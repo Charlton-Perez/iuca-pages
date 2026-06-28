@@ -86,12 +86,18 @@ function classifyTheme(title = "", journal = "") {
   return best.theme;
 }
 
-function buildDigest(secret, path, params) {
-  const sorted = Object.keys(params).sort().map(k => {
-    const v = Array.isArray(params[k]) ? params[k].join(",") : params[k];
-    return `${k}=${v}`;
-  });
-  const canonical = [path, ...sorted].join("&");
+// Canonical string: only filter[] params (not key/digest/page[]/filter[order]),
+// sorted alphabetically by filter name, values in URL order, joined by pipe |.
+// See: https://github.com/altmetric/altmetric-explorer-api-client
+function buildDigest(secret, filters) {
+  const parts = [];
+  for (const name of Object.keys(filters).sort()) {
+    parts.push(name);
+    const vals = filters[name];
+    if (Array.isArray(vals)) vals.forEach(v => parts.push(v));
+    else parts.push(vals);
+  }
+  const canonical = parts.join("|");
   return crypto.createHmac("sha1", secret).update(canonical).digest("hex");
 }
 
@@ -99,25 +105,26 @@ function buildDigest(secret, path, params) {
 async function fetchFromExplorer(key, secret) {
   const path = "/explorer/api/research_outputs";
 
-  const affiliationParams = IUCA_GRID_IDS.reduce((acc, id, i) => {
-    acc[`filter[affiliations][${i}]`] = id;
-    return acc;
-  }, {});
-
-  const params = {
-    key,
-    "filter[timeframe]": "6m",
-    "filter[order]":     "score_desc",
-    "filter[scope]":     "all",
-    "page[size]":        "25",
-    ...affiliationParams,
+  // Filters used in digest (exclude order, page params, key)
+  const filters = {
+    affiliations: IUCA_GRID_IDS,
+    timeframe: "6m",
+    scope: "all",
   };
 
-  params.digest = buildDigest(secret, path, params);
+  const digest = buildDigest(secret, filters);
 
-  const qs = Object.entries(params)
-    .map(([k, v]) => `${encodeURIComponent(k)}=${encodeURIComponent(v)}`)
-    .join("&");
+  // Build query string without URL-encoding brackets (Altmetric requires raw brackets)
+  const affiliationQs = IUCA_GRID_IDS.map(id => `filter[affiliations][]=${id}`).join("&");
+  const qs = [
+    `key=${key}`,
+    affiliationQs,
+    `filter[timeframe]=6m`,
+    `filter[scope]=all`,
+    `filter[order]=score_desc`,
+    `page[size]=25`,
+    `digest=${digest}`,
+  ].join("&");
 
   const r = await fetch(`https://www.altmetric.com${path}?${qs}`, {
     headers: { Accept: "application/json" },
