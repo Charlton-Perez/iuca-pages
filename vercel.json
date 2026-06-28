@@ -1,0 +1,7 @@
+{
+  "functions": {
+    "api/scopus.js":   { "runtime": "nodejs20.x" },
+    "api/altmetric.js": { "runtime": "nodejs20.x" },
+    "api/claude.js":    { "runtime": "nodejs20.x" }
+  }
+}
