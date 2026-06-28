@@ -260,7 +260,6 @@ function HeroCard({ paper }) {
             <StatPill value={paper.socialMentions} label="social posts"     icon="◎" />
           </div>
 
-          {/* Top news coverage */}
           {paper.topNews?.length > 0 && (
             <div style={{ borderTop: "1px solid rgba(255,255,255,0.07)", paddingTop: "0.85rem" }}>
               <div style={{ fontSize: "0.65rem", color: "rgba(255,255,255,0.25)", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: "0.5rem" }}>
@@ -268,12 +267,15 @@ function HeroCard({ paper }) {
               </div>
               {paper.topNews.map((n, i) => (
                 <div key={i} style={{ display: "flex", gap: "0.5rem", marginBottom: "0.3rem", alignItems: "baseline" }}>
-                  <span style={{ fontSize: "0.72rem", color: colour, fontWeight: 600, whiteSpace: "nowrap" }}>
-                    {n.outlet}
-                  </span>
-                  <span style={{ fontSize: "0.72rem", color: "rgba(255,255,255,0.5)", lineHeight: 1.4 }}>
-                    {n.title}
-                  </span>
+                  <span style={{ fontSize: "0.72rem", color: colour, fontWeight: 600, whiteSpace: "nowrap" }}>{n.outlet}</span>
+                  {n.url
+                    ? <a href={n.url} target="_blank" rel="noopener noreferrer" style={{ fontSize: "0.72rem", color: "rgba(255,255,255,0.5)", lineHeight: 1.4, textDecoration: "none" }}
+                        onMouseEnter={e => e.currentTarget.style.color = "rgba(255,255,255,0.85)"}
+                        onMouseLeave={e => e.currentTarget.style.color = "rgba(255,255,255,0.5)"}>
+                        {n.title} ↗
+                      </a>
+                    : <span style={{ fontSize: "0.72rem", color: "rgba(255,255,255,0.5)", lineHeight: 1.4 }}>{n.title}</span>
+                  }
                 </div>
               ))}
             </div>
@@ -340,12 +342,17 @@ function GridCard({ paper }) {
       </div>
 
       {paper.topNews?.[0] && (
-        <div style={{
-          borderTop: "1px solid rgba(255,255,255,0.05)", paddingTop: "0.6rem",
-          fontSize: "0.7rem", color: "rgba(255,255,255,0.35)", lineHeight: 1.5,
-        }}>
+        <div style={{ borderTop: "1px solid rgba(255,255,255,0.05)", paddingTop: "0.6rem", fontSize: "0.7rem", lineHeight: 1.5 }}>
           <span style={{ color: colour, fontWeight: 600 }}>{paper.topNews[0].outlet}: </span>
-          {paper.topNews[0].title}
+          {paper.topNews[0].url
+            ? <a href={paper.topNews[0].url} target="_blank" rel="noopener noreferrer"
+                style={{ color: "rgba(255,255,255,0.35)", textDecoration: "none" }}
+                onMouseEnter={e => e.currentTarget.style.color = "rgba(255,255,255,0.7)"}
+                onMouseLeave={e => e.currentTarget.style.color = "rgba(255,255,255,0.35)"}>
+                {paper.topNews[0].title} ↗
+              </a>
+            : <span style={{ color: "rgba(255,255,255,0.35)" }}>{paper.topNews[0].title}</span>
+          }
         </div>
       )}
 
@@ -362,27 +369,19 @@ function GridCard({ paper }) {
 }
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
-export default function InTheNews() {
-  const [papers, setPapers]     = useState(null);
-  const [loading, setLoading]   = useState(true);
-  const [isDemo, setIsDemo]     = useState(false);
-  const [fetchedAt, setFetchedAt] = useState(null);
+export default function InTheNews({ timeframe = "6m", paperCount = 25 }) {
+  const [papers, setPapers]           = useState(null);
+  const [loading, setLoading]         = useState(true);
   const [activeTheme, setActiveTheme] = useState("All");
 
   useEffect(() => {
-    fetch("/api/altmetric")
+    setLoading(true);
+    setPapers(null);
+    fetch(`/api/altmetric?timeframe=${timeframe}&limit=${paperCount}`)
       .then(r => r.ok ? r.json() : Promise.reject())
-      .then(({ papers, fetchedAt }) => {
-        setPapers(papers);
-        setFetchedAt(fetchedAt);
-        setLoading(false);
-      })
-      .catch(() => {
-        setPapers(DEMO_PAPERS);
-        setIsDemo(true);
-        setLoading(false);
-      });
-  }, []);
+      .then(({ papers }) => { setPapers(papers); setLoading(false); })
+      .catch(() => { setPapers(DEMO_PAPERS); setLoading(false); });
+  }, [timeframe, paperCount]);
 
   const themes = papers ? ["All", ...Array.from(new Set(papers.map(p => p.theme)))] : ["All"];
   const filtered = papers
@@ -405,48 +404,24 @@ export default function InTheNews() {
 
       {/* Header */}
       <div style={{ padding: "4rem 2rem 3rem", maxWidth: 900, margin: "0 auto" }}>
-        <div style={{ display: "flex", alignItems: "flex-end", justifyContent: "space-between", flexWrap: "wrap", gap: "1rem" }}>
-          <div>
-            <div style={{
-              fontSize: "0.68rem", color: "rgba(255,255,255,0.3)", letterSpacing: "0.1em",
-              textTransform: "uppercase", marginBottom: "0.75rem",
-            }}>
-              International Universities Climate Alliance
-            </div>
-            <h1 style={{
-              fontFamily: "'Fraunces', serif", fontWeight: 300,
-              fontSize: "clamp(2rem, 4vw, 3rem)", lineHeight: 1.15,
-              letterSpacing: "-0.02em", color: "#fff",
-            }}>
-              Our research,<br />
-              <em style={{ fontStyle: "italic", color: "rgba(255,255,255,0.5)" }}>in the world</em>
-            </h1>
-            <p style={{ marginTop: "0.85rem", fontSize: "0.9rem", color: "rgba(255,255,255,0.4)", lineHeight: 1.7, maxWidth: 480 }}>
-              The highest-impact climate papers from IUCA member universities in the past six months — ranked by public attention, media coverage and policy reach.
-            </p>
+        <div>
+          <div style={{
+            fontSize: "0.68rem", color: "rgba(255,255,255,0.3)", letterSpacing: "0.1em",
+            textTransform: "uppercase", marginBottom: "0.75rem",
+          }}>
+            International Universities Climate Alliance
           </div>
-
-          {!loading && (
-            <div style={{
-              background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)",
-              borderRadius: 12, padding: "1rem 1.25rem", textAlign: "right",
-            }}>
-              <div style={{ fontSize: "1.8rem", fontWeight: 700, color: "#f0a030", lineHeight: 1 }}>
-                {papers?.length}
-              </div>
-              <div style={{ fontSize: "0.68rem", color: "rgba(255,255,255,0.3)", marginTop: "0.2rem" }}>papers featured</div>
-              {fetchedAt && (
-                <div style={{ fontSize: "0.62rem", color: "rgba(255,255,255,0.2)", marginTop: "0.4rem" }}>
-                  Updated {new Date(fetchedAt).toLocaleDateString("en-GB")}
-                </div>
-              )}
-              {isDemo && (
-                <div style={{ fontSize: "0.62rem", color: "rgba(255,165,0,0.5)", marginTop: "0.4rem" }}>
-                  Demo data
-                </div>
-              )}
-            </div>
-          )}
+          <h1 style={{
+            fontFamily: "'Fraunces', serif", fontWeight: 300,
+            fontSize: "clamp(2rem, 4vw, 3rem)", lineHeight: 1.15,
+            letterSpacing: "-0.02em", color: "#fff",
+          }}>
+            Our research,<br />
+            <em style={{ fontStyle: "italic", color: "rgba(255,255,255,0.5)" }}>in the world</em>
+          </h1>
+          <p style={{ marginTop: "0.85rem", fontSize: "0.9rem", color: "rgba(255,255,255,0.4)", lineHeight: 1.7, maxWidth: 480 }}>
+            The highest-impact climate papers from IUCA member universities — ranked by public attention, media coverage and policy reach.
+          </p>
         </div>
 
         {/* Theme filter pills */}

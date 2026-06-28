@@ -102,27 +102,25 @@ function buildDigest(secret, filters) {
 }
 
 // ── Explorer API path ─────────────────────────────────────────────────────────
-async function fetchFromExplorer(key, secret) {
+async function fetchFromExplorer(key, secret, timeframe, limit) {
   const path = "/explorer/api/research_outputs";
 
-  // Filters used in digest (exclude order, page params, key)
   const filters = {
     affiliations: IUCA_GRID_IDS,
-    timeframe: "6m",
+    timeframe,
     scope: "all",
   };
 
   const digest = buildDigest(secret, filters);
 
-  // Build query string without URL-encoding brackets (Altmetric requires raw brackets)
   const affiliationQs = IUCA_GRID_IDS.map(id => `filter[affiliations][]=${id}`).join("&");
   const qs = [
     `key=${key}`,
     affiliationQs,
-    `filter[timeframe]=6m`,
+    `filter[timeframe]=${timeframe}`,
     `filter[scope]=all`,
     `filter[order]=score_desc`,
-    `page[size]=25`,
+    `page[size]=${limit}`,
     `digest=${digest}`,
   ].join("&");
 
@@ -152,7 +150,6 @@ async function fetchFromExplorer(key, secret) {
       return "IUCA Member";
     })();
 
-    // News stories from included mentions
     const topNews = included
       .filter(i => i.type === "mention" &&
         item.relationships?.mentions?.data?.some(m => m.id === i.id) &&
@@ -161,6 +158,7 @@ async function fetchFromExplorer(key, secret) {
       .map(i => ({
         outlet: i.attributes?.outlet_name || i.attributes?.author || "News",
         title:  i.attributes?.title || "",
+        url:    i.attributes?.url    || null,
       }));
 
     const title   = attr.title || "Untitled";
@@ -188,7 +186,7 @@ async function fetchFromExplorer(key, secret) {
 }
 
 // ── Fallback: Scopus + free Altmetric API ─────────────────────────────────────
-async function fetchFromScopusFallback(scopusKey) {
+async function fetchFromScopusFallback(scopusKey, limit) {
   const affFilter = IUCA_SCOPUS_IDS.map(id => `AF-ID(${id})`).join(" OR ");
   const query = `(${affFilter}) AND SUBJAREA(EART OR ENVI OR MULT) AND PUBYEAR > 2022`;
   const scopusUrl = `https://api.elsevier.com/content/search/scopus?` +
@@ -246,7 +244,7 @@ async function fetchFromScopusFallback(scopusKey) {
     })
     .filter(p => p && p.score > 0)
     .sort((a, b) => b.score - a.score)
-    .slice(0, 20);
+    .slice(0, limit);
 
   return { papers, source: "scopus+altmetric-free" };
 }
@@ -258,6 +256,10 @@ export default async function handler(req, res) {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Cache-Control", "s-maxage=86400");
 
+  const timeframe = ["1m","3m","6m","1y","5y"].includes(req.query.timeframe)
+    ? req.query.timeframe : "6m";
+  const limit = Math.min(parseInt(req.query.limit) || 25, 50);
+
   const explorerKey    = process.env.ALTMETRIC_EXPLORER_KEY;
   const explorerSecret = process.env.ALTMETRIC_EXPLORER_SECRET;
   const scopusKey      = process.env.SCOPUS_API_KEY;
@@ -265,9 +267,9 @@ export default async function handler(req, res) {
   try {
     let result;
     if (explorerKey && explorerSecret) {
-      result = await fetchFromExplorer(explorerKey, explorerSecret);
+      result = await fetchFromExplorer(explorerKey, explorerSecret, timeframe, limit);
     } else if (scopusKey) {
-      result = await fetchFromScopusFallback(scopusKey);
+      result = await fetchFromScopusFallback(scopusKey, limit);
     } else {
       return res.status(500).json({ error: "No API credentials configured" });
     }

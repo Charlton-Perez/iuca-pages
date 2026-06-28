@@ -362,8 +362,12 @@ function ThemePanel({ theme, isOpen, onToggle }) {
 }
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
-export default function WhatWeDo() {
+export default function WhatWeDo({ visibleThemes }) {
   const [openTheme, setOpenTheme] = useState(null);
+
+  const themes = visibleThemes
+    ? THEMES.filter(t => visibleThemes.includes(t.id))
+    : THEMES;
 
   const toggle = (id) => setOpenTheme(prev => prev === id ? null : id);
 
@@ -409,7 +413,7 @@ export default function WhatWeDo() {
         border: "1px solid rgba(255,255,255,0.08)", borderRadius: 16, overflow: "hidden",
         background: "rgba(255,255,255,0.02)",
       }}>
-        {THEMES.map(theme => (
+        {themes.map(theme => (
           <ThemePanel
             key={theme.id}
             theme={theme}
