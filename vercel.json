@@ -4,6 +4,7 @@
     "api/altmetric.js":   { "runtime": "nodejs20.x" },
     "api/claude.js":      { "runtime": "nodejs20.x" },
     "api/config.js":      { "runtime": "nodejs20.x" },
-    "api/save-config.js": { "runtime": "nodejs20.x" }
+    "api/save-config.js": { "runtime": "nodejs20.x" },
+    "api/check-links.js": { "runtime": "nodejs20.x" }
   }
 }

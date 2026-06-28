@@ -37,32 +37,33 @@ async function generateSubcategories(theme, rawData, universities) {
 
 // ─── Components ───────────────────────────────────────────────────────────────
 function UniChip({ name, flag, researchUrl, colour }) {
-  return (
-    <a
-      href={researchUrl}
-      target="_blank"
-      rel="noopener noreferrer"
-      title={`${name} — research group`}
-      style={{
-        display: "inline-flex", alignItems: "center", gap: "0.4rem",
-        padding: "0.3rem 0.7rem", borderRadius: 6,
-        background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)",
-        marginRight: "0.4rem", marginBottom: "0.4rem",
-        textDecoration: "none", cursor: "pointer", transition: "background 0.15s, border-color 0.15s",
-      }}
-      onMouseEnter={e => {
-        e.currentTarget.style.background = `${colour}18`;
-        e.currentTarget.style.borderColor = `${colour}50`;
-      }}
-      onMouseLeave={e => {
-        e.currentTarget.style.background = "rgba(255,255,255,0.06)";
-        e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)";
-      }}
-    >
+  const hasLink = researchUrl && researchUrl.startsWith("http");
+  const chipStyle = {
+    display: "inline-flex", alignItems: "center", gap: "0.4rem",
+    padding: "0.3rem 0.7rem", borderRadius: 6,
+    background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)",
+    marginRight: "0.4rem", marginBottom: "0.4rem",
+    textDecoration: "none", transition: "background 0.15s, border-color 0.15s",
+    cursor: hasLink ? "pointer" : "default",
+  };
+  const inner = (
+    <>
       <span style={{ fontSize: "0.9rem", lineHeight: 1 }}>{flag}</span>
       <span style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.9)", fontWeight: 500 }}>{name}</span>
-      <span style={{ fontSize: "0.6rem", color: `${colour}90` }}>↗</span>
+      {hasLink && <span style={{ fontSize: "0.6rem", color: `${colour}90` }}>↗</span>}
+    </>
+  );
+  const hoverIn  = e => { e.currentTarget.style.background = `${colour}18`; e.currentTarget.style.borderColor = `${colour}50`; };
+  const hoverOut = e => { e.currentTarget.style.background = "rgba(255,255,255,0.06)"; e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)"; };
+
+  return hasLink ? (
+    <a href={researchUrl} target="_blank" rel="noopener noreferrer"
+      title={`${name} — research group`} style={chipStyle}
+      onMouseEnter={hoverIn} onMouseLeave={hoverOut}>
+      {inner}
     </a>
+  ) : (
+    <span style={chipStyle} onMouseEnter={hoverIn} onMouseLeave={hoverOut}>{inner}</span>
   );
 }
 
@@ -167,8 +168,15 @@ function ThemePanel({ theme, universities, isOpen, onToggle }) {
             </div>
           )}
           {status === "error" && (
-            <div style={{ color: "#e07060", fontSize: "0.78rem", padding: "0.5rem 0" }}>
-              Could not load research data.
+            <div>
+              <div style={{ fontSize: "0.72rem", color: "rgba(255,255,255,0.3)", marginBottom: "0.75rem", fontStyle: "italic" }}>
+                Detailed research areas are generated from live Scopus data (available on Vercel). Showing all member universities active in this broad theme area.
+              </div>
+              <div>
+                {universities.map(u => (
+                  <UniChip key={u.name} name={u.name} flag={u.flag} researchUrl={u.researchUrl} colour={theme.colour} />
+                ))}
+              </div>
             </div>
           )}
           {subcategories && subcategories.map((sub, i) => (

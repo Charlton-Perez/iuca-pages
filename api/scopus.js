@@ -36,23 +36,27 @@ export default async function handler(req, res) {
 
     // ── Mode 2: theme-level fetch — titles per uni for a given theme ──────────
     if (themeQuery && affIds) {
-      const uniIds = affIds.split(",").slice(0, 35);
-      const sampleIds = uniIds.slice(0, 10);
+      const uniIds = affIds.split(",").filter(Boolean);
 
+      // Query all universities in batches of 10 to avoid hammering the Scopus rate limit
+      const BATCH = 10;
       const uniTitles = {};
-      await Promise.all(sampleIds.map(async (id) => {
-        const q = `AF-ID(${id}) AND TITLE-ABS-KEY(${decodeURIComponent(themeQuery)}) AND PUBYEAR > 2019`;
-        const url = `https://api.elsevier.com/content/search/scopus?` +
-          `query=${encodeURIComponent(q)}&count=20&sort=citedby-count`;
-        try {
-          const r = await fetch(url, { headers: scopusHeaders });
-          if (!r.ok) return;
-          const data = await r.json();
-          const entries = data?.["search-results"]?.entry || [];
-          const titles = entries.map(e => e["dc:title"]).filter(Boolean);
-          if (titles.length) uniTitles[id] = titles.slice(0, 8);
-        } catch {}
-      }));
+      for (let i = 0; i < uniIds.length; i += BATCH) {
+        const batch = uniIds.slice(i, i + BATCH);
+        await Promise.all(batch.map(async (id) => {
+          const q = `AF-ID(${id}) AND TITLE-ABS-KEY(${decodeURIComponent(themeQuery)}) AND PUBYEAR > 2019`;
+          const url = `https://api.elsevier.com/content/search/scopus?` +
+            `query=${encodeURIComponent(q)}&count=20&sort=citedby-count`;
+          try {
+            const r = await fetch(url, { headers: scopusHeaders });
+            if (!r.ok) return;
+            const data = await r.json();
+            const entries = data?.["search-results"]?.entry || [];
+            const titles = entries.map(e => e["dc:title"]).filter(Boolean);
+            if (titles.length) uniTitles[id] = titles.slice(0, 8);
+          } catch {}
+        }));
+      }
 
       return res.status(200).json({ uniTitles });
     }

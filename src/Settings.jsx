@@ -108,6 +108,8 @@ function EmbedTab() {
 // ─── Tab: Members ─────────────────────────────────────────────────────────────
 function MembersTab({ universities, onUpdate }) {
   const [text, setText] = useState(() => universitiesToText(universities));
+  const [linkStatus, setLinkStatus] = useState(null); // { url: true/false }
+  const [checking, setChecking] = useState(false);
 
   useEffect(() => { setText(universitiesToText(universities)); }, [universities]);
 
@@ -132,8 +134,29 @@ function MembersTab({ universities, onUpdate }) {
       .filter(u => u.name && u.scopusId);
   }
 
+  async function verifyLinks() {
+    const parsed = textToUniversities(text);
+    const urls = parsed.map(u => u.researchUrl).filter(u => u && u.startsWith("http"));
+    if (!urls.length) return;
+    setChecking(true);
+    setLinkStatus(null);
+    try {
+      const r = await fetch("/api/check-links", {
+        method: "POST", headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ urls }),
+      });
+      if (r.ok) setLinkStatus((await r.json()).results);
+    } catch {}
+    setChecking(false);
+  }
+
   const parsed = textToUniversities(text);
   const valid = parsed.length > 0;
+
+  // Count dead links if we have results
+  const deadCount = linkStatus
+    ? parsed.filter(u => u.researchUrl && linkStatus[u.researchUrl] === false).length
+    : null;
 
   return (
     <div>
@@ -144,24 +167,55 @@ function MembersTab({ universities, onUpdate }) {
       </p>
       <textarea
         value={text}
-        onChange={e => setText(e.target.value)}
+        onChange={e => { setText(e.target.value); setLinkStatus(null); }}
         style={{ ...textarea, minHeight: 320, fontFamily: "monospace", fontSize: "0.72rem" }}
         spellCheck={false}
       />
-      {!valid && <p style={{ color: "#e07060", fontSize: "0.72rem", marginTop: "0.35rem" }}>Each line needs at least a name and Scopus ID</p>}
-      <button
-        disabled={!valid}
-        onClick={() => onUpdate(parsed)}
-        style={{
-          marginTop: "0.75rem", width: "100%", padding: "0.6rem",
-          background: valid ? "#5b9bd5" : "rgba(255,255,255,0.08)",
-          border: "none", borderRadius: 8,
-          color: valid ? "#fff" : "rgba(255,255,255,0.25)",
-          fontWeight: 600, fontSize: "0.85rem", cursor: valid ? "pointer" : "default",
-          fontFamily: "inherit",
+
+      {/* Link verification results */}
+      {linkStatus && (
+        <div style={{
+          marginTop: "0.5rem", padding: "0.6rem 0.85rem", borderRadius: 7, fontSize: "0.73rem", lineHeight: 1.7,
+          background: deadCount > 0 ? "rgba(224,112,96,0.12)" : "rgba(92,170,114,0.12)",
+          border: `1px solid ${deadCount > 0 ? "#e07060" : "#5caa72"}40`,
+          color: deadCount > 0 ? "#e07060" : "#5caa72",
         }}>
-        Apply member changes
-      </button>
+          {deadCount > 0
+            ? `${deadCount} dead link${deadCount > 1 ? "s" : ""} found. Lines with ❌ have unreachable URLs — update or clear the URL field for those universities.`
+            : "All research links are reachable ✓"}
+          {deadCount > 0 && (
+            <ul style={{ marginTop: "0.4rem", paddingLeft: "1.2rem" }}>
+              {parsed.filter(u => u.researchUrl && linkStatus[u.researchUrl] === false).map(u => (
+                <li key={u.name}>{u.name} — <span style={{ fontFamily: "monospace", fontSize: "0.68rem" }}>{u.researchUrl}</span></li>
+              ))}
+            </ul>
+          )}
+        </div>
+      )}
+
+      <div style={{ display: "flex", gap: "0.5rem", marginTop: "0.75rem" }}>
+        <button onClick={verifyLinks} disabled={checking || !valid}
+          style={{
+            flex: 1, padding: "0.6rem", borderRadius: 8, border: "1px solid rgba(255,255,255,0.12)",
+            background: "transparent", color: checking ? "rgba(255,255,255,0.3)" : "rgba(255,255,255,0.6)",
+            fontSize: "0.8rem", cursor: checking ? "default" : "pointer", fontFamily: "inherit",
+          }}>
+          {checking ? "Checking links…" : "Verify research links"}
+        </button>
+        <button
+          disabled={!valid}
+          onClick={() => onUpdate(parsed)}
+          style={{
+            flex: 2, padding: "0.6rem",
+            background: valid ? "#5b9bd5" : "rgba(255,255,255,0.08)",
+            border: "none", borderRadius: 8,
+            color: valid ? "#fff" : "rgba(255,255,255,0.25)",
+            fontWeight: 600, fontSize: "0.85rem", cursor: valid ? "pointer" : "default",
+            fontFamily: "inherit",
+          }}>
+          Apply member changes
+        </button>
+      </div>
     </div>
   );
 }

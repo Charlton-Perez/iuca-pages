@@ -23,7 +23,7 @@ ${uniSummary || "(no data — use your knowledge of these universities' research
 Create exactly 4 subcategories within this theme that:
 1. Are meaningful and distinct to a public audience (not jargon-heavy)
 2. Reflect what IUCA universities actually research
-3. Map each subcategory to the 4-6 universities most active in that sub-area
+3. For each subcategory, include ALL universities from the list that genuinely have research strength in that area — do not artificially limit the count. A subcategory may have anywhere from 3 to 20+ universities if the evidence supports it.
 
 Universities to choose from: ${universities.join(", ")}
 
@@ -32,7 +32,7 @@ Respond ONLY with a JSON array (no markdown, no explanation):
   {
     "label": "Plain-English subcategory name",
     "summary": "One sentence explaining this research area for a public audience.",
-    "universities": ["University Name 1", "University Name 2", "University Name 3", "University Name 4"]
+    "universities": ["Every university name that genuinely researches this area"]
   }
 ]`;
 
