@@ -1,10 +1,1 @@
-{
-  "functions": {
-    "api/scopus.js":      {},
-    "api/altmetric.js":   {},
-    "api/claude.js":      {},
-    "api/config.js":      {},
-    "api/save-config.js": {},
-    "api/check-links.js": {}
-  }
-}
+{}
