@@ -1,6 +1,6 @@
 import { useState, useEffect } from "react";
 
-const PASSWORD = import.meta.env.VITE_SETTINGS_PASSWORD || "iuca2024";
+const PASSWORD = "iuca2024";
 
 // ─── Display config (localStorage) ───────────────────────────────────────────
 const TIMEFRAME_OPTIONS = [
