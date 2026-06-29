@@ -8,6 +8,7 @@ async function fetchThemeData(theme, universities) {
     themeQuery: termQuery,
     affIds: universities.map(u => u.scopusId).join(","),
   });
+  params.set("v", "3");
   const resp = await fetch(`/api/scopus?${params}`);
   if (!resp.ok) throw new Error("Scopus proxy error");
   return resp.json(); // { uniPapers: { scopusId: [{ title, doi, year, citations, url }] } }

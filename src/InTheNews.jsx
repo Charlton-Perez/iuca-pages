@@ -377,7 +377,7 @@ export default function InTheNews({ timeframe = "6m", paperCount = 25 }) {
   useEffect(() => {
     setLoading(true);
     setPapers(null);
-    fetch(`/api/altmetric?timeframe=${timeframe}&limit=${paperCount}`)
+    fetch(`/api/altmetric?timeframe=${timeframe}&limit=${paperCount}&v=3`)
       .then(r => r.ok ? r.json() : Promise.reject())
       .then(({ papers }) => { setPapers(papers); setLoading(false); })
       .catch(() => { setPapers(DEMO_PAPERS); setLoading(false); });

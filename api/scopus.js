@@ -38,31 +38,27 @@ export default async function handler(req, res) {
     if (themeQuery && affIds) {
       const uniIds = affIds.split(",").filter(Boolean);
 
-      // Query all universities in batches of 10 to avoid hammering the Scopus rate limit
-      const BATCH = 10;
+      // All universities in parallel — faster than sequential batches and stays within timeout
       const uniPapers = {};
-      for (let i = 0; i < uniIds.length; i += BATCH) {
-        const batch = uniIds.slice(i, i + BATCH);
-        await Promise.all(batch.map(async (id) => {
-          const q = `AF-ID(${id}) AND TITLE-ABS-KEY(${decodeURIComponent(themeQuery)}) AND PUBYEAR > 2019`;
-          const url = `https://api.elsevier.com/content/search/scopus?` +
-            `query=${encodeURIComponent(q)}&count=20&sort=citedby-count`;
-          try {
-            const r = await fetch(url, { headers: scopusHeaders });
-            if (!r.ok) return;
-            const data = await r.json();
-            const entries = data?.["search-results"]?.entry || [];
-            const papers = entries.map(e => ({
-              title:     e["dc:title"] || "",
-              doi:       e["prism:doi"] || "",
-              year:      (e["prism:coverDate"] || "").slice(0, 4),
-              citations: parseInt(e["citedby-count"] || "0"),
-              url:       e["prism:doi"] ? `https://doi.org/${e["prism:doi"]}` : "",
-            })).filter(p => p.title);
-            if (papers.length) uniPapers[id] = papers.slice(0, 6);
-          } catch {}
-        }));
-      }
+      await Promise.all(uniIds.map(async (id) => {
+        const q = `AF-ID(${id}) AND TITLE-ABS-KEY(${decodeURIComponent(themeQuery)}) AND PUBYEAR > 2019`;
+        const url = `https://api.elsevier.com/content/search/scopus?` +
+          `query=${encodeURIComponent(q)}&count=10&sort=citedby-count`;
+        try {
+          const r = await fetch(url, { headers: scopusHeaders });
+          if (!r.ok) return;
+          const data = await r.json();
+          const entries = data?.["search-results"]?.entry || [];
+          const papers = entries.map(e => ({
+            title:     e["dc:title"] || "",
+            doi:       e["prism:doi"] || "",
+            year:      (e["prism:coverDate"] || "").slice(0, 4),
+            citations: parseInt(e["citedby-count"] || "0"),
+            url:       e["prism:doi"] ? `https://doi.org/${e["prism:doi"]}` : "",
+          })).filter(p => p.title);
+          if (papers.length) uniPapers[id] = papers.slice(0, 4);
+        } catch {}
+      }));
 
       return res.status(200).json({ uniPapers });
     }
