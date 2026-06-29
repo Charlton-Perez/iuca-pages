@@ -46,7 +46,7 @@ export default async function handler(req, res) {
         await Promise.all(batch.map(async (id) => {
           const q = `AF-ID(${id}) AND TITLE-ABS-KEY(${decodeURIComponent(themeQuery)}) AND PUBYEAR > 2019`;
           const url = `https://api.elsevier.com/content/search/scopus?` +
-            `query=${encodeURIComponent(q)}&count=20&sort=citedby-count&field=dc:title,prism:doi,prism:coverDate,citedby-count,link`;
+            `query=${encodeURIComponent(q)}&count=20&sort=citedby-count`;
           try {
             const r = await fetch(url, { headers: scopusHeaders });
             if (!r.ok) return;

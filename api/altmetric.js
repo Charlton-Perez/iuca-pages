@@ -101,26 +101,38 @@ function buildDigest(secret, filters) {
   return crypto.createHmac("sha1", secret).update(canonical).digest("hex");
 }
 
+// Climate keywords — papers not matching at least one are excluded
+const CLIMATE_KEYWORDS = [
+  "climate","carbon","greenhouse","warming","emission","fossil","renewable",
+  "arctic","glacier","ice sheet","permafrost","sea level","ocean","coral",
+  "drought","flood","wildfire","heatwave","extreme weather","storm","cyclone",
+  "biodiversity","ecosystem","deforestation","wetland","peatland","species",
+  "atmosphere","aerosol","methane","co2","net zero","decarboni","adaptation",
+  "mitigation","sustainability","environmental","nature","ecology","pollution",
+];
+
+function isClimateRelated(title, journal) {
+  const text = (title + " " + journal).toLowerCase();
+  return CLIMATE_KEYWORDS.some(kw => text.includes(kw));
+}
+
 // ── Explorer API path ─────────────────────────────────────────────────────────
 async function fetchFromExplorer(key, secret, timeframe, limit) {
   const path = "/explorer/api/research_outputs";
 
-  const filters = {
-    affiliations: IUCA_GRID_IDS,
-    timeframe,
-    scope: "all",
-  };
-
-  const digest = buildDigest(secret, filters);
+  const filters = { affiliations: IUCA_GRID_IDS, timeframe, scope: "all" };
+  const digest  = buildDigest(secret, filters);
 
   const affiliationQs = IUCA_GRID_IDS.map(id => `filter[affiliations][]=${id}`).join("&");
+  // include=mentions brings news/MSM mentions into the sideloaded `included` array
   const qs = [
     `key=${key}`,
     affiliationQs,
     `filter[timeframe]=${timeframe}`,
     `filter[scope]=all`,
     `filter[order]=score_desc`,
-    `page[size]=${limit}`,
+    `page[size]=${Math.min(limit * 3, 100)}`, // fetch extra so we have enough after climate filter
+    `include=mentions`,
     `digest=${digest}`,
   ].join("&");
 
@@ -130,17 +142,27 @@ async function fetchFromExplorer(key, secret, timeframe, limit) {
 
   if (!r.ok) {
     const body = await r.text();
-    throw new Error(`Explorer ${r.status}: ${body.slice(0, 200)}`);
+    throw new Error(`Explorer ${r.status}: ${body.slice(0, 300)}`);
   }
 
   const data = await r.json();
-  const outputs = data?.data || [];
+  const outputs  = data?.data     || [];
   const included = data?.included || [];
 
-  const papers = outputs.map(item => {
-    const attr    = item.attributes || {};
-    const counts  = attr.mention_counts || {};
+  // Log the raw attribute keys from the first item to Vercel function logs
+  // so we can verify field names without a dedicated debug endpoint
+  if (outputs[0]) {
+    console.log("ALTMETRIC_ATTR_KEYS:", JSON.stringify(Object.keys(outputs[0].attributes || {})));
+    console.log("ALTMETRIC_COUNTS_KEYS:", JSON.stringify(Object.keys(outputs[0].attributes?.mention_counts || {})));
+    console.log("ALTMETRIC_FIRST_SCORE:", outputs[0].attributes?.altmetric_score, outputs[0].attributes?.score);
+    console.log("ALTMETRIC_FIRST_URL:", outputs[0].attributes?.url, outputs[0].attributes?.doi);
+  }
 
+  const papers = outputs.map(item => {
+    const attr   = item.attributes || {};
+    const counts = attr.mention_counts || {};
+
+    // University name from sideloaded affiliations
     const affiliationIds = item.relationships?.affiliations?.data?.map(a => a.id) || [];
     const uniName = (() => {
       for (const affId of affiliationIds) {
@@ -150,27 +172,37 @@ async function fetchFromExplorer(key, secret, timeframe, limit) {
       return "IUCA Member";
     })();
 
+    // News mentions from sideloaded includes (requires include=mentions in query)
+    const mentionIds = new Set((item.relationships?.mentions?.data || []).map(m => m.id));
     const topNews = included
-      .filter(i => i.type === "mention" &&
-        item.relationships?.mentions?.data?.some(m => m.id === i.id) &&
-        i.attributes?.mention_type === "msm")
+      .filter(i => i.type === "mention" && mentionIds.has(i.id) &&
+        ["msm","news"].includes(i.attributes?.mention_type))
       .slice(0, 3)
       .map(i => ({
         outlet: i.attributes?.outlet_name || i.attributes?.author || "News",
         title:  i.attributes?.title || "",
-        url:    i.attributes?.url    || null,
+        url:    i.attributes?.url   || null,
       }));
 
-    const title   = attr.title || "Untitled";
-    const journal = attr.journal_title || "";
+    const title   = attr.title || attr.name || "";
+    const journal = attr.journal_title || attr.journal || "";
 
-    // Explorer API may use altmetric_score, score, or attention_score
-    const score = Math.round(
-      Number(attr.altmetric_score ?? attr.score ?? attr.attention_score ?? 0)
-    );
+    // Try all known score field locations in the Explorer API
+    const rawScore = attr.altmetric_score ?? attr.score ?? attr.attention_score
+      ?? counts.total?.at ?? 0;
+    const score = Math.round(Number(rawScore));
+
+    // Paper URL: prefer DOI (permanent), then Altmetric details as last resort
+    const paperUrl = attr.doi
+      ? `https://doi.org/${attr.doi}`
+      : (attr.url && !attr.url.includes("altmetric.com") ? attr.url : "#");
+
+    // Altmetric details page (for "Full attention data" button)
+    const detailsUrl = attr.details_url || attr.altmetric_details_url
+      || (attr.url?.includes("altmetric.com") ? attr.url : null);
 
     return {
-      doi:            attr.doi,
+      doi:            attr.doi || null,
       title,
       journal,
       score,
@@ -179,15 +211,17 @@ async function fetchFromExplorer(key, secret, timeframe, limit) {
         : (attr.publication_date ? new Date(attr.publication_date).getTime() / 1000 : null),
       university:     uniName,
       theme:          classifyTheme(title, journal),
-      newsOutlets:    counts.msm?.at    || counts.news_and_blogs?.at || 0,
-      policyMentions: counts.policy?.at || 0,
-      blogMentions:   counts.blog?.at   || counts.blogs?.at || 0,
+      newsOutlets:    counts.msm?.at || counts.news?.at || counts.news_and_blogs?.at || 0,
+      policyMentions: counts.policy?.at || counts.policy_document?.at || 0,
+      blogMentions:   counts.blog?.at   || counts.blogs?.at           || 0,
       socialMentions: (counts.tweet?.at || counts.twitter?.at || 0) + (counts.bluesky?.at || 0),
-      detailsUrl:     attr.details_url  || attr.altmetric_details_url || null,
-      paperUrl:       attr.url || attr.uri || (attr.doi ? `https://doi.org/${attr.doi}` : "#"),
+      detailsUrl,
+      paperUrl,
       topNews,
     };
-  }).filter(p => p.title && p.title !== "Untitled");
+  })
+  .filter(p => p.title && isClimateRelated(p.title, p.journal))
+  .slice(0, limit);
 
   return { papers, source: "altmetric-explorer" };
 }
