@@ -10,14 +10,14 @@ async function fetchThemeData(theme, universities) {
   });
   const resp = await fetch(`/api/scopus?${params}`);
   if (!resp.ok) throw new Error("Scopus proxy error");
-  return resp.json();
+  return resp.json(); // { uniPapers: { scopusId: [{ title, doi, year, citations, url }] } }
 }
 
 async function generateSubcategories(theme, rawData, universities) {
-  const uniTitles = rawData.uniTitles || {};
-  const uniSummary = Object.entries(uniTitles).map(([id, titles]) => {
+  const uniPapers = rawData.uniPapers || {};
+  const uniSummary = Object.entries(uniPapers).map(([id, papers]) => {
     const uni = universities.find(u => u.scopusId === id);
-    return `${uni?.name || id}: ${titles.slice(0, 4).join("; ")}`;
+    return `${uni?.name || id}: ${papers.slice(0, 4).map(p => p.title).join("; ")}`;
   }).join("\n");
 
   const resp = await fetch("/api/claude", {
@@ -36,8 +36,9 @@ async function generateSubcategories(theme, rawData, universities) {
 }
 
 // ─── Components ───────────────────────────────────────────────────────────────
-function UniChip({ name, flag, researchUrl, colour }) {
-  const hasLink = researchUrl && researchUrl.startsWith("http");
+// paper = { title, doi, year, citations, url } | null
+function UniChip({ name, flag, paper, colour }) {
+  const hasLink = paper?.url && paper.url.startsWith("http");
   const chipStyle = {
     display: "inline-flex", alignItems: "center", gap: "0.4rem",
     padding: "0.3rem 0.7rem", borderRadius: 6,
@@ -56,18 +57,21 @@ function UniChip({ name, flag, researchUrl, colour }) {
   const hoverIn  = e => { e.currentTarget.style.background = `${colour}18`; e.currentTarget.style.borderColor = `${colour}50`; };
   const hoverOut = e => { e.currentTarget.style.background = "rgba(255,255,255,0.06)"; e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)"; };
 
+  const title = hasLink ? `"${paper.title}"${paper.year ? ` (${paper.year})` : ""}${paper.citations ? ` · ${paper.citations} citations` : ""}` : name;
+
   return hasLink ? (
-    <a href={researchUrl} target="_blank" rel="noopener noreferrer"
-      title={`${name} — research group`} style={chipStyle}
+    <a href={paper.url} target="_blank" rel="noopener noreferrer"
+      title={title} style={chipStyle}
       onMouseEnter={hoverIn} onMouseLeave={hoverOut}>
       {inner}
     </a>
   ) : (
-    <span style={chipStyle} onMouseEnter={hoverIn} onMouseLeave={hoverOut}>{inner}</span>
+    <span style={chipStyle} title={name} onMouseEnter={hoverIn} onMouseLeave={hoverOut}>{inner}</span>
   );
 }
 
-function SubcategoryCard({ sub, colour, universities }) {
+// uniPaperMap: { uniName: topPaper } built from Scopus data
+function SubcategoryCard({ sub, colour, universities, uniPaperMap }) {
   const [expanded, setExpanded] = useState(false);
   const unis = (sub.universities || [])
     .map(name => universities.find(u => u.name === name))
@@ -99,11 +103,12 @@ function SubcategoryCard({ sub, colour, universities }) {
       {expanded && (
         <div style={{ marginTop: "0.85rem", paddingTop: "0.75rem", borderTop: "1px solid rgba(255,255,255,0.07)" }}>
           <div style={{ fontSize: "0.68rem", color: "rgba(255,255,255,0.35)", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: "0.5rem" }}>
-            IUCA members active in this area
+            IUCA members active in this area — hover chip to see top cited paper
           </div>
           <div>
             {unis.map(u => (
-              <UniChip key={u.name} name={u.name} flag={u.flag} researchUrl={u.researchUrl} colour={colour} />
+              <UniChip key={u.name} name={u.name} flag={u.flag}
+                paper={uniPaperMap?.[u.name] || null} colour={colour} />
             ))}
           </div>
         </div>
@@ -113,15 +118,30 @@ function SubcategoryCard({ sub, colour, universities }) {
 }
 
 function ThemePanel({ theme, universities, isOpen, onToggle }) {
-  const [status, setStatus]             = useState("idle");
+  const [status, setStatus]               = useState("idle");
   const [subcategories, setSubcategories] = useState(null);
+  const [uniPaperMap, setUniPaperMap]     = useState(null); // { uniName: topPaper }
 
   useEffect(() => {
     if (!isOpen || subcategories) return;
     setStatus("loading");
+    let rawPapers = {};
     fetchThemeData(theme, universities)
-      .then(raw => generateSubcategories(theme, raw, universities))
-      .then(subs => { setSubcategories(subs); setStatus("done"); })
+      .then(raw => {
+        rawPapers = raw.uniPapers || {};
+        return generateSubcategories(theme, raw, universities);
+      })
+      .then(subs => {
+        // Build name → top paper lookup from Scopus results
+        const map = {};
+        for (const uni of universities) {
+          const papers = rawPapers[uni.scopusId];
+          if (papers?.length) map[uni.name] = papers[0]; // already sorted by citation count
+        }
+        setUniPaperMap(map);
+        setSubcategories(subs);
+        setStatus("done");
+      })
       .catch(() => { setSubcategories(null); setStatus("error"); });
   }, [isOpen]);
 
@@ -174,13 +194,13 @@ function ThemePanel({ theme, universities, isOpen, onToggle }) {
               </div>
               <div>
                 {universities.map(u => (
-                  <UniChip key={u.name} name={u.name} flag={u.flag} researchUrl={u.researchUrl} colour={theme.colour} />
+                  <UniChip key={u.name} name={u.name} flag={u.flag} paper={null} colour={theme.colour} />
                 ))}
               </div>
             </div>
           )}
           {subcategories && subcategories.map((sub, i) => (
-            <SubcategoryCard key={i} sub={sub} colour={theme.colour} universities={universities} />
+            <SubcategoryCard key={i} sub={sub} colour={theme.colour} universities={universities} uniPaperMap={uniPaperMap} />
           ))}
         </div>
       )}

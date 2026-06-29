@@ -164,23 +164,30 @@ async function fetchFromExplorer(key, secret, timeframe, limit) {
     const title   = attr.title || "Untitled";
     const journal = attr.journal_title || "";
 
+    // Explorer API may use altmetric_score, score, or attention_score
+    const score = Math.round(
+      Number(attr.altmetric_score ?? attr.score ?? attr.attention_score ?? 0)
+    );
+
     return {
       doi:            attr.doi,
       title,
       journal,
-      score:          Math.round(attr.altmetric_score || 0),
-      publishedOn:    attr.published_on ? new Date(attr.published_on).getTime() / 1000 : null,
+      score,
+      publishedOn:    attr.published_on
+        ? new Date(attr.published_on).getTime() / 1000
+        : (attr.publication_date ? new Date(attr.publication_date).getTime() / 1000 : null),
       university:     uniName,
       theme:          classifyTheme(title, journal),
-      newsOutlets:    counts.msm?.at    || 0,
+      newsOutlets:    counts.msm?.at    || counts.news_and_blogs?.at || 0,
       policyMentions: counts.policy?.at || 0,
-      blogMentions:   counts.blog?.at   || 0,
-      socialMentions: (counts.tweet?.at || 0) + (counts.bluesky?.at || 0),
-      detailsUrl:     attr.details_url  || null,
-      paperUrl:       attr.url || (attr.doi ? `https://doi.org/${attr.doi}` : "#"),
+      blogMentions:   counts.blog?.at   || counts.blogs?.at || 0,
+      socialMentions: (counts.tweet?.at || counts.twitter?.at || 0) + (counts.bluesky?.at || 0),
+      detailsUrl:     attr.details_url  || attr.altmetric_details_url || null,
+      paperUrl:       attr.url || attr.uri || (attr.doi ? `https://doi.org/${attr.doi}` : "#"),
       topNews,
     };
-  }).filter(p => p.score > 0);
+  }).filter(p => p.title && p.title !== "Untitled");
 
   return { papers, source: "altmetric-explorer" };
 }
