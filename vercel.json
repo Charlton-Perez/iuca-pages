@@ -1,10 +1,10 @@
 {
   "functions": {
-    "api/scopus.js":      { "runtime": "nodejs20.x" },
-    "api/altmetric.js":   { "runtime": "nodejs20.x" },
-    "api/claude.js":      { "runtime": "nodejs20.x" },
-    "api/config.js":      { "runtime": "nodejs20.x" },
-    "api/save-config.js": { "runtime": "nodejs20.x" },
-    "api/check-links.js": { "runtime": "nodejs20.x" }
+    "api/scopus.js":      {},
+    "api/altmetric.js":   {},
+    "api/claude.js":      {},
+    "api/config.js":      {},
+    "api/save-config.js": {},
+    "api/check-links.js": {}
   }
 }
