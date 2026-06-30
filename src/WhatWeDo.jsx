@@ -117,21 +117,14 @@ function ThemePanel({ theme, universities, isOpen, onToggle, shownDois, onPapers
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", flexWrap: "wrap" }}>
                         <span style={{ fontSize: "0.82rem", fontWeight: 600, color: "rgba(255,255,255,0.9)" }}>{u.name}</span>
-                        {paper.fwci != null ? (
-                          <span style={{
-                            fontSize: "0.63rem", padding: "0.1rem 0.45rem", borderRadius: 10,
-                            background: `${theme.colour}18`, color: theme.colour, fontWeight: 600,
-                          }} title="Field-Weighted Citation Impact — how this paper compares to the average for its field and year. Above 1.0 = above average.">
-                            FWCI {paper.fwci.toFixed(1)}
-                          </span>
-                        ) : paper.citations > 0 ? (
+                        {paper.citations > 0 && (
                           <span style={{
                             fontSize: "0.63rem", padding: "0.1rem 0.45rem", borderRadius: 10,
                             background: `${theme.colour}18`, color: theme.colour, fontWeight: 600,
                           }}>
                             {paper.citations.toLocaleString()} citations
                           </span>
-                        ) : null}
+                        )}
                         {paper.year && (
                           <span style={{ fontSize: "0.63rem", color: "rgba(255,255,255,0.25)" }}>{paper.year}</span>
                         )}

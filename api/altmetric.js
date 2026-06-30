@@ -1,5 +1,6 @@
 // api/altmetric.js — Vercel serverless function
-// Uses Altmetric Explorer API (institutional access) with HMAC-SHA1 signing.
+// Returns top N papers by Altmetric score from IUCA member universities.
+// Uses Altmetric Explorer API (HMAC-SHA1 signed).
 // Falls back to Scopus + free Altmetric API if Explorer credentials are missing.
 
 import crypto from "crypto";
@@ -42,7 +43,6 @@ const IUCA_GRID_IDS = [
   "grid.449398.e",  // University of the South Pacific
 ];
 
-// Direct GRID ID → display name lookup so we don't rely on sideloading
 const GRID_TO_NAME = {
   "grid.9025.f":   "University of Reading",
   "grid.4991.5":   "University of Oxford",
@@ -104,31 +104,7 @@ const SCOPUS_ID_TO_NAME = {
   "60003980":"University of Cape Town","60070377":"TERI School of Advanced Studies","60004028":"University of the South Pacific",
 };
 
-// Theme labels must match exactly the theme labels used in What We Do (data.js THEMES)
-const THEME_KEYWORDS = {
-  "Atmosphere & Weather":    ["forecast","atmospheric","weather","precipitation","aerosol","jet stream","air quality","monsoon","troposphere","stratosphere","climate model","general circulation"],
-  "Oceans & Sea Level":      ["ocean","sea level","marine","coastal","coral","salinity","thermohaline","tidal","oceanograph","deep water","upwelling","acidification"],
-  "Ice, Snow & Permafrost":  ["glacier","ice sheet","permafrost","arctic","sea ice","snow","cryosphere","polar","greenland","antarctica","frozen","ice core"],
-  "Ecosystems & Biodiversity":["biodiversity","ecosystem","forest","deforestation","wetland","peatland","species","habitat","rewilding","conservation","terrestrial","savanna"],
-  "Society & Adaptation":    ["adaptation","health","mortality","equity","justice","migration","urban","community","resilience","vulnerability","displacement","livelihoods"],
-  "Mitigation & Clean Energy":["mitigation","renewable","carbon capture","net zero","decarbonisation","solar","emissions","wind energy","hydrogen","battery","photovoltaic","carbon pricing"],
-  "Food, Water & Land":      ["food","agriculture","drought","water","irrigation","crop","agroecology","groundwater","land use","food security","farming","livestock"],
-  "Extreme Events & Risk":   ["extreme","heatwave","flood","wildfire","cyclone","attribution","disaster","compound","storm surge","fire","hurricane","typhoon"],
-};
-
-function classifyTheme(title = "", journal = "") {
-  const text = (title + " " + journal).toLowerCase();
-  let best = { theme: "Climate Science", count: 0 };
-  for (const [theme, keywords] of Object.entries(THEME_KEYWORDS)) {
-    const count = keywords.filter(k => text.includes(k)).length;
-    if (count > best.count) best = { theme, count };
-  }
-  return best.theme;
-}
-
-// Canonical string: only filter[] params (not key/digest/page[]/filter[order]),
-// sorted alphabetically by filter name, values in URL order, joined by pipe |.
-// See: https://github.com/altmetric/altmetric-explorer-api-client
+// Canonical HMAC string: filter param names + values, sorted alphabetically, pipe-separated.
 function buildDigest(secret, filters) {
   const parts = [];
   for (const name of Object.keys(filters).sort()) {
@@ -137,13 +113,9 @@ function buildDigest(secret, filters) {
     if (Array.isArray(vals)) vals.forEach(v => parts.push(v));
     else parts.push(vals);
   }
-  const canonical = parts.join("|");
-  return crypto.createHmac("sha1", secret).update(canonical).digest("hex");
+  return crypto.createHmac("sha1", secret).update(parts.join("|")).digest("hex");
 }
 
-// ── Explorer API path ─────────────────────────────────────────────────────────
-// subjects = ANZSRC Fields of Research (FOR) codes, e.g. ["0401","0405"]
-// Altmetric Explorer applies these at journal level — far more reliable than title keywords.
 async function fetchFromExplorer(key, secret, timeframe, limit, subjects) {
   const filters = {
     affiliations: IUCA_GRID_IDS,
@@ -162,7 +134,7 @@ async function fetchFromExplorer(key, secret, timeframe, limit, subjects) {
     `filter[timeframe]=${timeframe}`,
     `filter[scope]=all`,
     `filter[order]=score_desc`,
-    `page[size]=${Math.min(limit * 2, 100)}`,
+    `page[size]=${Math.min(limit, 100)}`,
     `include=affiliations,journals`,
     `digest=${digest}`,
   ].filter(Boolean).join("&");
@@ -181,24 +153,15 @@ async function fetchFromExplorer(key, secret, timeframe, limit, subjects) {
 
   const papers = outputs.map(item => {
     const attr     = item.attributes || {};
-    const mentions = attr.mentions   || {}; // flat counts: { msm: 12, tweet: 400, ... }
+    const mentions = attr.mentions   || {};
 
-    // Score — confirmed field name from debug: "altmetric-score"
-    const score = Math.round(Number(attr["altmetric-score"] || 0));
-
-    // DOI and paper URL
-    const doi      = attr.identifiers?.dois?.[0] || null;
-    const paperUrl = doi ? `https://doi.org/${doi}` : "#";
-
-    // Altmetric details page — constructed from item id
+    const score     = Math.round(Number(attr["altmetric-score"] || 0));
+    const doi       = attr.identifiers?.dois?.[0] || null;
+    const paperUrl  = doi ? `https://doi.org/${doi}` : "#";
     const detailsUrl = item.id ? `https://www.altmetric.com/details/${item.id}` : null;
-
-    // Publication date — confirmed field name: "publication-date"
-    const pubStr     = attr["publication-date"] || null;
+    const pubStr    = attr["publication-date"] || null;
     const publishedOn = pubStr ? new Date(pubStr).getTime() / 1000 : null;
 
-    // University — match GRID IDs from relationships against our local lookup first,
-    // then fall back to sideloaded affiliations if the API provides them
     const affiliationIds = item.relationships?.affiliations?.data?.map(a => a.id) || [];
     const uniName = (() => {
       for (const affId of affiliationIds) {
@@ -209,30 +172,23 @@ async function fetchFromExplorer(key, secret, timeframe, limit, subjects) {
       return null;
     })();
 
-    // Journal from sideloaded journals
     const journalId  = item.relationships?.journal?.data?.id;
     const journalObj = journalId ? included.find(i => i.type === "journal" && i.id === journalId) : null;
     const journal    = journalObj?.attributes?.title || journalObj?.attributes?.name || "";
 
-    const title = attr.title || "";
-
     return {
       doi,
-      title,
+      title:          attr.title || "",
       journal,
       score,
       publishedOn,
       university:     uniName || "IUCA Member",
-      theme:          classifyTheme(title, journal),
-      // Mention counts are direct integers, confirmed from debug
       newsOutlets:    mentions.msm    || 0,
       policyMentions: mentions.policy || 0,
       blogMentions:   mentions.blog   || 0,
       socialMentions: (mentions.tweet || 0) + (mentions.bluesky || 0) + (mentions.rdt || 0),
-      citations:      attr.dimensions?.citations || 0,
       detailsUrl,
       paperUrl,
-      topNews: [], // Individual article headlines not available via Explorer API
     };
   })
   .filter(p => p.title && p.score > 0)
@@ -242,7 +198,6 @@ async function fetchFromExplorer(key, secret, timeframe, limit, subjects) {
   return { papers, source: "altmetric-explorer" };
 }
 
-// ── Fallback: Scopus + free Altmetric API ─────────────────────────────────────
 async function fetchFromScopusFallback(scopusKey, limit) {
   const affFilter = IUCA_SCOPUS_IDS.map(id => `AF-ID(${id})`).join(" OR ");
   const query = `(${affFilter}) AND SUBJAREA(EART OR ENVI OR MULT) AND PUBYEAR > 2022`;
@@ -289,14 +244,12 @@ async function fetchFromScopusFallback(scopusKey, limit) {
         score:          Math.round(alt.score || 0),
         publishedOn:    alt.published_on || (p.published ? new Date(p.published).getTime() / 1000 : null),
         university:     p.university,
-        theme:          classifyTheme(alt.title || p.title, alt.journal || p.journal),
-        newsOutlets:    alt.cited_by_msm_count     || 0,
+        newsOutlets:    alt.cited_by_msm_count      || 0,
         policyMentions: alt.cited_by_policies_count || 0,
-        blogMentions:   alt.cited_by_posts_count   || 0,
+        blogMentions:   alt.cited_by_posts_count    || 0,
         socialMentions: (alt.cited_by_tweeters_count || 0) + (alt.cited_by_bluesky_count || 0),
-        detailsUrl:     alt.details_url            || null,
+        detailsUrl:     alt.details_url             || null,
         paperUrl:       alt.url || `https://doi.org/${p.doi}`,
-        topNews:        [],
       };
     })
     .filter(p => p && p.score > 0)
@@ -306,7 +259,6 @@ async function fetchFromScopusFallback(scopusKey, limit) {
   return { papers, source: "scopus+altmetric-free" };
 }
 
-// ── Handler ───────────────────────────────────────────────────────────────────
 export default async function handler(req, res) {
   if (req.method !== "GET") return res.status(405).json({ error: "Method not allowed" });
 
@@ -315,10 +267,10 @@ export default async function handler(req, res) {
 
   const timeframe = ["1m","3m","6m","1y","3y","5y"].includes(req.query.timeframe)
     ? req.query.timeframe : "1y";
-  const limit    = Math.min(parseInt(req.query.limit) || 35, 50);
+  const limit    = Math.min(parseInt(req.query.limit) || 30, 50);
   const subjects = req.query.subjects
     ? req.query.subjects.split(",").map(s => s.trim()).filter(Boolean)
-    : ["0401","0405","0406","0501","0502","0503","0504"]; // default FOR codes for climate/environment
+    : ["0401","0405","0406","0501","0502","0503","0504"];
 
   const explorerKey    = process.env.ALTMETRIC_EXPLORER_KEY;
   const explorerSecret = process.env.ALTMETRIC_EXPLORER_SECRET;
