@@ -47,7 +47,7 @@ export const THEMES = [
     colour: "#5b9bd5",
     bg: "#0d1e32",
     description: "Forecasting, atmospheric dynamics, air quality and the physics of our changing skies.",
-    scopusTerms: ["atmospheric dynamics","numerical weather prediction","climate modelling","air quality","aerosols","atmospheric chemistry","jet stream","precipitation"],
+    scopusTerms: ["atmosphere","weather","precipitation","aerosol","troposphere","stratosphere","forecast","monsoon"],
   },
   {
     id: "oceans",
@@ -56,7 +56,7 @@ export const THEMES = [
     colour: "#3ab5c6",
     bg: "#091e24",
     description: "Ocean heat, circulation, sea level rise, acidification and marine ecosystems under pressure.",
-    scopusTerms: ["ocean circulation","sea level rise","marine heatwaves","ocean acidification","southern ocean","ocean heat uptake","coastal flooding","thermohaline"],
+    scopusTerms: ["ocean","sea level","marine","coastal","acidification","thermohaline","salinity","upwelling"],
   },
   {
     id: "cryosphere",
@@ -65,7 +65,7 @@ export const THEMES = [
     colour: "#a8d4f0",
     bg: "#101824",
     description: "Glaciers, ice sheets, Arctic sea ice and the frozen ground releasing ancient carbon.",
-    scopusTerms: ["glacier retreat","ice sheet dynamics","permafrost","arctic amplification","sea ice","cryosphere","snow cover","ice cores"],
+    scopusTerms: ["glacier","permafrost","arctic","cryosphere","snowpack","ice sheet","sea ice","tundra"],
   },
   {
     id: "ecosystems",
@@ -74,7 +74,7 @@ export const THEMES = [
     colour: "#5caa72",
     bg: "#0b1c12",
     description: "How climate change reshapes forests, wetlands, coral reefs and the species that depend on them.",
-    scopusTerms: ["biodiversity","ecosystem services","deforestation","coral bleaching","peatland carbon","rewilding","species distribution","tropical forests"],
+    scopusTerms: ["biodiversity","ecosystem","deforestation","coral","peatland","habitat","vegetation","rewilding"],
   },
   {
     id: "society",
@@ -83,7 +83,7 @@ export const THEMES = [
     colour: "#e8a44a",
     bg: "#1e1608",
     description: "Climate justice, health impacts, migration, urban resilience and how communities adapt.",
-    scopusTerms: ["climate adaptation","climate justice","heat mortality","urban resilience","climate migration","climate health","food security","climate vulnerability"],
+    scopusTerms: ["adaptation","resilience","vulnerability","displacement","heatwave","health","urban","migration"],
   },
   {
     id: "mitigation",
@@ -92,7 +92,7 @@ export const THEMES = [
     colour: "#c97fd4",
     bg: "#1a0f20",
     description: "Pathways to net zero: renewables, carbon capture, energy systems and emissions reduction.",
-    scopusTerms: ["renewable energy","carbon capture","net zero","energy transition","solar photovoltaics","carbon budgets","decarbonisation","emissions reduction"],
+    scopusTerms: ["mitigation","renewable","solar","decarbonisation","emissions","battery","photovoltaic","hydrogen"],
   },
   {
     id: "food",
@@ -101,7 +101,7 @@ export const THEMES = [
     colour: "#d4a843",
     bg: "#1c1508",
     description: "Agricultural resilience, water security and land-use change in a warming world.",
-    scopusTerms: ["food systems","water scarcity","agroecology","land use change","drought resilience","groundwater","irrigation","crop yield"],
+    scopusTerms: ["agriculture","drought","irrigation","crop","groundwater","food","agroforestry","livestock"],
   },
   {
     id: "extremes",

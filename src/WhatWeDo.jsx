@@ -4,11 +4,14 @@ import { UNIVERSITIES, THEMES } from "./data.js";
 // Fetch top cited Scopus paper per university for a given theme.
 // Returns { uniPapers: { scopusId: [{ title, doi, year, citations, url }] } }
 async function fetchThemePapers(theme, universities) {
-  const termQuery = (theme.scopusTerms || []).slice(0, 4).join(" OR ");
+  // Quote multi-word phrases; single words work bare in TITLE-ABS-KEY
+  const termQuery = (theme.scopusTerms || []).slice(0, 6)
+    .map(t => t.includes(" ") ? `"${t}"` : t)
+    .join(" OR ");
   const params = new URLSearchParams({
     themeQuery: termQuery,
     affIds: universities.map(u => u.scopusId).join(","),
-    v: "4",
+    v: "5",
   });
   const resp = await fetch(`/api/scopus?${params}`);
   if (!resp.ok) throw new Error(`Scopus ${resp.status}`);
@@ -28,18 +31,12 @@ function ThemePanel({ theme, universities, isOpen, onToggle }) {
       .catch(() => { setUniPapers({}); setStatus("error"); });
   }, [isOpen]);
 
-  // Sort: universities with a paper first (by citation count), then those without
-  const sorted = [...universities].sort((a, b) => {
-    const pa = uniPapers?.[a.scopusId]?.[0];
-    const pb = uniPapers?.[b.scopusId]?.[0];
-    if (pa && pb) return (pb.citations || 0) - (pa.citations || 0);
-    if (pa) return -1;
-    if (pb) return 1;
-    return 0;
-  });
-
-  const withPapers    = uniPapers ? sorted.filter(u => uniPapers[u.scopusId]?.length) : [];
-  const withoutPapers = uniPapers ? sorted.filter(u => !uniPapers[u.scopusId]?.length) : [];
+  // Only show universities that have a matching paper, sorted A→Z
+  const withPapers = uniPapers
+    ? [...universities]
+        .filter(u => uniPapers[u.scopusId]?.length)
+        .sort((a, b) => a.name.localeCompare(b.name))
+    : [];
 
   return (
     <div style={{ borderBottom: "1px solid rgba(255,255,255,0.07)" }}>
@@ -94,8 +91,8 @@ function ThemePanel({ theme, universities, isOpen, onToggle }) {
 
               <div style={{ fontSize: "0.65rem", color: "rgba(255,255,255,0.25)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "0.85rem" }}>
                 {withPapers.length > 0
-                  ? `${withPapers.length} of ${universities.length} members have papers in Scopus for this theme · sorted by citations`
-                  : `${universities.length} member universities`}
+                  ? `${withPapers.length} of ${universities.length} members have Scopus papers in this theme · A–Z`
+                  : `No matching papers found in Scopus for this theme`}
               </div>
 
               {/* Universities with a paper */}
@@ -137,26 +134,6 @@ function ThemePanel({ theme, universities, isOpen, onToggle }) {
                 );
               })}
 
-              {/* Universities with no matching paper — collapsed into a chips row */}
-              {withoutPapers.length > 0 && (
-                <div style={{ marginTop: "0.85rem" }}>
-                  <div style={{ fontSize: "0.63rem", color: "rgba(255,255,255,0.18)", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: "0.45rem" }}>
-                    No Scopus papers found in this theme for:
-                  </div>
-                  <div style={{ display: "flex", flexWrap: "wrap", gap: "0.35rem" }}>
-                    {withoutPapers.map(u => (
-                      <span key={u.name} style={{
-                        fontSize: "0.72rem", color: "rgba(255,255,255,0.3)",
-                        background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.07)",
-                        borderRadius: 6, padding: "0.2rem 0.55rem",
-                        display: "inline-flex", alignItems: "center", gap: "0.3rem",
-                      }}>
-                        <span style={{ fontSize: "0.85rem" }}>{u.flag}</span>{u.name}
-                      </span>
-                    ))}
-                  </div>
-                </div>
-              )}
             </>
           )}
         </div>
