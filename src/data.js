@@ -44,12 +44,16 @@ export const UNIVERSITIES = [
 // Full list: https://www.abs.gov.au/statistics/classifications/australian-and-new-zealand-standard-research-classification-anzsrc/latest-release
 export const DEFAULT_SUBJECT_CODES = [
   "0401", // Atmospheric Sciences
+  "0402", // Geochemistry
+  "0404", // Geophysics
   "0405", // Oceanography
   "0406", // Physical Geography and Environmental Geoscience
   "0501", // Ecological Applications
   "0502", // Environmental Science and Management
   "0503", // Soil Sciences
   "0504", // Freshwater Science (Water Resources)
+  "0701", // Agriculture, Land and Farm Management
+  "0705", // Forestry Sciences
 ];
 
 // subjectAreas = Scopus SUBJAREA abbreviations (valid query field: SUBJAREA(EART OR ENVI)).
@@ -67,7 +71,8 @@ export const THEMES = [
     bg: "#0d1e32",
     description: "Forecasting, atmospheric dynamics, air quality and the physics of our changing skies.",
     subjectAreas: ["EART"],
-    keywords: ["atmosphere","weather","precipitation","aerosol","forecast","monsoon","troposphere","stratosphere"],
+    // Broad — EART alone returns all earth science; keywords distinguish from oceans/cryosphere
+    keywords: ["atmosphere","atmospheric","weather","climate","precipitation","aerosol","forecast","wind","cloud","radiation","temperature","humidity","jet","monsoon","blocking","reanalysis","NWP","general circulation","boundary layer"],
   },
   {
     id: "oceans",
@@ -77,7 +82,7 @@ export const THEMES = [
     bg: "#091e24",
     description: "Ocean heat, circulation, sea level rise, acidification and marine ecosystems under pressure.",
     subjectAreas: ["EART"],
-    keywords: ["ocean","sea level","marine","coastal","acidification","salinity","thermohaline","upwelling"],
+    keywords: ["ocean","sea level","marine","coastal","acidification","salinity","thermohaline","upwelling","AMOC","seawater","tidal","estuarine","bathymetry","deep sea"],
   },
   {
     id: "cryosphere",
@@ -87,7 +92,7 @@ export const THEMES = [
     bg: "#101824",
     description: "Glaciers, ice sheets, Arctic sea ice and the frozen ground releasing ancient carbon.",
     subjectAreas: ["EART"],
-    keywords: ["glacier","permafrost","arctic","cryosphere","ice sheet","sea ice","snowpack","tundra"],
+    keywords: ["glacier","permafrost","arctic","cryosphere","ice sheet","sea ice","snowpack","tundra","frozen","melt","Greenland","Antarctica","ice core","snowfall"],
   },
   {
     id: "ecosystems",
@@ -97,7 +102,7 @@ export const THEMES = [
     bg: "#0b1c12",
     description: "How climate change reshapes forests, wetlands, coral reefs and the species that depend on them.",
     subjectAreas: ["ENVI", "AGRI"],
-    keywords: ["biodiversity","ecosystem","deforestation","coral","peatland","habitat","species","rewilding"],
+    keywords: ["biodiversity","ecosystem","deforestation","coral","peatland","habitat","species","rewilding","forest","savanna","wetland","mangrove","terrestrial","biome"],
   },
   {
     id: "society",
@@ -107,7 +112,7 @@ export const THEMES = [
     bg: "#1e1608",
     description: "Climate justice, health impacts, migration, urban resilience and how communities adapt.",
     subjectAreas: ["ENVI", "SOCI"],
-    keywords: ["climate adaptation","climate justice","resilience","vulnerability","displacement","urban heat","migration"],
+    keywords: ["adaptation","resilience","vulnerability","displacement","urban","migration","climate risk","health","equity","justice","livelihoods","community","policy","governance"],
   },
   {
     id: "mitigation",
@@ -117,7 +122,7 @@ export const THEMES = [
     bg: "#1a0f20",
     description: "Pathways to net zero: renewables, carbon capture, energy systems and emissions reduction.",
     subjectAreas: ["ENER", "ENVI"],
-    keywords: ["renewable","solar","decarbonisation","emissions","carbon capture","net zero","photovoltaic","hydrogen"],
+    keywords: ["renewable","solar","decarbonisation","emissions","carbon capture","net zero","photovoltaic","hydrogen","wind energy","battery","CCS","energy transition","low carbon"],
   },
   {
     id: "food",
@@ -127,7 +132,7 @@ export const THEMES = [
     bg: "#1c1508",
     description: "Agricultural resilience, water security and land-use change in a warming world.",
     subjectAreas: ["AGRI", "ENVI"],
-    keywords: ["agriculture","drought","irrigation","crop","groundwater","food","agroforestry","land use"],
+    keywords: ["agriculture","drought","irrigation","crop","groundwater","food","agroforestry","land use","farming","livestock","food security","water security","soil","yield"],
   },
   {
     id: "extremes",
@@ -137,6 +142,6 @@ export const THEMES = [
     bg: "#1e0e0c",
     description: "Heatwaves, floods, wildfires and storms — attribution, prediction and disaster risk reduction.",
     subjectAreas: ["EART", "ENVI"],
-    keywords: ["extreme","flood","wildfire","heatwave","cyclone","hurricane","attribution","disaster"],
+    keywords: ["extreme","flood","wildfire","heatwave","cyclone","hurricane","attribution","disaster","storm","typhoon","compound event","risk","fire","inundation"],
   },
 ];

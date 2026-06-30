@@ -20,7 +20,7 @@ async function fetchThemePapers(theme, universities) {
 }
 
 // ─── ThemePanel ───────────────────────────────────────────────────────────────
-function ThemePanel({ theme, universities, isOpen, onToggle }) {
+function ThemePanel({ theme, universities, isOpen, onToggle, shownDois, onPapersShown }) {
   const [status, setStatus]         = useState("idle");
   const [uniPapers, setUniPapers]   = useState(null); // { scopusId: [paper] }
 
@@ -32,10 +32,23 @@ function ThemePanel({ theme, universities, isOpen, onToggle }) {
       .catch(() => { setUniPapers({}); setStatus("error"); });
   }, [isOpen]);
 
-  // Only show universities that have a matching paper, sorted A→Z
+  // Register newly visible DOIs with the parent once loaded
+  useEffect(() => {
+    if (status !== "done" || !uniPapers) return;
+    const newDois = Object.values(uniPapers)
+      .flat()
+      .map(p => p.doi)
+      .filter(doi => doi && !shownDois.has(doi));
+    if (newDois.length) onPapersShown(newDois);
+  }, [status]);
+
+  // Only show universities with a paper not already shown in another theme, sorted A→Z
   const withPapers = uniPapers
     ? [...universities]
-        .filter(u => uniPapers[u.scopusId]?.length)
+        .filter(u => {
+          const paper = uniPapers[u.scopusId]?.[0];
+          return paper && (!paper.doi || !shownDois.has(paper.doi));
+        })
         .sort((a, b) => a.name.localeCompare(b.name))
     : [];
 
@@ -146,6 +159,8 @@ function ThemePanel({ theme, universities, isOpen, onToggle }) {
 // ─── Page ─────────────────────────────────────────────────────────────────────
 export default function WhatWeDo({ universities = UNIVERSITIES, themes = THEMES, visibleThemes }) {
   const [openTheme, setOpenTheme] = useState(null);
+  const [shownDois, setShownDois] = useState(() => new Set());
+  const registerDois = (dois) => setShownDois(prev => new Set([...prev, ...dois]));
 
   const filteredThemes = visibleThemes
     ? themes.filter(t => visibleThemes.includes(t.id))

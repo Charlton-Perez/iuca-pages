@@ -104,15 +104,16 @@ const SCOPUS_ID_TO_NAME = {
   "60003980":"University of Cape Town","60070377":"TERI School of Advanced Studies","60004028":"University of the South Pacific",
 };
 
+// Theme labels must match exactly the theme labels used in What We Do (data.js THEMES)
 const THEME_KEYWORDS = {
-  "Atmosphere & Weather":  ["forecast","atmospheric","weather","precipitation","aerosol","jet stream","air quality","monsoon"],
-  "Oceans & Sea Level":    ["ocean","sea level","marine","coastal","coral","salinity","thermohaline","tidal"],
-  "Cryosphere":            ["glacier","ice sheet","permafrost","arctic","sea ice","snow","cryosphere","polar"],
-  "Ecosystems":            ["biodiversity","ecosystem","forest","deforestation","wetland","peatland","species","habitat"],
-  "Society & Health":      ["adaptation","health","mortality","equity","justice","migration","urban","community"],
-  "Mitigation & Energy":   ["mitigation","renewable","carbon capture","net zero","decarbonisation","solar","emissions"],
-  "Food & Water":          ["food","agriculture","drought","water","irrigation","crop","agroecology","groundwater"],
-  "Extreme Events":        ["extreme","heatwave","flood","wildfire","cyclone","attribution","disaster","compound"],
+  "Atmosphere & Weather":    ["forecast","atmospheric","weather","precipitation","aerosol","jet stream","air quality","monsoon","troposphere","stratosphere","climate model","general circulation"],
+  "Oceans & Sea Level":      ["ocean","sea level","marine","coastal","coral","salinity","thermohaline","tidal","oceanograph","deep water","upwelling","acidification"],
+  "Ice, Snow & Permafrost":  ["glacier","ice sheet","permafrost","arctic","sea ice","snow","cryosphere","polar","greenland","antarctica","frozen","ice core"],
+  "Ecosystems & Biodiversity":["biodiversity","ecosystem","forest","deforestation","wetland","peatland","species","habitat","rewilding","conservation","terrestrial","savanna"],
+  "Society & Adaptation":    ["adaptation","health","mortality","equity","justice","migration","urban","community","resilience","vulnerability","displacement","livelihoods"],
+  "Mitigation & Clean Energy":["mitigation","renewable","carbon capture","net zero","decarbonisation","solar","emissions","wind energy","hydrogen","battery","photovoltaic","carbon pricing"],
+  "Food, Water & Land":      ["food","agriculture","drought","water","irrigation","crop","agroecology","groundwater","land use","food security","farming","livestock"],
+  "Extreme Events & Risk":   ["extreme","heatwave","flood","wildfire","cyclone","attribution","disaster","compound","storm surge","fire","hurricane","typhoon"],
 };
 
 function classifyTheme(title = "", journal = "") {

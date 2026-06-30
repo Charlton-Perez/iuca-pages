@@ -55,7 +55,7 @@ export default async function handler(req, res) {
 
       const uniPapers = {};
       await Promise.all(uniIds.map(async (id) => {
-        const q = `AF-ID(${id}) AND ${subjectClause} AND PUBYEAR > 2023`;
+        const q = `AF-ID(${id}) AND ${subjectClause} AND PUBYEAR > 2021`;
         const url = `https://api.elsevier.com/content/search/scopus?` +
           `query=${encodeURIComponent(q)}&count=5&sort=citedby-count`;
         try {

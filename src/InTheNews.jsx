@@ -191,7 +191,7 @@ function ScoreRing({ score }) {
       position: "relative",
     }}>
       <span style={{ fontSize: "1rem", fontWeight: 700, color: colour, lineHeight: 1 }}>{display}</span>
-      <span style={{ fontSize: "0.5rem", color: colour, opacity: 0.7, letterSpacing: "0.05em", textTransform: "uppercase" }}>score</span>
+      <span style={{ fontSize: "0.45rem", color: colour, opacity: 0.7, letterSpacing: "0.04em", textTransform: "uppercase" }}>altmetric</span>
     </div>
   );
 }
