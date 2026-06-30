@@ -1,175 +1,49 @@
 import { useState, useEffect } from "react";
 import { UNIVERSITIES, THEMES } from "./data.js";
 
-// ─── API calls ────────────────────────────────────────────────────────────────
-async function fetchThemeData(theme, universities) {
+// Fetch top cited Scopus paper per university for a given theme.
+// Returns { uniPapers: { scopusId: [{ title, doi, year, citations, url }] } }
+async function fetchThemePapers(theme, universities) {
   const termQuery = (theme.scopusTerms || []).slice(0, 4).join(" OR ");
   const params = new URLSearchParams({
     themeQuery: termQuery,
     affIds: universities.map(u => u.scopusId).join(","),
+    v: "4",
   });
-  params.set("v", "3");
   const resp = await fetch(`/api/scopus?${params}`);
-  if (!resp.ok) throw new Error("Scopus proxy error");
-  return resp.json(); // { uniPapers: { scopusId: [{ title, doi, year, citations, url }] } }
+  if (!resp.ok) throw new Error(`Scopus ${resp.status}`);
+  return resp.json();
 }
 
-async function generateSubcategories(theme, rawData, universities) {
-  const uniPapers = rawData.uniPapers || {};
-  const uniSummary = Object.entries(uniPapers).map(([id, papers]) => {
-    const uni = universities.find(u => u.scopusId === id);
-    return `${uni?.name || id}: ${papers.slice(0, 4).map(p => p.title).join("; ")}`;
-  }).join("\n");
-
-  const resp = await fetch("/api/claude", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({
-      theme: theme.label,
-      description: theme.description,
-      uniSummary,
-      universities: universities.map(u => u.name),
-    }),
-  });
-  if (!resp.ok) throw new Error("Claude proxy error");
-  const data = await resp.json();
-  return data.subcategories;
-}
-
-// ─── Components ───────────────────────────────────────────────────────────────
-// paper = { title, doi, year, citations, url } | null
-function UniChip({ name, flag, paper, colour }) {
-  const hasLink = paper?.url && paper.url.startsWith("http");
-  const chipStyle = {
-    display: "inline-flex", alignItems: "center", gap: "0.4rem",
-    padding: "0.3rem 0.7rem", borderRadius: 6,
-    background: "rgba(255,255,255,0.06)", border: "1px solid rgba(255,255,255,0.1)",
-    marginRight: "0.4rem", marginBottom: "0.4rem",
-    textDecoration: "none", transition: "background 0.15s, border-color 0.15s",
-    cursor: hasLink ? "pointer" : "default",
-  };
-  const inner = (
-    <>
-      <span style={{ fontSize: "0.9rem", lineHeight: 1 }}>{flag}</span>
-      <span style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.9)", fontWeight: 500 }}>{name}</span>
-      {hasLink && <span style={{ fontSize: "0.6rem", color: `${colour}90` }}>↗</span>}
-    </>
-  );
-  const hoverIn  = e => { e.currentTarget.style.background = `${colour}18`; e.currentTarget.style.borderColor = `${colour}50`; };
-  const hoverOut = e => { e.currentTarget.style.background = "rgba(255,255,255,0.06)"; e.currentTarget.style.borderColor = "rgba(255,255,255,0.1)"; };
-
-  const title = hasLink ? `"${paper.title}"${paper.year ? ` (${paper.year})` : ""}${paper.citations ? ` · ${paper.citations} citations` : ""}` : name;
-
-  return hasLink ? (
-    <a href={paper.url} target="_blank" rel="noopener noreferrer"
-      title={title} style={chipStyle}
-      onMouseEnter={hoverIn} onMouseLeave={hoverOut}>
-      {inner}
-    </a>
-  ) : (
-    <span style={chipStyle} title={name} onMouseEnter={hoverIn} onMouseLeave={hoverOut}>{inner}</span>
-  );
-}
-
-function SubcategoryCard({ sub, colour, universities, uniPaperMap }) {
-  const [expanded, setExpanded] = useState(false);
-  const unis = (sub.universities || [])
-    .map(name => universities.find(u => u.name === name))
-    .filter(Boolean);
-
-  return (
-    <div style={{
-      background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)",
-      borderLeft: `3px solid ${colour}`, borderRadius: 8, marginBottom: "0.5rem",
-    }}>
-      <div
-        onClick={() => setExpanded(e => !e)}
-        style={{ padding: "0.85rem 1rem", cursor: "pointer", display: "flex", justifyContent: "space-between", alignItems: "center" }}
-        onMouseEnter={e => e.currentTarget.style.background = "rgba(255,255,255,0.03)"}
-        onMouseLeave={e => e.currentTarget.style.background = "transparent"}
-      >
-        <div>
-          <div style={{ color: "rgba(255,255,255,0.92)", fontWeight: 600, fontSize: "0.88rem" }}>{sub.label}</div>
-          {sub.summary && <div style={{ color: "rgba(255,255,255,0.45)", fontSize: "0.75rem", marginTop: "0.2rem", lineHeight: 1.5 }}>{sub.summary}</div>}
-        </div>
-        <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", flexShrink: 0, marginLeft: "1rem" }}>
-          <span style={{ fontSize: "0.7rem", color: colour, fontWeight: 600 }}>{unis.length} universities</span>
-          <span style={{ color: "rgba(255,255,255,0.3)", fontSize: "0.8rem" }}>{expanded ? "▲" : "▼"}</span>
-        </div>
-      </div>
-
-      {expanded && (
-        <div style={{ padding: "0 1rem 1rem 1rem", borderTop: "1px solid rgba(255,255,255,0.07)" }}>
-          <div style={{ fontSize: "0.65rem", color: "rgba(255,255,255,0.25)", textTransform: "uppercase", letterSpacing: "0.07em", margin: "0.65rem 0 0.75rem" }}>
-            IUCA members active in this area · top cited Scopus paper shown
-          </div>
-          {unis.map(u => {
-            const paper = uniPaperMap?.[u.name];
-            return (
-              <div key={u.name} style={{ marginBottom: "0.75rem", paddingBottom: "0.75rem", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
-                <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.25rem" }}>
-                  <span style={{ fontSize: "1rem" }}>{u.flag}</span>
-                  <span style={{ fontSize: "0.8rem", fontWeight: 600, color: "rgba(255,255,255,0.9)" }}>{u.name}</span>
-                  {paper?.citations > 0 && (
-                    <span style={{ fontSize: "0.65rem", color: colour, background: `${colour}15`, padding: "0.1rem 0.4rem", borderRadius: 10 }}>
-                      {paper.citations} citations
-                    </span>
-                  )}
-                </div>
-                {paper?.url ? (
-                  <a href={paper.url} target="_blank" rel="noopener noreferrer" style={{
-                    display: "block", marginLeft: "1.6rem", fontSize: "0.73rem",
-                    color: "rgba(255,255,255,0.5)", lineHeight: 1.5, textDecoration: "none",
-                  }}
-                    onMouseEnter={e => e.currentTarget.style.color = colour}
-                    onMouseLeave={e => e.currentTarget.style.color = "rgba(255,255,255,0.5)"}
-                  >
-                    {paper.title}{paper.year ? ` (${paper.year})` : ""} ↗
-                  </a>
-                ) : (
-                  <span style={{ display: "block", marginLeft: "1.6rem", fontSize: "0.72rem", color: "rgba(255,255,255,0.2)", fontStyle: "italic" }}>
-                    No matching Scopus paper found
-                  </span>
-                )}
-              </div>
-            );
-          })}
-        </div>
-      )}
-    </div>
-  );
-}
-
+// ─── ThemePanel ───────────────────────────────────────────────────────────────
 function ThemePanel({ theme, universities, isOpen, onToggle }) {
-  const [status, setStatus]               = useState("idle");
-  const [subcategories, setSubcategories] = useState(null);
-  const [uniPaperMap, setUniPaperMap]     = useState(null); // { uniName: topPaper }
+  const [status, setStatus]         = useState("idle");
+  const [uniPapers, setUniPapers]   = useState(null); // { scopusId: [paper] }
 
   useEffect(() => {
-    if (!isOpen || subcategories) return;
+    if (!isOpen || uniPapers !== null) return;
     setStatus("loading");
-    let rawPapers = {};
-    fetchThemeData(theme, universities)
-      .then(raw => {
-        rawPapers = raw.uniPapers || {};
-        return generateSubcategories(theme, raw, universities);
-      })
-      .then(subs => {
-        // Build name → top paper lookup from Scopus results
-        const map = {};
-        for (const uni of universities) {
-          const papers = rawPapers[uni.scopusId];
-          if (papers?.length) map[uni.name] = papers[0]; // already sorted by citation count
-        }
-        setUniPaperMap(map);
-        setSubcategories(subs);
-        setStatus("done");
-      })
-      .catch(() => { setSubcategories(null); setStatus("error"); });
+    fetchThemePapers(theme, universities)
+      .then(data => { setUniPapers(data.uniPapers || {}); setStatus("done"); })
+      .catch(() => { setUniPapers({}); setStatus("error"); });
   }, [isOpen]);
+
+  // Sort: universities with a paper first (by citation count), then those without
+  const sorted = [...universities].sort((a, b) => {
+    const pa = uniPapers?.[a.scopusId]?.[0];
+    const pb = uniPapers?.[b.scopusId]?.[0];
+    if (pa && pb) return (pb.citations || 0) - (pa.citations || 0);
+    if (pa) return -1;
+    if (pb) return 1;
+    return 0;
+  });
+
+  const withPapers    = uniPapers ? sorted.filter(u => uniPapers[u.scopusId]?.length) : [];
+  const withoutPapers = uniPapers ? sorted.filter(u => !uniPapers[u.scopusId]?.length) : [];
 
   return (
     <div style={{ borderBottom: "1px solid rgba(255,255,255,0.07)" }}>
+      {/* Header row */}
       <button
         onClick={onToggle}
         style={{
@@ -198,33 +72,93 @@ function ThemePanel({ theme, universities, isOpen, onToggle }) {
           display: "flex", alignItems: "center", justifyContent: "center",
           color: theme.colour, fontSize: "0.75rem", transition: "transform 0.2s",
           transform: isOpen ? "rotate(45deg)" : "none",
-        }}>
-          +
-        </div>
+        }}>+</div>
       </button>
 
+      {/* Expanded content */}
       {isOpen && (
-        <div style={{ padding: "0.5rem 2rem 1.5rem 4.5rem" }}>
+        <div style={{ padding: "0.75rem 2rem 1.75rem 2rem" }}>
           {status === "loading" && (
-            <div style={{ color: "rgba(255,255,255,0.3)", fontSize: "0.8rem", padding: "1rem 0", fontStyle: "italic" }}>
-              Pulling research areas from Scopus…
-            </div>
+            <p style={{ color: "rgba(255,255,255,0.3)", fontSize: "0.8rem", fontStyle: "italic", padding: "0.5rem 0" }}>
+              Fetching top cited papers from Scopus…
+            </p>
           )}
-          {status === "error" && (
-            <div>
-              <div style={{ fontSize: "0.72rem", color: "rgba(255,255,255,0.3)", marginBottom: "0.75rem", fontStyle: "italic" }}>
-                Detailed research areas are generated from live Scopus data (available on Vercel). Showing all member universities active in this broad theme area.
+
+          {(status === "done" || status === "error") && (
+            <>
+              {status === "error" && (
+                <p style={{ color: "rgba(255,255,255,0.25)", fontSize: "0.72rem", fontStyle: "italic", marginBottom: "1rem" }}>
+                  Scopus data unavailable — showing all member universities.
+                </p>
+              )}
+
+              <div style={{ fontSize: "0.65rem", color: "rgba(255,255,255,0.25)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "0.85rem" }}>
+                {withPapers.length > 0
+                  ? `${withPapers.length} of ${universities.length} members have papers in Scopus for this theme · sorted by citations`
+                  : `${universities.length} member universities`}
               </div>
-              <div>
-                {universities.map(u => (
-                  <UniChip key={u.name} name={u.name} flag={u.flag} paper={null} colour={theme.colour} />
-                ))}
-              </div>
-            </div>
+
+              {/* Universities with a paper */}
+              {withPapers.map(u => {
+                const paper = uniPapers[u.scopusId][0];
+                return (
+                  <div key={u.name} style={{
+                    display: "flex", alignItems: "flex-start", gap: "0.75rem",
+                    padding: "0.65rem 0", borderBottom: "1px solid rgba(255,255,255,0.05)",
+                  }}>
+                    <span style={{ fontSize: "1.1rem", flexShrink: 0, lineHeight: 1.4 }}>{u.flag}</span>
+                    <div style={{ flex: 1, minWidth: 0 }}>
+                      <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", flexWrap: "wrap" }}>
+                        <span style={{ fontSize: "0.82rem", fontWeight: 600, color: "rgba(255,255,255,0.9)" }}>{u.name}</span>
+                        {paper.citations > 0 && (
+                          <span style={{
+                            fontSize: "0.63rem", padding: "0.1rem 0.45rem", borderRadius: 10,
+                            background: `${theme.colour}18`, color: theme.colour, fontWeight: 600,
+                          }}>
+                            {paper.citations.toLocaleString()} citations
+                          </span>
+                        )}
+                        {paper.year && (
+                          <span style={{ fontSize: "0.63rem", color: "rgba(255,255,255,0.25)" }}>{paper.year}</span>
+                        )}
+                      </div>
+                      <a
+                        href={paper.url}
+                        target="_blank"
+                        rel="noopener noreferrer"
+                        style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.45)", lineHeight: 1.5, textDecoration: "none", display: "block", marginTop: "0.15rem" }}
+                        onMouseEnter={e => e.currentTarget.style.color = theme.colour}
+                        onMouseLeave={e => e.currentTarget.style.color = "rgba(255,255,255,0.45)"}
+                      >
+                        {paper.title} ↗
+                      </a>
+                    </div>
+                  </div>
+                );
+              })}
+
+              {/* Universities with no matching paper — collapsed into a chips row */}
+              {withoutPapers.length > 0 && (
+                <div style={{ marginTop: "0.85rem" }}>
+                  <div style={{ fontSize: "0.63rem", color: "rgba(255,255,255,0.18)", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: "0.45rem" }}>
+                    No Scopus papers found in this theme for:
+                  </div>
+                  <div style={{ display: "flex", flexWrap: "wrap", gap: "0.35rem" }}>
+                    {withoutPapers.map(u => (
+                      <span key={u.name} style={{
+                        fontSize: "0.72rem", color: "rgba(255,255,255,0.3)",
+                        background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.07)",
+                        borderRadius: 6, padding: "0.2rem 0.55rem",
+                        display: "inline-flex", alignItems: "center", gap: "0.3rem",
+                      }}>
+                        <span style={{ fontSize: "0.85rem" }}>{u.flag}</span>{u.name}
+                      </span>
+                    ))}
+                  </div>
+                </div>
+              )}
+            </>
           )}
-          {subcategories && subcategories.map((sub, i) => (
-            <SubcategoryCard key={i} sub={sub} colour={theme.colour} universities={universities} uniPaperMap={uniPaperMap} />
-          ))}
         </div>
       )}
     </div>
@@ -238,8 +172,6 @@ export default function WhatWeDo({ universities = UNIVERSITIES, themes = THEMES,
   const filteredThemes = visibleThemes
     ? themes.filter(t => visibleThemes.includes(t.id))
     : themes;
-
-  const toggle = (id) => setOpenTheme(prev => prev === id ? null : id);
 
   return (
     <div style={{
@@ -287,13 +219,13 @@ export default function WhatWeDo({ universities = UNIVERSITIES, themes = THEMES,
             theme={theme}
             universities={universities}
             isOpen={openTheme === theme.id}
-            onToggle={() => toggle(theme.id)}
+            onToggle={() => setOpenTheme(prev => prev === theme.id ? null : theme.id)}
           />
         ))}
       </div>
 
       <div style={{ textAlign: "center", paddingBottom: "3rem", color: "rgba(255,255,255,0.18)", fontSize: "0.7rem" }}>
-        Research areas derived from Scopus publication data · Subcategories generated by Claude AI
+        Top cited papers from Scopus publication data · {new Date().getFullYear()} IUCA
       </div>
     </div>
   );
