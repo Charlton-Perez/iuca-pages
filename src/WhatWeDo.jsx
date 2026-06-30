@@ -15,9 +15,9 @@ async function fetchThemePapers(theme, universities) {
 }
 
 // ─── ThemePanel ───────────────────────────────────────────────────────────────
-function ThemePanel({ theme, universities, isOpen, onToggle, shownDois, onPapersShown }) {
-  const [status, setStatus]         = useState("idle");
-  const [uniPapers, setUniPapers]   = useState(null); // { "University Name": [paper] }
+function ThemePanel({ theme, universities, isOpen, onToggle }) {
+  const [status, setStatus]       = useState("idle");
+  const [uniPapers, setUniPapers] = useState(null); // { "University Name": [paper] }
 
   useEffect(() => {
     if (!isOpen || uniPapers !== null) return;
@@ -27,23 +27,9 @@ function ThemePanel({ theme, universities, isOpen, onToggle, shownDois, onPapers
       .catch(() => { setUniPapers({}); setStatus("error"); });
   }, [isOpen]);
 
-  // Register newly visible DOIs with the parent once loaded
-  useEffect(() => {
-    if (status !== "done" || !uniPapers) return;
-    const newDois = Object.values(uniPapers)
-      .flat()
-      .map(p => p.doi)
-      .filter(doi => doi && !shownDois.has(doi));
-    if (newDois.length) onPapersShown(newDois);
-  }, [status]);
-
-  // Only show universities with a paper not already shown in another theme, sorted A→Z
   const withPapers = uniPapers
     ? [...universities]
-        .filter(u => {
-          const paper = uniPapers[u.name]?.[0];
-          return paper && (!paper.doi || !shownDois.has(paper.doi));
-        })
+        .filter(u => uniPapers[u.name]?.[0])
         .sort((a, b) => a.name.localeCompare(b.name))
     : [];
 
@@ -154,9 +140,6 @@ function ThemePanel({ theme, universities, isOpen, onToggle, shownDois, onPapers
 // ─── Page ─────────────────────────────────────────────────────────────────────
 export default function WhatWeDo({ universities = UNIVERSITIES, themes = THEMES, visibleThemes }) {
   const [openTheme, setOpenTheme] = useState(null);
-  const [shownDois, setShownDois] = useState(() => new Set());
-  const registerDois = (dois) => setShownDois(prev => new Set([...prev, ...dois]));
-
   const filteredThemes = visibleThemes
     ? themes.filter(t => visibleThemes.includes(t.id))
     : themes;
@@ -208,8 +191,6 @@ export default function WhatWeDo({ universities = UNIVERSITIES, themes = THEMES,
             universities={universities}
             isOpen={openTheme === theme.id}
             onToggle={() => setOpenTheme(prev => prev === theme.id ? null : theme.id)}
-            shownDois={shownDois}
-            onPapersShown={registerDois}
           />
         ))}
       </div>
