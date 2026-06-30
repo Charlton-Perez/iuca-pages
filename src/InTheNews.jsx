@@ -356,14 +356,26 @@ function GridCard({ paper }) {
         </div>
       )}
 
-      <a href={paper.paperUrl} target="_blank" rel="noopener" style={{
-        display: "inline-block", marginTop: "0.85rem", padding: "0.4rem 0.85rem",
-        background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)",
-        borderRadius: 7, color: "rgba(255,255,255,0.6)", fontSize: "0.73rem",
-        fontWeight: 500, textDecoration: "none", alignSelf: "flex-start",
-      }}>
-        Read paper →
-      </a>
+      <div style={{ display: "flex", gap: "0.5rem", marginTop: "0.85rem" }}>
+        <a href={paper.paperUrl} target="_blank" rel="noopener" style={{
+          padding: "0.4rem 0.85rem",
+          background: "rgba(255,255,255,0.05)", border: "1px solid rgba(255,255,255,0.1)",
+          borderRadius: 7, color: "rgba(255,255,255,0.6)", fontSize: "0.73rem",
+          fontWeight: 500, textDecoration: "none",
+        }}>
+          Read paper →
+        </a>
+        {paper.detailsUrl && (
+          <a href={paper.detailsUrl} target="_blank" rel="noopener" style={{
+            padding: "0.4rem 0.85rem",
+            background: "transparent", border: "1px solid rgba(255,255,255,0.08)",
+            borderRadius: 7, color: "rgba(255,255,255,0.35)", fontSize: "0.73rem",
+            fontWeight: 400, textDecoration: "none",
+          }}>
+            Altmetric ↗
+          </a>
+        )}
+      </div>
     </div>
   );
 }
@@ -377,7 +389,7 @@ export default function InTheNews({ timeframe = "6m", paperCount = 25 }) {
   useEffect(() => {
     setLoading(true);
     setPapers(null);
-    fetch(`/api/altmetric?timeframe=${timeframe}&limit=${paperCount}&v=3`)
+    fetch(`/api/altmetric?timeframe=${timeframe}&limit=${paperCount}&v=4`)
       .then(r => r.ok ? r.json() : Promise.reject())
       .then(({ papers }) => { setPapers(papers); setLoading(false); })
       .catch(() => { setPapers(DEMO_PAPERS); setLoading(false); });

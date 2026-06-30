@@ -42,6 +42,45 @@ const IUCA_GRID_IDS = [
   "grid.449398.e",  // University of the South Pacific
 ];
 
+// Direct GRID ID → display name lookup so we don't rely on sideloading
+const GRID_TO_NAME = {
+  "grid.9025.f":   "University of Reading",
+  "grid.4991.5":   "University of Oxford",
+  "grid.5335.0":   "University of Cambridge",
+  "grid.4305.2":   "University of Edinburgh",
+  "grid.8391.3":   "University of Exeter",
+  "grid.9909.9":   "University of Leeds",
+  "grid.13097.3c": "King's College London",
+  "grid.12082.39": "University of Sussex",
+  "grid.462410.5": "Sorbonne Université",
+  "grid.5801.c":   "ETH Zurich",
+  "grid.7400.3":   "University of Zurich",
+  "grid.7737.4":   "University of Helsinki",
+  "grid.7704.4":   "University of Bremen",
+  "grid.1005.4":   "UNSW Sydney",
+  "grid.1008.9":   "University of Melbourne",
+  "grid.1002.3":   "Monash University",
+  "grid.1009.8":   "University of Tasmania",
+  "grid.4280.e":   "National University of Singapore",
+  "grid.10784.3a": "Chinese University of Hong Kong",
+  "grid.194645.b": "University of Hong Kong",
+  "grid.39158.36": "Hokkaido University",
+  "grid.41156.37": "Nanjing University",
+  "grid.443626.0": "China University of Geosciences",
+  "grid.20861.3d": "California Inst. of Technology",
+  "grid.5386.8":   "Cornell University",
+  "grid.47100.32": "Yale University",
+  "grid.137628.9": "New York University",
+  "grid.266190.a": "University of Colorado Boulder",
+  "grid.14709.3b": "McGill University",
+  "grid.11899.38": "University of São Paulo",
+  "grid.10604.33": "University of Nairobi",
+  "grid.10818.34": "University of Ghana",
+  "grid.7836.a":   "University of Cape Town",
+  "grid.444501.3": "TERI School of Advanced Studies",
+  "grid.449398.e": "University of the South Pacific",
+};
+
 const IUCA_SCOPUS_IDS = [
   "60006462","60023256","60025259","60003093","60001809","60022452","60003596","60020422",
   "60071311","60028186","60028717","60002026","60007882","60031004","60031226","60031229",
@@ -101,19 +140,22 @@ function buildDigest(secret, filters) {
   return crypto.createHmac("sha1", secret).update(canonical).digest("hex");
 }
 
-// Climate keywords — papers not matching at least one are excluded
-const CLIMATE_KEYWORDS = [
-  "climate","carbon","greenhouse","warming","emission","fossil","renewable",
-  "arctic","glacier","ice sheet","permafrost","sea level","ocean","coral",
-  "drought","flood","wildfire","heatwave","extreme weather","storm","cyclone",
-  "biodiversity","ecosystem","deforestation","wetland","peatland","species",
-  "atmosphere","aerosol","methane","co2","net zero","decarboni","adaptation",
-  "mitigation","sustainability","environmental","nature","ecology","pollution",
+// Specific climate/environment terms — checked against title only to avoid
+// false matches like "Nature Medicine" or "Environmental Health" (virus papers)
+const CLIMATE_TITLE_KEYWORDS = [
+  "climate","global warming","greenhouse gas","carbon","co2","methane","emission",
+  "sea level","ocean heat","ocean acidif","arctic","antarctic","glacier","ice sheet",
+  "permafrost","sea ice","cryosphere","coral reef","ocean warming","marine heat",
+  "drought","flood","wildfire","heatwave","extreme weather","cyclone","hurricane",
+  "typhoon","attribution","tipping point","deforestation","biodiversity loss",
+  "ecosystem collapse","wetland","peatland","decarboni","net zero","renewable energy",
+  "solar energy","wind energy","carbon capture","ipcc","adaptation","mitigation",
+  "temperature rise","precipitation change","monsoon change","aerosol forcing",
 ];
 
-function isClimateRelated(title, journal) {
-  const text = (title + " " + journal).toLowerCase();
-  return CLIMATE_KEYWORDS.some(kw => text.includes(kw));
+function isClimateRelated(title) {
+  const t = title.toLowerCase();
+  return CLIMATE_TITLE_KEYWORDS.some(kw => t.includes(kw));
 }
 
 // ── Explorer API path ─────────────────────────────────────────────────────────
@@ -163,12 +205,14 @@ async function fetchFromExplorer(key, secret, timeframe, limit) {
     const pubStr     = attr["publication-date"] || null;
     const publishedOn = pubStr ? new Date(pubStr).getTime() / 1000 : null;
 
-    // University from sideloaded affiliations
+    // University — match GRID IDs from relationships against our local lookup first,
+    // then fall back to sideloaded affiliations if the API provides them
     const affiliationIds = item.relationships?.affiliations?.data?.map(a => a.id) || [];
     const uniName = (() => {
       for (const affId of affiliationIds) {
+        if (GRID_TO_NAME[affId]) return GRID_TO_NAME[affId];
         const match = included.find(i => i.type === "affiliation" && i.id === affId);
-        if (match) return match.attributes?.name || null;
+        if (match?.attributes?.name) return match.attributes.name;
       }
       return null;
     })();
@@ -199,7 +243,7 @@ async function fetchFromExplorer(key, secret, timeframe, limit) {
       topNews: [], // Individual article headlines not available via Explorer API
     };
   })
-  .filter(p => p.title && isClimateRelated(p.title, p.journal))
+  .filter(p => p.title && isClimateRelated(p.title))
   .sort((a, b) => b.score - a.score)
   .slice(0, limit);
 
