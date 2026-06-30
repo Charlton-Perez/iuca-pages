@@ -6,14 +6,10 @@ import { UNIVERSITIES, THEMES } from "./data.js";
 // Returns { uniPapers: { scopusId: [{ title, doi, year, citations, url }] } }
 async function fetchThemePapers(theme, universities) {
   const params = new URLSearchParams({
-    subjectAreas: (theme.subjectAreas || theme.asjcCodes || []).join(","),
+    subjectAreas: (theme.subjectAreas || []).join(","),
     affIds:       universities.map(u => u.scopusId).join(","),
-    v: "8",
+    v: "9",
   });
-  const kws = (theme.keywords || theme.scopusTerms || []);
-  if (kws.length) {
-    params.set("keywords", kws.map(k => k.includes(" ") ? `"${k}"` : k).join(" OR "));
-  }
   const resp = await fetch(`/api/scopus?${params}`);
   if (!resp.ok) throw new Error(`Scopus ${resp.status}`);
   return resp.json();
@@ -121,14 +117,21 @@ function ThemePanel({ theme, universities, isOpen, onToggle, shownDois, onPapers
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", flexWrap: "wrap" }}>
                         <span style={{ fontSize: "0.82rem", fontWeight: 600, color: "rgba(255,255,255,0.9)" }}>{u.name}</span>
-                        {paper.citations > 0 && (
+                        {paper.fwci != null ? (
+                          <span style={{
+                            fontSize: "0.63rem", padding: "0.1rem 0.45rem", borderRadius: 10,
+                            background: `${theme.colour}18`, color: theme.colour, fontWeight: 600,
+                          }} title="Field-Weighted Citation Impact — how this paper compares to the average for its field and year. Above 1.0 = above average.">
+                            FWCI {paper.fwci.toFixed(1)}
+                          </span>
+                        ) : paper.citations > 0 ? (
                           <span style={{
                             fontSize: "0.63rem", padding: "0.1rem 0.45rem", borderRadius: 10,
                             background: `${theme.colour}18`, color: theme.colour, fontWeight: 600,
                           }}>
                             {paper.citations.toLocaleString()} citations
                           </span>
-                        )}
+                        ) : null}
                         {paper.year && (
                           <span style={{ fontSize: "0.63rem", color: "rgba(255,255,255,0.25)" }}>{paper.year}</span>
                         )}

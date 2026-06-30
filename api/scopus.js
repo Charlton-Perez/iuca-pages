@@ -38,26 +38,23 @@ export default async function handler(req, res) {
     if (affIds) {
       const uniIds = affIds.split(",").filter(Boolean);
 
-      // Build subject clause using Scopus SUBJAREA abbreviations (EART, ENVI, AGRI, ENER, SOCI)
-      // plus optional TITLE-ABS-KEY keywords to differentiate themes within a broad subject area.
+      // SUBJAREA only — no keyword filter. Keywords were too restrictive and
+      // excluded legitimate papers that don't use specific terminology in title/abstract.
+      // Scopus journal-level classification is the right discriminator.
       const areas = (req.query.subjectAreas || "").split(",").map(s => s.trim().toUpperCase()).filter(Boolean);
-      const rawKeywords = req.query.keywords ? decodeURIComponent(req.query.keywords) : null;
+      if (!areas.length) return res.status(400).json({ error: "Provide subjectAreas" });
 
-      let subjectClause;
-      if (areas.length) {
-        subjectClause = `SUBJAREA(${areas.join(" OR ")})`;
-        if (rawKeywords) subjectClause += ` AND TITLE-ABS-KEY(${rawKeywords})`;
-      } else if (rawKeywords) {
-        subjectClause = `TITLE-ABS-KEY(${rawKeywords})`;
-      } else {
-        return res.status(400).json({ error: "Provide subjectAreas or keywords" });
-      }
+      const subjectClause = `SUBJAREA(${areas.join(" OR ")})`;
+
+      // Request fwci (Field-Weighted Citation Impact) — normalises citations by field and year.
+      // fwci > 1 means above-average impact for the field; more meaningful than raw citation count.
+      const fields = "prism:doi,dc:title,prism:coverDate,citedby-count,fwci";
 
       const uniPapers = {};
       await Promise.all(uniIds.map(async (id) => {
         const q = `AF-ID(${id}) AND ${subjectClause} AND PUBYEAR > 2021`;
         const url = `https://api.elsevier.com/content/search/scopus?` +
-          `query=${encodeURIComponent(q)}&count=5&sort=citedby-count`;
+          `query=${encodeURIComponent(q)}&count=10&sort=citedby-count&field=${encodeURIComponent(fields)}`;
         try {
           const r = await fetch(url, { headers: scopusHeaders });
           if (!r.ok) return;
@@ -68,9 +65,11 @@ export default async function handler(req, res) {
             doi:       e["prism:doi"] || "",
             year:      (e["prism:coverDate"] || "").slice(0, 4),
             citations: parseInt(e["citedby-count"] || "0"),
+            fwci:      parseFloat(e["fwci"]) || null,
             url:       e["prism:doi"] ? `https://doi.org/${e["prism:doi"]}` : "",
           })).filter(p => p.title);
-          // One paper per institution — top cited within the last 2 years
+          // Sort by fwci if available, otherwise raw citations; take the top paper
+          papers.sort((a, b) => (b.fwci ?? -1) - (a.fwci ?? -1) || b.citations - a.citations);
           if (papers.length) uniPapers[id] = papers.slice(0, 1);
         } catch {}
       }));

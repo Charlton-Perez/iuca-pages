@@ -248,17 +248,12 @@ function ThemesTab({ themes, onUpdate }) {
     update(idx, "subjectAreas", areas);
   };
 
-  const updateKeywords = (idx, raw) => {
-    update(idx, "keywords", raw.split(",").map(s => s.trim()).filter(Boolean));
-  };
-
   return (
     <div>
       <div style={sectionHead}>Research themes — {local.length} themes</div>
       <p style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.35)", marginBottom: "0.5rem", lineHeight: 1.6 }}>
-        Subject areas are Scopus's journal-level classifications (SUBJAREA). Keywords narrow further
-        within that area — useful to separate themes that share a subject (e.g. atmosphere vs oceans,
-        both in EART).
+        Subject areas are Scopus's journal-level classifications (SUBJAREA) — the sole filter for
+        finding papers. Papers are ranked by Field-Weighted Citation Impact (FWCI).
       </p>
       <div style={{
         marginBottom: "1rem", padding: "0.6rem 0.85rem", borderRadius: 7,
@@ -296,18 +291,10 @@ function ThemesTab({ themes, onUpdate }) {
                 placeholder="e.g. EART, ENVI" />
             </div>
             {(theme.subjectAreas || []).length > 0 && (
-              <div style={{ fontSize: "0.63rem", color: "rgba(255,255,255,0.25)", marginBottom: "0.5rem", paddingLeft: 94, lineHeight: 1.6 }}>
+              <div style={{ fontSize: "0.63rem", color: "rgba(255,255,255,0.25)", paddingLeft: 94, lineHeight: 1.6 }}>
                 {(theme.subjectAreas || []).map(c => SUBJAREA_LABELS[c] ? `${c} — ${SUBJAREA_LABELS[c]}` : c).join(" · ")}
               </div>
             )}
-            <div style={{ display: "flex", gap: "0.4rem", alignItems: "center" }}>
-              <span style={{ fontSize: "0.65rem", color: "rgba(255,255,255,0.3)", whiteSpace: "nowrap", width: 90, flexShrink: 0 }}>Keywords <span style={{ fontStyle: "italic" }}>(AND)</span></span>
-              <input
-                value={(theme.keywords || []).join(", ")}
-                onChange={e => updateKeywords(i, e.target.value)}
-                style={{ ...input, fontSize: "0.72rem", fontFamily: "monospace" }}
-                placeholder="e.g. glacier, permafrost" />
-            </div>
           </div>
         ))}
       </div>
