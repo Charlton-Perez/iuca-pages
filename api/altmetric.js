@@ -118,109 +118,89 @@ function isClimateRelated(title, journal) {
 
 // ── Explorer API path ─────────────────────────────────────────────────────────
 async function fetchFromExplorer(key, secret, timeframe, limit) {
-  const path = "/explorer/api/research_outputs";
-
   const filters = { affiliations: IUCA_GRID_IDS, timeframe, scope: "all" };
   const digest  = buildDigest(secret, filters);
 
   const affiliationQs = IUCA_GRID_IDS.map(id => `filter[affiliations][]=${id}`).join("&");
-  // include=mentions brings news/MSM mentions into the sideloaded `included` array
   const qs = [
     `key=${key}`,
     affiliationQs,
     `filter[timeframe]=${timeframe}`,
     `filter[scope]=all`,
     `filter[order]=score_desc`,
-    `page[size]=${Math.min(limit * 3, 100)}`, // fetch extra so we have enough after climate filter
-    `include=mentions`,
+    `page[size]=${Math.min(limit * 4, 100)}`, // fetch extra — climate filter will reduce count
+    `include=affiliations,journals`,           // sideload so we get uni name + journal
     `digest=${digest}`,
   ].join("&");
 
-  const r = await fetch(`https://www.altmetric.com${path}?${qs}`, {
-    headers: { Accept: "application/json" },
-  });
+  const r = await fetch(`https://www.altmetric.com/explorer/api/research_outputs?${qs}`,
+    { headers: { Accept: "application/json" } });
 
   if (!r.ok) {
     const body = await r.text();
     throw new Error(`Explorer ${r.status}: ${body.slice(0, 300)}`);
   }
 
-  const data = await r.json();
+  const data     = await r.json();
   const outputs  = data?.data     || [];
   const included = data?.included || [];
 
-  // Log the raw attribute keys from the first item to Vercel function logs
-  // so we can verify field names without a dedicated debug endpoint
-  if (outputs[0]) {
-    console.log("ALTMETRIC_ATTR_KEYS:", JSON.stringify(Object.keys(outputs[0].attributes || {})));
-    console.log("ALTMETRIC_COUNTS_KEYS:", JSON.stringify(Object.keys(outputs[0].attributes?.mention_counts || {})));
-    console.log("ALTMETRIC_FIRST_SCORE:", outputs[0].attributes?.altmetric_score, outputs[0].attributes?.score);
-    console.log("ALTMETRIC_FIRST_URL:", outputs[0].attributes?.url, outputs[0].attributes?.doi);
-  }
-
   const papers = outputs.map(item => {
-    const attr   = item.attributes || {};
-    const counts = attr.mention_counts || {};
+    const attr     = item.attributes || {};
+    const mentions = attr.mentions   || {}; // flat counts: { msm: 12, tweet: 400, ... }
 
-    // University name from sideloaded affiliations
+    // Score — confirmed field name from debug: "altmetric-score"
+    const score = Math.round(Number(attr["altmetric-score"] || 0));
+
+    // DOI and paper URL
+    const doi      = attr.identifiers?.dois?.[0] || null;
+    const paperUrl = doi ? `https://doi.org/${doi}` : "#";
+
+    // Altmetric details page — constructed from item id
+    const detailsUrl = item.id ? `https://www.altmetric.com/details/${item.id}` : null;
+
+    // Publication date — confirmed field name: "publication-date"
+    const pubStr     = attr["publication-date"] || null;
+    const publishedOn = pubStr ? new Date(pubStr).getTime() / 1000 : null;
+
+    // University from sideloaded affiliations
     const affiliationIds = item.relationships?.affiliations?.data?.map(a => a.id) || [];
     const uniName = (() => {
       for (const affId of affiliationIds) {
         const match = included.find(i => i.type === "affiliation" && i.id === affId);
-        if (match) return match.attributes?.name || "IUCA Member";
+        if (match) return match.attributes?.name || null;
       }
-      return "IUCA Member";
+      return null;
     })();
 
-    // News mentions from sideloaded includes (requires include=mentions in query)
-    const mentionIds = new Set((item.relationships?.mentions?.data || []).map(m => m.id));
-    const topNews = included
-      .filter(i => i.type === "mention" && mentionIds.has(i.id) &&
-        ["msm","news"].includes(i.attributes?.mention_type))
-      .slice(0, 3)
-      .map(i => ({
-        outlet: i.attributes?.outlet_name || i.attributes?.author || "News",
-        title:  i.attributes?.title || "",
-        url:    i.attributes?.url   || null,
-      }));
+    // Journal from sideloaded journals
+    const journalId  = item.relationships?.journal?.data?.id;
+    const journalObj = journalId ? included.find(i => i.type === "journal" && i.id === journalId) : null;
+    const journal    = journalObj?.attributes?.title || journalObj?.attributes?.name || "";
 
-    const title   = attr.title || attr.name || "";
-    const journal = attr.journal_title || attr.journal || "";
-
-    // Try all known score field locations in the Explorer API
-    const rawScore = attr.altmetric_score ?? attr.score ?? attr.attention_score
-      ?? counts.total?.at ?? 0;
-    const score = Math.round(Number(rawScore));
-
-    // Paper URL: prefer DOI (permanent), then Altmetric details as last resort
-    const paperUrl = attr.doi
-      ? `https://doi.org/${attr.doi}`
-      : (attr.url && !attr.url.includes("altmetric.com") ? attr.url : "#");
-
-    // Altmetric details page (for "Full attention data" button)
-    const detailsUrl = attr.details_url || attr.altmetric_details_url
-      || (attr.url?.includes("altmetric.com") ? attr.url : null);
+    const title = attr.title || "";
 
     return {
-      doi:            attr.doi || null,
+      doi,
       title,
       journal,
       score,
-      publishedOn:    attr.published_on
-        ? new Date(attr.published_on).getTime() / 1000
-        : (attr.publication_date ? new Date(attr.publication_date).getTime() / 1000 : null),
-      university:     uniName,
+      publishedOn,
+      university:     uniName || "IUCA Member",
       theme:          classifyTheme(title, journal),
-      newsOutlets:    counts.msm?.at || counts.news?.at || counts.news_and_blogs?.at || 0,
-      policyMentions: counts.policy?.at || counts.policy_document?.at || 0,
-      blogMentions:   counts.blog?.at   || counts.blogs?.at           || 0,
-      socialMentions: (counts.tweet?.at || counts.twitter?.at || 0) + (counts.bluesky?.at || 0),
+      // Mention counts are direct integers, confirmed from debug
+      newsOutlets:    mentions.msm    || 0,
+      policyMentions: mentions.policy || 0,
+      blogMentions:   mentions.blog   || 0,
+      socialMentions: (mentions.tweet || 0) + (mentions.bluesky || 0) + (mentions.rdt || 0),
+      citations:      attr.dimensions?.citations || 0,
       detailsUrl,
       paperUrl,
-      topNews,
+      topNews: [], // Individual article headlines not available via Explorer API
     };
   })
   .filter(p => p.title && isClimateRelated(p.title, p.journal))
+  .sort((a, b) => b.score - a.score)
   .slice(0, limit);
 
   return { papers, source: "altmetric-explorer" };
