@@ -116,28 +116,29 @@ function buildDigest(secret, filters) {
   return crypto.createHmac("sha1", secret).update(parts.join("|")).digest("hex");
 }
 
-async function fetchFromExplorer(key, secret, timeframe, limit, subjects) {
+async function fetchFromExplorer(key, secret, timeframe, limit) {
+  // filter[q]=climate restricts to climate papers without needing ANZSRC subject codes
+  // (filter[subject][] causes invalid digest errors — the canonical string format is undocumented).
   const filters = {
     affiliations: IUCA_GRID_IDS,
-    timeframe,
+    q: "climate",
     scope: "all",
-    ...(subjects.length ? { subject: subjects } : {}),
+    timeframe,
   };
   const digest = buildDigest(secret, filters);
 
   const affiliationQs = IUCA_GRID_IDS.map(id => `filter[affiliations][]=${id}`).join("&");
-  const subjectQs     = subjects.map(s => `filter[subject][]=${s}`).join("&");
   const qs = [
     `key=${key}`,
     affiliationQs,
-    subjectQs,
+    `filter[q]=climate`,
     `filter[timeframe]=${timeframe}`,
     `filter[scope]=all`,
     `filter[order]=score_desc`,
     `page[size]=${Math.min(limit, 100)}`,
     `include=affiliations,journals`,
     `digest=${digest}`,
-  ].filter(Boolean).join("&");
+  ].join("&");
 
   const r = await fetch(`https://www.altmetric.com/explorer/api/research_outputs?${qs}`,
     { headers: { Accept: "application/json" } });
@@ -279,7 +280,7 @@ export default async function handler(req, res) {
   try {
     let result;
     if (explorerKey && explorerSecret) {
-      result = await fetchFromExplorer(explorerKey, explorerSecret, timeframe, limit, subjects);
+      result = await fetchFromExplorer(explorerKey, explorerSecret, timeframe, limit);
     } else if (scopusKey) {
       result = await fetchFromScopusFallback(scopusKey, limit);
     } else {

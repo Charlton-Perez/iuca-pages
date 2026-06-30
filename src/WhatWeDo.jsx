@@ -2,13 +2,12 @@ import { useState, useEffect } from "react";
 import { UNIVERSITIES, THEMES } from "./data.js";
 
 // Fetch top cited Scopus paper per university for a given theme.
-// Uses ASJC taxonomy codes as primary filter; keywords are ANDed on top if present.
-// Returns { uniPapers: { scopusId: [{ title, doi, year, citations, url }] } }
+// Uses AFFILORG("name") queries — keyed by university name in the response.
 async function fetchThemePapers(theme, universities) {
   const params = new URLSearchParams({
     subjectAreas: (theme.subjectAreas || []).join(","),
-    affIds:       universities.map(u => u.scopusId).join(","),
-    v: "10",
+    affNames:     universities.map(u => u.name).join(","),
+    v: "11",
   });
   const resp = await fetch(`/api/scopus?${params}`);
   if (!resp.ok) throw new Error(`Scopus ${resp.status}`);
@@ -18,7 +17,7 @@ async function fetchThemePapers(theme, universities) {
 // ─── ThemePanel ───────────────────────────────────────────────────────────────
 function ThemePanel({ theme, universities, isOpen, onToggle, shownDois, onPapersShown }) {
   const [status, setStatus]         = useState("idle");
-  const [uniPapers, setUniPapers]   = useState(null); // { scopusId: [paper] }
+  const [uniPapers, setUniPapers]   = useState(null); // { "University Name": [paper] }
 
   useEffect(() => {
     if (!isOpen || uniPapers !== null) return;
@@ -42,7 +41,7 @@ function ThemePanel({ theme, universities, isOpen, onToggle, shownDois, onPapers
   const withPapers = uniPapers
     ? [...universities]
         .filter(u => {
-          const paper = uniPapers[u.scopusId]?.[0];
+          const paper = uniPapers[u.name]?.[0];
           return paper && (!paper.doi || !shownDois.has(paper.doi));
         })
         .sort((a, b) => a.name.localeCompare(b.name))
@@ -107,7 +106,7 @@ function ThemePanel({ theme, universities, isOpen, onToggle, shownDois, onPapers
 
               {/* Universities with a paper */}
               {withPapers.map(u => {
-                const paper = uniPapers[u.scopusId][0];
+                const paper = uniPapers[u.name][0];
                 return (
                   <div key={u.name} style={{
                     display: "flex", alignItems: "flex-start", gap: "0.75rem",

@@ -21,7 +21,7 @@ export default function InTheNews({ timeframe = "1y", paperCount = 30, subjectCo
     setLoading(true);
     setPapers(null);
     setError(null);
-    const params = new URLSearchParams({ timeframe, limit: paperCount, v: "7" });
+    const params = new URLSearchParams({ timeframe, limit: paperCount, v: "8" });
     if (subjectCodes?.length) params.set("subjects", subjectCodes.join(","));
     fetch(`/api/altmetric?${params}`)
       .then(r => r.ok ? r.json() : r.json().then(e => Promise.reject(e)))

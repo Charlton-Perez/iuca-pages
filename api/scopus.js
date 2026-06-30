@@ -1,6 +1,7 @@
 // api/scopus.js — Vercel serverless function
-// Mode: ?affIds=A,B,C&subjectAreas=EART,ENVI → one top paper per university
-// Falls back to broad climate SUBJAREA if subjectAreas not supplied.
+// Queries Scopus using AFFILORG("university name") — more reliable than AF-ID
+// which requires institution-level access tokens.
+// Mode: ?affNames=Univ A,Univ B&subjectAreas=EART,ENVI → one top paper per university
 
 export default async function handler(req, res) {
   if (req.method !== "GET") return res.status(405).json({ error: "Method not allowed" });
@@ -11,14 +12,11 @@ export default async function handler(req, res) {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Cache-Control", "s-maxage=86400");
 
-  const { affIds } = req.query;
-  if (!affIds) return res.status(400).json({ error: "Provide affIds" });
+  const { affNames } = req.query;
+  if (!affNames) return res.status(400).json({ error: "Provide affNames" });
 
-  const uniIds = affIds.split(",").map(s => s.trim()).filter(Boolean);
+  const uniNames = affNames.split(",").map(s => s.trim()).filter(Boolean);
 
-  // Use whatever subject areas are passed, or fall back to a broad climate/env default.
-  // This default ensures we always return something even if the KV-stored theme config
-  // is missing subjectAreas.
   const areas = (req.query.subjectAreas || "")
     .split(",").map(s => s.trim().toUpperCase()).filter(Boolean);
   const areaClause = areas.length
@@ -28,14 +26,16 @@ export default async function handler(req, res) {
   const scopusHeaders = { "X-ELS-APIKey": apiKey, Accept: "application/json" };
   const uniPapers = {};
 
-  await Promise.all(uniIds.map(async (id) => {
-    const q = `AF-ID(${id}) AND ${areaClause} AND PUBYEAR > 2021`;
+  await Promise.all(uniNames.map(async (name) => {
+    // AFFILORG searches the institution name field in Scopus — much more reliable
+    // than AF-ID which requires knowing the exact internal institution identifier.
+    const q = `AFFILORG("${name}") AND ${areaClause} AND PUBYEAR > 2021`;
     const url = `https://api.elsevier.com/content/search/scopus?` +
       `query=${encodeURIComponent(q)}&count=5&sort=citedby-count`;
     try {
       const r = await fetch(url, { headers: scopusHeaders });
       if (!r.ok) {
-        console.error(`Scopus ${r.status} for AF-ID(${id}) q=${q}`);
+        console.error(`Scopus ${r.status} for AFFILORG("${name}")`);
         return;
       }
       const data = await r.json();
@@ -47,9 +47,9 @@ export default async function handler(req, res) {
         citations: parseInt(e["citedby-count"] || "0"),
         url:       e["prism:doi"] ? `https://doi.org/${e["prism:doi"]}` : "",
       })).filter(p => p.title);
-      if (papers.length) uniPapers[id] = papers.slice(0, 1);
+      if (papers.length) uniPapers[name] = papers.slice(0, 1);
     } catch (err) {
-      console.error(`Scopus fetch error for AF-ID(${id}):`, err.message);
+      console.error(`Scopus fetch error for "${name}":`, err.message);
     }
   }));
 
