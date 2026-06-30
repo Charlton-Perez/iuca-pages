@@ -1,8 +1,6 @@
-import { useState, useEffect } from "react";
+import { useState, useEffect, useRef } from "react";
 import { UNIVERSITIES, THEMES } from "./data.js";
 
-// Fetch top cited Scopus paper per university for a given theme.
-// Uses AFFILORG("name") queries — keyed by university name in the response.
 async function fetchThemePapers(theme, universities) {
   const params = new URLSearchParams({
     subjectAreas: (theme.subjectAreas || []).join(","),
@@ -16,9 +14,9 @@ async function fetchThemePapers(theme, universities) {
 }
 
 // ─── ThemePanel ───────────────────────────────────────────────────────────────
-function ThemePanel({ theme, universities, isOpen, onToggle }) {
+function ThemePanel({ theme, universities, isOpen, onToggle, claimedDois, claimDois }) {
   const [status, setStatus]       = useState("idle");
-  const [uniPapers, setUniPapers] = useState(null); // { "University Name": [paper] }
+  const [uniPapers, setUniPapers] = useState(null);
 
   useEffect(() => {
     if (!isOpen || uniPapers !== null) return;
@@ -28,11 +26,35 @@ function ThemePanel({ theme, universities, isOpen, onToggle }) {
       .catch(() => { setUniPapers({}); setStatus("error"); });
   }, [isOpen]);
 
-  const withPapers = uniPapers
-    ? [...universities]
-        .filter(u => uniPapers[u.name]?.[0])
-        .sort((a, b) => a.name.localeCompare(b.name))
-    : [];
+  // Group papers by DOI → one entry per unique paper, listing all IUCA co-institutions.
+  // Apply first-claim deduplication across themes: skip DOIs already claimed by a prior theme.
+  const uniquePapers = (() => {
+    if (!uniPapers) return [];
+    const byDoi   = {}; // doi → { paper, unis: [university] }
+    const noDoi   = []; // papers without a DOI
+
+    for (const u of universities) {
+      const paper = uniPapers[u.name]?.[0];
+      if (!paper) continue;
+      if (paper.doi && !claimedDois.has(paper.doi)) {
+        if (!byDoi[paper.doi]) byDoi[paper.doi] = { paper, unis: [] };
+        byDoi[paper.doi].unis.push(u);
+      } else if (!paper.doi) {
+        noDoi.push({ paper, unis: [u] });
+      }
+    }
+
+    const results = [
+      ...Object.values(byDoi),
+      ...noDoi,
+    ].sort((a, b) => (b.paper.citesPerYear || 0) - (a.paper.citesPerYear || 0));
+
+    // Register these DOIs as claimed by this theme
+    const newDois = results.map(r => r.paper.doi).filter(Boolean);
+    if (newDois.length) claimDois(newDois);
+
+    return results;
+  })();
 
   return (
     <div style={{ borderBottom: "1px solid rgba(255,255,255,0.07)" }}>
@@ -86,55 +108,59 @@ function ThemePanel({ theme, universities, isOpen, onToggle }) {
               )}
 
               <div style={{ fontSize: "0.65rem", color: "rgba(255,255,255,0.25)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "0.85rem" }}>
-                {withPapers.length > 0
-                  ? `${withPapers.length} of ${universities.length} members have Scopus papers in this theme · A–Z`
+                {uniquePapers.length > 0
+                  ? `${uniquePapers.length} papers from ${universities.length} member universities · ranked by citations/year`
                   : `No matching papers found in Scopus for this theme`}
               </div>
 
-              {/* Universities with a paper */}
-              {withPapers.map(u => {
-                const paper = uniPapers[u.name][0];
-                return (
-                  <div key={u.name} style={{
-                    display: "flex", alignItems: "flex-start", gap: "0.75rem",
-                    padding: "0.65rem 0", borderBottom: "1px solid rgba(255,255,255,0.05)",
-                  }}>
-                    <span style={{ fontSize: "1.1rem", flexShrink: 0, lineHeight: 1.4 }}>{u.flag}</span>
-                    <div style={{ flex: 1, minWidth: 0 }}>
-                      <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", flexWrap: "wrap" }}>
-                        <span style={{ fontSize: "0.82rem", fontWeight: 600, color: "rgba(255,255,255,0.9)" }}>{u.name}</span>
-                        {paper.citesPerYear > 0 && (
-                          <span style={{
-                            fontSize: "0.63rem", padding: "0.1rem 0.45rem", borderRadius: 10,
-                            background: `${theme.colour}18`, color: theme.colour, fontWeight: 600,
-                          }} title={`${paper.citations?.toLocaleString()} total citations`}>
-                            {paper.citesPerYear} cites/yr
-                          </span>
-                        )}
-                        {paper.year && (
-                          <span style={{ fontSize: "0.63rem", color: "rgba(255,255,255,0.25)" }}>{paper.year}</span>
-                        )}
-                      </div>
-                      <a
-                        href={paper.url}
-                        target="_blank"
-                        rel="noopener noreferrer"
-                        style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.45)", lineHeight: 1.5, textDecoration: "none", display: "block", marginTop: "0.15rem" }}
-                        onMouseEnter={e => e.currentTarget.style.color = theme.colour}
-                        onMouseLeave={e => e.currentTarget.style.color = "rgba(255,255,255,0.45)"}
-                      >
-                        {paper.title} ↗
-                      </a>
-                      {paper.coInstitutions?.length > 0 && (
-                        <div style={{ fontSize: "0.62rem", color: "rgba(255,255,255,0.22)", marginTop: "0.2rem" }}>
-                          Also: {paper.coInstitutions.join(", ")}
-                        </div>
+              {uniquePapers.map(({ paper, unis }) => (
+                <div key={paper.doi || paper.title} style={{
+                  display: "flex", alignItems: "flex-start", gap: "0.75rem",
+                  padding: "0.75rem 0", borderBottom: "1px solid rgba(255,255,255,0.05)",
+                }}>
+                  <div style={{ flex: 1, minWidth: 0 }}>
+                    {/* Institution flags + names */}
+                    <div style={{ display: "flex", alignItems: "center", gap: "0.45rem", flexWrap: "wrap", marginBottom: "0.3rem" }}>
+                      {unis.map(u => (
+                        <span key={u.name} style={{ display: "inline-flex", alignItems: "center", gap: "0.3rem" }}>
+                          <span style={{ fontSize: "0.9rem" }}>{u.flag}</span>
+                          <span style={{ fontSize: "0.78rem", fontWeight: 600, color: "rgba(255,255,255,0.85)" }}>{u.name}</span>
+                        </span>
+                      ))}
+                      {paper.citesPerYear > 0 && (
+                        <span style={{
+                          fontSize: "0.62rem", padding: "0.1rem 0.45rem", borderRadius: 10,
+                          background: `${theme.colour}18`, color: theme.colour, fontWeight: 600,
+                        }} title={`${paper.citations?.toLocaleString()} total citations`}>
+                          {paper.citesPerYear} cites/yr
+                        </span>
+                      )}
+                      {paper.year && (
+                        <span style={{ fontSize: "0.62rem", color: "rgba(255,255,255,0.22)" }}>{paper.year}</span>
                       )}
                     </div>
-                  </div>
-                );
-              })}
 
+                    {/* Paper link */}
+                    <a
+                      href={paper.url}
+                      target="_blank"
+                      rel="noopener noreferrer"
+                      style={{ fontSize: "0.78rem", color: "rgba(255,255,255,0.5)", lineHeight: 1.5, textDecoration: "none", display: "block" }}
+                      onMouseEnter={e => e.currentTarget.style.color = theme.colour}
+                      onMouseLeave={e => e.currentTarget.style.color = "rgba(255,255,255,0.5)"}
+                    >
+                      {paper.title} ↗
+                    </a>
+
+                    {/* Non-queried IUCA co-institutions detected in the affiliation list */}
+                    {paper.coInstitutions?.length > 0 && (
+                      <div style={{ fontSize: "0.61rem", color: "rgba(255,255,255,0.2)", marginTop: "0.2rem" }}>
+                        Also: {paper.coInstitutions.filter(n => !unis.find(u => u.name === n)).join(", ")}
+                      </div>
+                    )}
+                  </div>
+                </div>
+              ))}
             </>
           )}
         </div>
@@ -146,6 +172,12 @@ function ThemePanel({ theme, universities, isOpen, onToggle }) {
 // ─── Page ─────────────────────────────────────────────────────────────────────
 export default function WhatWeDo({ universities = UNIVERSITIES, themes = THEMES, visibleThemes }) {
   const [openTheme, setOpenTheme] = useState(null);
+
+  // Shared DOI claim Set — prevents the same paper appearing in multiple themes.
+  // First theme (top of list) to load and claim a DOI wins; later themes skip it.
+  const claimedDois = useRef(new Set());
+  const claimDois   = (dois) => dois.forEach(d => claimedDois.current.add(d));
+
   const filteredThemes = visibleThemes
     ? themes.filter(t => visibleThemes.includes(t.id))
     : themes;
@@ -197,12 +229,14 @@ export default function WhatWeDo({ universities = UNIVERSITIES, themes = THEMES,
             universities={universities}
             isOpen={openTheme === theme.id}
             onToggle={() => setOpenTheme(prev => prev === theme.id ? null : theme.id)}
+            claimedDois={claimedDois.current}
+            claimDois={claimDois}
           />
         ))}
       </div>
 
       <div style={{ textAlign: "center", paddingBottom: "3rem", color: "rgba(255,255,255,0.18)", fontSize: "0.7rem" }}>
-        Papers ranked by citations per year (year-normalised impact) · Scopus data · {new Date().getFullYear()} IUCA
+        Papers ranked by citations per year · Scopus data · {new Date().getFullYear()} IUCA
       </div>
     </div>
   );
