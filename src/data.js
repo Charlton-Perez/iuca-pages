@@ -39,6 +39,10 @@ export const UNIVERSITIES = [
   { name: "University of the South Pacific",  flag: "🇫🇯", scopusId: "60004028", gridId: "grid.449398.e",  researchUrl: "https://www.usp.ac.fj/research/" },
 ];
 
+// ASJC = All Science Journal Classification codes (Scopus journal-level taxonomy).
+// These are applied by Scopus to every journal; a paper inherits its journal's codes.
+// Find codes at: https://service.elsevier.com/app/answers/detail/a_id/15181/
+// keywords = optional extra AND filter on top of ASJC (comma-separated, saved via settings)
 export const THEMES = [
   {
     id: "atmosphere",
@@ -47,7 +51,8 @@ export const THEMES = [
     colour: "#5b9bd5",
     bg: "#0d1e32",
     description: "Forecasting, atmospheric dynamics, air quality and the physics of our changing skies.",
-    scopusTerms: ["atmosphere","weather","precipitation","aerosol","troposphere","stratosphere","forecast","monsoon"],
+    asjcCodes: [1902],           // 1902 = Atmospheric Science
+    keywords: [],
   },
   {
     id: "oceans",
@@ -56,7 +61,8 @@ export const THEMES = [
     colour: "#3ab5c6",
     bg: "#091e24",
     description: "Ocean heat, circulation, sea level rise, acidification and marine ecosystems under pressure.",
-    scopusTerms: ["ocean","sea level","marine","coastal","acidification","thermohaline","salinity","upwelling"],
+    asjcCodes: [1910, 1104],     // 1910 = Oceanography; 1104 = Aquatic Science
+    keywords: [],
   },
   {
     id: "cryosphere",
@@ -65,7 +71,8 @@ export const THEMES = [
     colour: "#a8d4f0",
     bg: "#101824",
     description: "Glaciers, ice sheets, Arctic sea ice and the frozen ground releasing ancient carbon.",
-    scopusTerms: ["glacier","permafrost","arctic","cryosphere","snowpack","ice sheet","sea ice","tundra"],
+    asjcCodes: [1902, 1908],     // 1902 = Atmospheric Science; 1908 = Geophysics
+    keywords: ["glacier","permafrost","cryosphere","ice sheet","sea ice","snowpack"],
   },
   {
     id: "ecosystems",
@@ -74,7 +81,8 @@ export const THEMES = [
     colour: "#5caa72",
     bg: "#0b1c12",
     description: "How climate change reshapes forests, wetlands, coral reefs and the species that depend on them.",
-    scopusTerms: ["biodiversity","ecosystem","deforestation","coral","peatland","habitat","vegetation","rewilding"],
+    asjcCodes: [2303, 2309, 1105], // 2303 = Ecology; 2309 = Nature & Landscape Conservation; 1105 = Ecology/Evolution in AgBio
+    keywords: [],
   },
   {
     id: "society",
@@ -83,7 +91,8 @@ export const THEMES = [
     colour: "#e8a44a",
     bg: "#1e1608",
     description: "Climate justice, health impacts, migration, urban resilience and how communities adapt.",
-    scopusTerms: ["adaptation","resilience","vulnerability","displacement","heatwave","health","urban","migration"],
+    asjcCodes: [2308, 3305],     // 2308 = Management/Monitoring/Policy & Law; 3305 = Geography/Planning
+    keywords: ["climate"],
   },
   {
     id: "mitigation",
@@ -92,7 +101,8 @@ export const THEMES = [
     colour: "#c97fd4",
     bg: "#1a0f20",
     description: "Pathways to net zero: renewables, carbon capture, energy systems and emissions reduction.",
-    scopusTerms: ["mitigation","renewable","solar","decarbonisation","emissions","battery","photovoltaic","hydrogen"],
+    asjcCodes: [2105],           // 2105 = Renewable Energy, Sustainability & the Environment
+    keywords: [],
   },
   {
     id: "food",
@@ -101,7 +111,8 @@ export const THEMES = [
     colour: "#d4a843",
     bg: "#1c1508",
     description: "Agricultural resilience, water security and land-use change in a warming world.",
-    scopusTerms: ["agriculture","drought","irrigation","crop","groundwater","food","agroforestry","livestock"],
+    asjcCodes: [2312, 1102, 1107], // 2312 = Water Science & Technology; 1102 = Agronomy & Crop Science; 1107 = Forestry
+    keywords: [],
   },
   {
     id: "extremes",
@@ -110,6 +121,7 @@ export const THEMES = [
     colour: "#e07060",
     bg: "#1e0e0c",
     description: "Heatwaves, floods, wildfires and storms — attribution, prediction and disaster risk reduction.",
-    scopusTerms: ["climate extremes","heatwaves","flood risk","wildfire","tropical cyclones","climate attribution","disaster risk","compound events"],
+    asjcCodes: [2306, 1902],     // 2306 = Global and Planetary Change; 1902 = Atmospheric Science
+    keywords: ["extreme","flood","drought","heatwave","wildfire","cyclone","hurricane","attribution"],
   },
 ];

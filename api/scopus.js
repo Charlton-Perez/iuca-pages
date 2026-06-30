@@ -34,14 +34,28 @@ export default async function handler(req, res) {
       return res.status(200).json({ titles, paperCount: totalResults });
     }
 
-    // ── Mode 2: theme-level fetch — titles per uni for a given theme ──────────
-    if (themeQuery && affIds) {
+    // ── Mode 2: theme-level fetch using ASJC codes + optional keyword refinement ─
+    if (affIds) {
       const uniIds = affIds.split(",").filter(Boolean);
 
-      // All universities in parallel — faster than sequential batches and stays within timeout
+      // Build subject clause: prefer ASJC taxonomy codes; fall back to keyword search
+      const codes = (req.query.asjcCodes || "").split(",").map(s => s.trim()).filter(Boolean);
+      const rawKeywords = req.query.keywords ? decodeURIComponent(req.query.keywords) : null;
+
+      let subjectClause;
+      if (codes.length) {
+        subjectClause = `ASJC(${codes.join(" OR ")})`;
+        if (rawKeywords) subjectClause += ` AND TITLE-ABS-KEY(${rawKeywords})`;
+      } else if (rawKeywords) {
+        // Legacy fallback — no ASJC codes, use keywords only
+        subjectClause = `TITLE-ABS-KEY(${rawKeywords})`;
+      } else {
+        return res.status(400).json({ error: "Provide asjcCodes or keywords" });
+      }
+
       const uniPapers = {};
       await Promise.all(uniIds.map(async (id) => {
-        const q = `AF-ID(${id}) AND TITLE-ABS-KEY(${decodeURIComponent(themeQuery)}) AND PUBYEAR > 2019`;
+        const q = `AF-ID(${id}) AND ${subjectClause} AND PUBYEAR > 2019`;
         const url = `https://api.elsevier.com/content/search/scopus?` +
           `query=${encodeURIComponent(q)}&count=10&sort=citedby-count`;
         try {
@@ -63,7 +77,7 @@ export default async function handler(req, res) {
       return res.status(200).json({ uniPapers });
     }
 
-    return res.status(400).json({ error: "Provide affId or themeQuery+affIds" });
+    return res.status(400).json({ error: "Provide affId or affIds+asjcCodes" });
   } catch (err) {
     return res.status(500).json({ error: err.message });
   }

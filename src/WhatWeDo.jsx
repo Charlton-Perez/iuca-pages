@@ -2,17 +2,21 @@ import { useState, useEffect } from "react";
 import { UNIVERSITIES, THEMES } from "./data.js";
 
 // Fetch top cited Scopus paper per university for a given theme.
+// Uses ASJC taxonomy codes as primary filter; keywords are ANDed on top if present.
 // Returns { uniPapers: { scopusId: [{ title, doi, year, citations, url }] } }
 async function fetchThemePapers(theme, universities) {
-  // Quote multi-word phrases; single words work bare in TITLE-ABS-KEY
-  const termQuery = (theme.scopusTerms || []).slice(0, 6)
-    .map(t => t.includes(" ") ? `"${t}"` : t)
-    .join(" OR ");
   const params = new URLSearchParams({
-    themeQuery: termQuery,
-    affIds: universities.map(u => u.scopusId).join(","),
-    v: "5",
+    asjcCodes: (theme.asjcCodes || []).join(","),
+    affIds:    universities.map(u => u.scopusId).join(","),
+    v: "6",
   });
+  const kws = (theme.keywords || theme.scopusTerms || []);
+  if (kws.length) {
+    const kwQuery = kws
+      .map(k => k.includes(" ") ? `"${k}"` : k)
+      .join(" OR ");
+    params.set("keywords", kwQuery);
+  }
   const resp = await fetch(`/api/scopus?${params}`);
   if (!resp.ok) throw new Error(`Scopus ${resp.status}`);
   return resp.json();

@@ -220,6 +220,20 @@ function MembersTab({ universities, onUpdate }) {
   );
 }
 
+// Common ASJC codes for reference in the UI tooltip
+const ASJC_LABELS = {
+  1102: "Agronomy & Crop Science", 1104: "Aquatic Science",
+  1105: "Ecology, Evolution & Systematics", 1107: "Forestry",
+  1902: "Atmospheric Science", 1904: "Earth-Surface Processes",
+  1908: "Geophysics", 1910: "Oceanography",
+  2105: "Renewable Energy, Sustainability & Environment",
+  2303: "Ecology", 2306: "Global and Planetary Change",
+  2308: "Management, Monitoring, Policy & Law",
+  2309: "Nature & Landscape Conservation",
+  2312: "Water Science & Technology",
+  3305: "Geography, Planning & Development",
+};
+
 // ─── Tab: Themes ──────────────────────────────────────────────────────────────
 function ThemesTab({ themes, onUpdate }) {
   const [local, setLocal] = useState(themes);
@@ -230,17 +244,38 @@ function ThemesTab({ themes, onUpdate }) {
     setLocal(prev => prev.map((t, i) => i === idx ? { ...t, [field]: value } : t));
   };
 
-  const updateTerms = (idx, raw) => {
-    update(idx, "scopusTerms", raw.split(",").map(s => s.trim()).filter(Boolean));
+  const updateCodes = (idx, raw) => {
+    const codes = raw.split(",").map(s => parseInt(s.trim())).filter(n => !isNaN(n));
+    update(idx, "asjcCodes", codes);
+  };
+
+  const updateKeywords = (idx, raw) => {
+    update(idx, "keywords", raw.split(",").map(s => s.trim()).filter(Boolean));
   };
 
   return (
     <div>
       <div style={sectionHead}>Research themes — {local.length} themes</div>
-      <p style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.35)", marginBottom: "1rem", lineHeight: 1.6 }}>
-        Edit theme names, descriptions and search terms. Search terms are used to find relevant papers in Scopus.
+      <p style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.35)", marginBottom: "0.5rem", lineHeight: 1.6 }}>
+        ASJC codes are Scopus's journal-level subject taxonomy — the primary filter for finding papers.
+        Keywords are optional AND refinements on top of the codes.{" "}
+        <a href="https://service.elsevier.com/app/answers/detail/a_id/15181/" target="_blank" rel="noopener noreferrer"
+          style={{ color: "#5b9bd5", textDecoration: "none" }}>
+          Full code list ↗
+        </a>
       </p>
-      <div style={{ maxHeight: 400, overflowY: "auto", paddingRight: "0.25rem" }}>
+      <div style={{
+        marginBottom: "1rem", padding: "0.6rem 0.85rem", borderRadius: 7,
+        background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)",
+        fontSize: "0.68rem", color: "rgba(255,255,255,0.3)", lineHeight: 1.8, fontFamily: "monospace",
+      }}>
+        {Object.entries(ASJC_LABELS).map(([code, name]) => (
+          <span key={code} style={{ marginRight: "1rem", whiteSpace: "nowrap" }}>
+            <span style={{ color: "rgba(255,255,255,0.55)" }}>{code}</span> {name}
+          </span>
+        ))}
+      </div>
+      <div style={{ maxHeight: 360, overflowY: "auto", paddingRight: "0.25rem" }}>
         {local.map((theme, i) => (
           <div key={theme.id} style={{
             marginBottom: "0.85rem", padding: "0.85rem",
@@ -256,11 +291,28 @@ function ThemesTab({ themes, onUpdate }) {
             <textarea value={theme.description} onChange={e => update(i, "description", e.target.value)}
               style={{ ...textarea, minHeight: 52, fontSize: "0.75rem", marginBottom: "0.5rem" }}
               placeholder="Public description" />
-            <input
-              value={(theme.scopusTerms || []).join(", ")}
-              onChange={e => updateTerms(i, e.target.value)}
-              style={{ ...input, fontSize: "0.72rem", fontFamily: "monospace" }}
-              placeholder="Search terms (comma-separated)" />
+            <div style={{ display: "flex", gap: "0.4rem", marginBottom: "0.4rem", alignItems: "center" }}>
+              <span style={{ fontSize: "0.65rem", color: "rgba(255,255,255,0.3)", whiteSpace: "nowrap", width: 90, flexShrink: 0 }}>ASJC codes</span>
+              <input
+                value={(theme.asjcCodes || []).join(", ")}
+                onChange={e => updateCodes(i, e.target.value)}
+                style={{ ...input, fontSize: "0.72rem", fontFamily: "monospace" }}
+                placeholder="e.g. 1902, 1910" />
+            </div>
+            {/* Show resolved names for the current codes */}
+            {(theme.asjcCodes || []).length > 0 && (
+              <div style={{ fontSize: "0.63rem", color: "rgba(255,255,255,0.25)", marginBottom: "0.5rem", paddingLeft: 94, lineHeight: 1.6 }}>
+                {(theme.asjcCodes || []).map(c => ASJC_LABELS[c] ? `${c} (${ASJC_LABELS[c]})` : c).join(" · ")}
+              </div>
+            )}
+            <div style={{ display: "flex", gap: "0.4rem", alignItems: "center" }}>
+              <span style={{ fontSize: "0.65rem", color: "rgba(255,255,255,0.3)", whiteSpace: "nowrap", width: 90, flexShrink: 0 }}>Keywords <span style={{ fontStyle: "italic" }}>(optional)</span></span>
+              <input
+                value={(theme.keywords || []).join(", ")}
+                onChange={e => updateKeywords(i, e.target.value)}
+                style={{ ...input, fontSize: "0.72rem", fontFamily: "monospace" }}
+                placeholder="e.g. glacier, permafrost (AND-ed with codes)" />
+            </div>
           </div>
         ))}
       </div>
