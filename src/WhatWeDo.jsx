@@ -8,7 +8,7 @@ async function fetchThemePapers(theme, universities) {
   const params = new URLSearchParams({
     subjectAreas: (theme.subjectAreas || theme.asjcCodes || []).join(","),
     affIds:       universities.map(u => u.scopusId).join(","),
-    v: "7",
+    v: "8",
   });
   const kws = (theme.keywords || theme.scopusTerms || []);
   if (kws.length) {
@@ -213,6 +213,8 @@ export default function WhatWeDo({ universities = UNIVERSITIES, themes = THEMES,
             universities={universities}
             isOpen={openTheme === theme.id}
             onToggle={() => setOpenTheme(prev => prev === theme.id ? null : theme.id)}
+            shownDois={shownDois}
+            onPapersShown={registerDois}
           />
         ))}
       </div>
