@@ -13,8 +13,8 @@ export default function App() {
   const [page, setPage]         = useState(initialPage);
   const [displayConfig, updateDisplayConfig] = useConfig();
 
-  // Live content config (universities + themes) — fetched from server, falls back to defaults
-  const [contentConfig, setContentConfig] = useState({ universities: UNIVERSITIES, themes: THEMES });
+  // Live content config (universities + themes + subjectCodes) — fetched from server, falls back to defaults
+  const [contentConfig, setContentConfig] = useState({ universities: UNIVERSITIES, themes: THEMES, subjectCodes: null });
   const [configLoaded, setConfigLoaded]   = useState(false);
 
   useEffect(() => {
@@ -84,6 +84,7 @@ export default function App() {
           <InTheNews
             timeframe={displayConfig.timeframe}
             paperCount={displayConfig.paperCount}
+            subjectCodes={contentConfig.subjectCodes}
           />
         )}
       </div>

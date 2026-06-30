@@ -328,6 +328,81 @@ function ThemesTab({ themes, onUpdate }) {
   );
 }
 
+// ─── Tab: Filters ─────────────────────────────────────────────────────────────
+const FOR_LABELS = {
+  "0401": "Atmospheric Sciences",
+  "0402": "Geochemistry",
+  "0403": "Geology",
+  "0404": "Geophysics",
+  "0405": "Oceanography",
+  "0406": "Physical Geography & Environmental Geoscience",
+  "0501": "Ecological Applications",
+  "0502": "Environmental Science and Management",
+  "0503": "Soil Sciences",
+  "0504": "Freshwater Science (Water Resources)",
+  "0701": "Agriculture, Land and Farm Management",
+  "0705": "Forestry Sciences",
+  "1402": "Applied Economics",
+  "1606": "Environmental and Resource Economics",
+};
+
+function FiltersTab({ subjectCodes, onUpdate }) {
+  const [local, setLocal] = useState(subjectCodes || []);
+
+  useEffect(() => { setLocal(subjectCodes || []); }, [subjectCodes]);
+
+  const toggle = (code) => {
+    setLocal(prev => prev.includes(code) ? prev.filter(c => c !== code) : [...prev, code].sort());
+  };
+
+  return (
+    <div>
+      <div style={sectionHead}>In the News — subject filter</div>
+      <p style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.35)", marginBottom: "1rem", lineHeight: 1.6 }}>
+        Altmetric Explorer filters papers by journal subject using ANZSRC Fields of Research (FOR) codes.
+        Tick the subjects to include — papers in journals outside these areas are excluded.{" "}
+        <a href="https://www.abs.gov.au/statistics/classifications/australian-and-new-zealand-standard-research-classification-anzsrc/latest-release"
+          target="_blank" rel="noopener noreferrer" style={{ color: "#5b9bd5", textDecoration: "none" }}>
+          Full code list ↗
+        </a>
+      </p>
+
+      <div style={{ display: "flex", flexDirection: "column", gap: "0.35rem", marginBottom: "1.25rem" }}>
+        {Object.entries(FOR_LABELS).map(([code, name]) => {
+          const active = local.includes(code);
+          return (
+            <label key={code} style={{ display: "flex", alignItems: "center", gap: "0.6rem", cursor: "pointer" }}>
+              <input type="checkbox" checked={active} onChange={() => toggle(code)}
+                style={{ accentColor: "#3ab5c6", width: 14, height: 14, flexShrink: 0 }} />
+              <span style={{ fontFamily: "monospace", fontSize: "0.72rem", color: active ? "#3ab5c6" : "rgba(255,255,255,0.3)", width: 38, flexShrink: 0 }}>
+                {code}
+              </span>
+              <span style={{ fontSize: "0.78rem", color: active ? "rgba(255,255,255,0.8)" : "rgba(255,255,255,0.35)" }}>
+                {name}
+              </span>
+            </label>
+          );
+        })}
+      </div>
+
+      <div style={{ fontSize: "0.72rem", color: "rgba(255,255,255,0.3)", marginBottom: "0.85rem" }}>
+        {local.length} subject{local.length !== 1 ? "s" : ""} selected: {local.join(", ") || "none"}
+      </div>
+
+      <button onClick={() => onUpdate(local)} disabled={local.length === 0} style={{
+        width: "100%", padding: "0.6rem",
+        background: local.length > 0 ? "#3ab5c6" : "rgba(255,255,255,0.08)",
+        border: "none", borderRadius: 8,
+        color: local.length > 0 ? "#fff" : "rgba(255,255,255,0.25)",
+        fontWeight: 600, fontSize: "0.85rem",
+        cursor: local.length > 0 ? "pointer" : "default", fontFamily: "inherit",
+      }}>
+        Apply subject filter
+      </button>
+    </div>
+  );
+}
+
 // ─── Tab: Display ─────────────────────────────────────────────────────────────
 function DisplayTab({ config, onUpdate, themes }) {
   const [local, setLocal] = useState(config);
@@ -412,19 +487,19 @@ export default function Settings({ displayConfig, onDisplayUpdate, contentConfig
     else { setPwError(true); setPwInput(""); }
   };
 
-  // Save content (members / themes) to server via /api/save-config
-  const saveContent = async (universities, themes) => {
+  // Save content (members / themes / subjectCodes) to server via /api/save-config
+  const saveContent = async (universities, themes, subjectCodes) => {
     setSaving(true);
     setSaveMsg(null);
     try {
       const r = await fetch("/api/save-config", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ password: pwInput || PASSWORD, universities, themes }),
+        body: JSON.stringify({ password: pwInput || PASSWORD, universities, themes, subjectCodes }),
       });
       const data = await r.json();
       if (!r.ok) throw new Error(data.error || "Save failed");
-      onContentSave({ universities, themes });
+      onContentSave({ universities, themes, subjectCodes });
       setSaveMsg({ ok: true, text: "Saved — changes are now live for all users." });
     } catch (err) {
       setSaveMsg({ ok: false, text: err.message });
@@ -433,13 +508,15 @@ export default function Settings({ displayConfig, onDisplayUpdate, contentConfig
     }
   };
 
-  const handleMembersUpdate = (universities) => saveContent(universities, contentConfig.themes);
-  const handleThemesUpdate  = (themes)       => saveContent(contentConfig.universities, themes);
+  const handleMembersUpdate      = (universities)  => saveContent(universities, contentConfig.themes, contentConfig.subjectCodes);
+  const handleThemesUpdate       = (themes)        => saveContent(contentConfig.universities, themes, contentConfig.subjectCodes);
+  const handleSubjectCodesUpdate = (subjectCodes)  => saveContent(contentConfig.universities, contentConfig.themes, subjectCodes);
 
   const TABS = [
     { id: "embed",   label: "Embed links" },
     { id: "members", label: "Members" },
     { id: "themes",  label: "Themes" },
+    { id: "filters", label: "Filters" },
     { id: "display", label: "Display" },
   ];
 
@@ -535,13 +612,14 @@ export default function Settings({ displayConfig, onDisplayUpdate, contentConfig
 
                 {/* Tab content */}
                 <div style={{ overflowY: "auto", flex: 1 }}>
-                  {tab === "embed"   && <EmbedTab />}
-                  {tab === "members" && <MembersTab universities={contentConfig.universities} onUpdate={handleMembersUpdate} />}
-                  {tab === "themes"  && <ThemesTab  themes={contentConfig.themes}             onUpdate={handleThemesUpdate} />}
-                  {tab === "display" && <DisplayTab config={displayConfig} onUpdate={onDisplayUpdate} themes={contentConfig.themes} />}
+                  {tab === "embed"    && <EmbedTab />}
+                  {tab === "members"  && <MembersTab universities={contentConfig.universities} onUpdate={handleMembersUpdate} />}
+                  {tab === "themes"   && <ThemesTab  themes={contentConfig.themes}             onUpdate={handleThemesUpdate} />}
+                  {tab === "filters"  && <FiltersTab subjectCodes={contentConfig.subjectCodes} onUpdate={handleSubjectCodesUpdate} />}
+                  {tab === "display"  && <DisplayTab config={displayConfig} onUpdate={onDisplayUpdate} themes={contentConfig.themes} />}
                 </div>
 
-                {(tab === "members" || tab === "themes") && (
+                {(tab === "members" || tab === "themes" || tab === "filters") && (
                   <p style={{ fontSize: "0.67rem", color: "rgba(255,255,255,0.18)", marginTop: "0.75rem", textAlign: "center" }}>
                     Changes are saved to the server and immediately visible to all users.{" "}
                     Requires Vercel KV to be connected in your project.

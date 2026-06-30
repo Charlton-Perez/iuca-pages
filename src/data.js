@@ -39,6 +39,19 @@ export const UNIVERSITIES = [
   { name: "University of the South Pacific",  flag: "🇫🇯", scopusId: "60004028", gridId: "grid.449398.e",  researchUrl: "https://www.usp.ac.fj/research/" },
 ];
 
+// FOR = ANZSRC Fields of Research codes (used by Altmetric Explorer filter[subject][]).
+// These are applied at journal level by Altmetric; papers inherit their journal's codes.
+// Full list: https://www.abs.gov.au/statistics/classifications/australian-and-new-zealand-standard-research-classification-anzsrc/latest-release
+export const DEFAULT_SUBJECT_CODES = [
+  "0401", // Atmospheric Sciences
+  "0405", // Oceanography
+  "0406", // Physical Geography and Environmental Geoscience
+  "0501", // Ecological Applications
+  "0502", // Environmental Science and Management
+  "0503", // Soil Sciences
+  "0504", // Freshwater Science (Water Resources)
+];
+
 // ASJC = All Science Journal Classification codes (Scopus journal-level taxonomy).
 // These are applied by Scopus to every journal; a paper inherits its journal's codes.
 // Find codes at: https://service.elsevier.com/app/answers/detail/a_id/15181/

@@ -140,40 +140,31 @@ function buildDigest(secret, filters) {
   return crypto.createHmac("sha1", secret).update(canonical).digest("hex");
 }
 
-// Specific climate/environment terms — checked against title only to avoid
-// false matches like "Nature Medicine" or "Environmental Health" (virus papers)
-const CLIMATE_TITLE_KEYWORDS = [
-  "climate","global warming","greenhouse gas","carbon","co2","methane","emission",
-  "sea level","ocean heat","ocean acidif","arctic","antarctic","glacier","ice sheet",
-  "permafrost","sea ice","cryosphere","coral reef","ocean warming","marine heat",
-  "drought","flood","wildfire","heatwave","extreme weather","cyclone","hurricane",
-  "typhoon","attribution","tipping point","deforestation","biodiversity loss",
-  "ecosystem collapse","wetland","peatland","decarboni","net zero","renewable energy",
-  "solar energy","wind energy","carbon capture","ipcc","adaptation","mitigation",
-  "temperature rise","precipitation change","monsoon change","aerosol forcing",
-];
-
-function isClimateRelated(title) {
-  const t = title.toLowerCase();
-  return CLIMATE_TITLE_KEYWORDS.some(kw => t.includes(kw));
-}
-
 // ── Explorer API path ─────────────────────────────────────────────────────────
-async function fetchFromExplorer(key, secret, timeframe, limit) {
-  const filters = { affiliations: IUCA_GRID_IDS, timeframe, scope: "all" };
-  const digest  = buildDigest(secret, filters);
+// subjects = ANZSRC Fields of Research (FOR) codes, e.g. ["0401","0405"]
+// Altmetric Explorer applies these at journal level — far more reliable than title keywords.
+async function fetchFromExplorer(key, secret, timeframe, limit, subjects) {
+  const filters = {
+    affiliations: IUCA_GRID_IDS,
+    timeframe,
+    scope: "all",
+    ...(subjects.length ? { subject: subjects } : {}),
+  };
+  const digest = buildDigest(secret, filters);
 
   const affiliationQs = IUCA_GRID_IDS.map(id => `filter[affiliations][]=${id}`).join("&");
+  const subjectQs     = subjects.map(s => `filter[subject][]=${s}`).join("&");
   const qs = [
     `key=${key}`,
     affiliationQs,
+    subjectQs,
     `filter[timeframe]=${timeframe}`,
     `filter[scope]=all`,
     `filter[order]=score_desc`,
-    `page[size]=${Math.min(limit * 4, 100)}`, // fetch extra — climate filter will reduce count
-    `include=affiliations,journals`,           // sideload so we get uni name + journal
+    `page[size]=${Math.min(limit * 2, 100)}`,
+    `include=affiliations,journals`,
     `digest=${digest}`,
-  ].join("&");
+  ].filter(Boolean).join("&");
 
   const r = await fetch(`https://www.altmetric.com/explorer/api/research_outputs?${qs}`,
     { headers: { Accept: "application/json" } });
@@ -243,7 +234,7 @@ async function fetchFromExplorer(key, secret, timeframe, limit) {
       topNews: [], // Individual article headlines not available via Explorer API
     };
   })
-  .filter(p => p.title && isClimateRelated(p.title))
+  .filter(p => p.title && p.score > 0)
   .sort((a, b) => b.score - a.score)
   .slice(0, limit);
 
@@ -323,7 +314,10 @@ export default async function handler(req, res) {
 
   const timeframe = ["1m","3m","6m","1y","5y"].includes(req.query.timeframe)
     ? req.query.timeframe : "6m";
-  const limit = Math.min(parseInt(req.query.limit) || 25, 50);
+  const limit    = Math.min(parseInt(req.query.limit) || 25, 50);
+  const subjects = req.query.subjects
+    ? req.query.subjects.split(",").map(s => s.trim()).filter(Boolean)
+    : ["0401","0405","0406","0501","0502","0503","0504"]; // default FOR codes for climate/environment
 
   const explorerKey    = process.env.ALTMETRIC_EXPLORER_KEY;
   const explorerSecret = process.env.ALTMETRIC_EXPLORER_SECRET;
@@ -332,7 +326,7 @@ export default async function handler(req, res) {
   try {
     let result;
     if (explorerKey && explorerSecret) {
-      result = await fetchFromExplorer(explorerKey, explorerSecret, timeframe, limit);
+      result = await fetchFromExplorer(explorerKey, explorerSecret, timeframe, limit, subjects);
     } else if (scopusKey) {
       result = await fetchFromScopusFallback(scopusKey, limit);
     } else {

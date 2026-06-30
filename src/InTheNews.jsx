@@ -381,7 +381,7 @@ function GridCard({ paper }) {
 }
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
-export default function InTheNews({ timeframe = "6m", paperCount = 25 }) {
+export default function InTheNews({ timeframe = "6m", paperCount = 25, subjectCodes = null }) {
   const [papers, setPapers]           = useState(null);
   const [loading, setLoading]         = useState(true);
   const [activeTheme, setActiveTheme] = useState("All");
@@ -389,11 +389,13 @@ export default function InTheNews({ timeframe = "6m", paperCount = 25 }) {
   useEffect(() => {
     setLoading(true);
     setPapers(null);
-    fetch(`/api/altmetric?timeframe=${timeframe}&limit=${paperCount}&v=4`)
+    const params = new URLSearchParams({ timeframe, limit: paperCount, v: "5" });
+    if (subjectCodes?.length) params.set("subjects", subjectCodes.join(","));
+    fetch(`/api/altmetric?${params}`)
       .then(r => r.ok ? r.json() : Promise.reject())
       .then(({ papers }) => { setPapers(papers); setLoading(false); })
       .catch(() => { setPapers(DEMO_PAPERS); setLoading(false); });
-  }, [timeframe, paperCount]);
+  }, [timeframe, paperCount, subjectCodes]);
 
   const themes = papers ? ["All", ...Array.from(new Set(papers.map(p => p.theme)))] : ["All"];
   const filtered = papers
