@@ -7,8 +7,9 @@ async function fetchThemePapers(theme, universities) {
   const params = new URLSearchParams({
     subjectAreas: (theme.subjectAreas || []).join(","),
     affNames:     universities.map(u => u.name).join(","),
-    v: "11",
+    v: "12",
   });
+  if (theme.scopusTerms?.length) params.set("scopusTerms", theme.scopusTerms.join(","));
   const resp = await fetch(`/api/scopus?${params}`);
   if (!resp.ok) throw new Error(`Scopus ${resp.status}`);
   return resp.json();
@@ -102,12 +103,12 @@ function ThemePanel({ theme, universities, isOpen, onToggle }) {
                     <div style={{ flex: 1, minWidth: 0 }}>
                       <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", flexWrap: "wrap" }}>
                         <span style={{ fontSize: "0.82rem", fontWeight: 600, color: "rgba(255,255,255,0.9)" }}>{u.name}</span>
-                        {paper.citations > 0 && (
+                        {paper.citesPerYear > 0 && (
                           <span style={{
                             fontSize: "0.63rem", padding: "0.1rem 0.45rem", borderRadius: 10,
                             background: `${theme.colour}18`, color: theme.colour, fontWeight: 600,
-                          }}>
-                            {paper.citations.toLocaleString()} citations
+                          }} title={`${paper.citations?.toLocaleString()} total citations`}>
+                            {paper.citesPerYear} cites/yr
                           </span>
                         )}
                         {paper.year && (
@@ -124,6 +125,11 @@ function ThemePanel({ theme, universities, isOpen, onToggle }) {
                       >
                         {paper.title} ↗
                       </a>
+                      {paper.coInstitutions?.length > 0 && (
+                        <div style={{ fontSize: "0.62rem", color: "rgba(255,255,255,0.22)", marginTop: "0.2rem" }}>
+                          Also: {paper.coInstitutions.join(", ")}
+                        </div>
+                      )}
                     </div>
                   </div>
                 );
@@ -196,7 +202,7 @@ export default function WhatWeDo({ universities = UNIVERSITIES, themes = THEMES,
       </div>
 
       <div style={{ textAlign: "center", paddingBottom: "3rem", color: "rgba(255,255,255,0.18)", fontSize: "0.7rem" }}>
-        Top cited papers from Scopus publication data · {new Date().getFullYear()} IUCA
+        Papers ranked by citations per year (year-normalised impact) · Scopus data · {new Date().getFullYear()} IUCA
       </div>
     </div>
   );

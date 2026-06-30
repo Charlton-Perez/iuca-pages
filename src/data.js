@@ -68,6 +68,8 @@ export const THEMES = [
     bg: "#0d1e32",
     description: "Forecasting, atmospheric dynamics, air quality and the physics of our changing skies.",
     subjectAreas: ["EART"],
+    // TITLE-ABS-KEY refinement — differentiates within the broad EART subject area (not user-editable)
+    scopusTerms: ["atmospheric","troposphere","stratosphere","precipitation","aerosol","meteorolog","monsoon","reanalysis","air quality","boundary layer"],
   },
   {
     id: "oceans",
@@ -77,6 +79,7 @@ export const THEMES = [
     bg: "#091e24",
     description: "Ocean heat, circulation, sea level rise, acidification and marine ecosystems under pressure.",
     subjectAreas: ["EART"],
+    scopusTerms: ["ocean","oceanograph","sea level","marine","thermohaline","salinity","upwelling","tidal","AMOC","sea surface temperature"],
   },
   {
     id: "cryosphere",
@@ -86,6 +89,7 @@ export const THEMES = [
     bg: "#101824",
     description: "Glaciers, ice sheets, Arctic sea ice and the frozen ground releasing ancient carbon.",
     subjectAreas: ["EART"],
+    scopusTerms: ["cryosphere","glacier","ice sheet","permafrost","sea ice","arctic","antarctic","snowpack","ice core","frozen ground"],
   },
   {
     id: "ecosystems",
@@ -131,5 +135,6 @@ export const THEMES = [
     bg: "#1e0e0c",
     description: "Heatwaves, floods, wildfires and storms — attribution, prediction and disaster risk reduction.",
     subjectAreas: ["EART", "ENVI"],
+    scopusTerms: ["extreme event","heatwave","heat wave","flood","wildfire","cyclone","hurricane","drought","disaster","storm surge"],
   },
 ];
