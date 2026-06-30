@@ -47,7 +47,7 @@ export default function App() {
           <div style={{ display: "flex", gap: "0.25rem" }}>
             {[
               { id: "whatwedo",  label: "What We Do" },
-              { id: "inthenews", label: "In the News" },
+              { id: "inthenews", label: "Our Impact" },
             ].map(({ id, label }) => (
               <button key={id} onClick={() => setPage(id)} style={{
                 padding: "0.35rem 0.85rem", borderRadius: 7, border: "none",

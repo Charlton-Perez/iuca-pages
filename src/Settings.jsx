@@ -4,16 +4,16 @@ const PASSWORD = "iuca2024";
 
 // ─── Display config (localStorage) ───────────────────────────────────────────
 const TIMEFRAME_OPTIONS = [
-  { value: "1m", label: "Last month" },
   { value: "3m", label: "Last 3 months" },
   { value: "6m", label: "Last 6 months" },
   { value: "1y", label: "Last year" },
+  { value: "3y", label: "Last 3 years" },
   { value: "5y", label: "Last 5 years" },
 ];
 
 export const DEFAULT_DISPLAY = {
-  timeframe:     "6m",
-  paperCount:    25,
+  timeframe:     "1y",
+  paperCount:    35,
   visibleThemes: null, // null = all visible
 };
 
@@ -428,7 +428,7 @@ function DisplayTab({ config, onUpdate, themes }) {
       </div>
       <div style={{ marginBottom: "0.4rem" }}><span style={label}>Papers shown</span></div>
       <div style={{ display: "flex", gap: "0.4rem", marginBottom: "1.5rem" }}>
-        {[10, 25, 50].map(n => (
+        {[15, 25, 35, 50].map(n => (
           <button key={n} onClick={() => setLocal(l => ({ ...l, paperCount: n }))}
             style={pill(local.paperCount === n)}>
             {n}

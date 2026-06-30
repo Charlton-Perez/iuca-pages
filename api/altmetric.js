@@ -312,9 +312,9 @@ export default async function handler(req, res) {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Cache-Control", "s-maxage=86400");
 
-  const timeframe = ["1m","3m","6m","1y","5y"].includes(req.query.timeframe)
-    ? req.query.timeframe : "6m";
-  const limit    = Math.min(parseInt(req.query.limit) || 25, 50);
+  const timeframe = ["1m","3m","6m","1y","3y","5y"].includes(req.query.timeframe)
+    ? req.query.timeframe : "1y";
+  const limit    = Math.min(parseInt(req.query.limit) || 35, 50);
   const subjects = req.query.subjects
     ? req.query.subjects.split(",").map(s => s.trim()).filter(Boolean)
     : ["0401","0405","0406","0501","0502","0503","0504"]; // default FOR codes for climate/environment

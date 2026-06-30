@@ -55,9 +55,9 @@ export default async function handler(req, res) {
 
       const uniPapers = {};
       await Promise.all(uniIds.map(async (id) => {
-        const q = `AF-ID(${id}) AND ${subjectClause} AND PUBYEAR > 2019`;
+        const q = `AF-ID(${id}) AND ${subjectClause} AND PUBYEAR > 2023`;
         const url = `https://api.elsevier.com/content/search/scopus?` +
-          `query=${encodeURIComponent(q)}&count=10&sort=citedby-count`;
+          `query=${encodeURIComponent(q)}&count=5&sort=citedby-count`;
         try {
           const r = await fetch(url, { headers: scopusHeaders });
           if (!r.ok) return;
@@ -70,7 +70,8 @@ export default async function handler(req, res) {
             citations: parseInt(e["citedby-count"] || "0"),
             url:       e["prism:doi"] ? `https://doi.org/${e["prism:doi"]}` : "",
           })).filter(p => p.title);
-          if (papers.length) uniPapers[id] = papers.slice(0, 4);
+          // One paper per institution — top cited within the last 2 years
+          if (papers.length) uniPapers[id] = papers.slice(0, 1);
         } catch {}
       }));
 
