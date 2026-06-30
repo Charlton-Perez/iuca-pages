@@ -8,7 +8,7 @@ async function fetchThemePapers(theme, universities) {
   const params = new URLSearchParams({
     subjectAreas: (theme.subjectAreas || []).join(","),
     affIds:       universities.map(u => u.scopusId).join(","),
-    v: "9",
+    v: "10",
   });
   const resp = await fetch(`/api/scopus?${params}`);
   if (!resp.ok) throw new Error(`Scopus ${resp.status}`);

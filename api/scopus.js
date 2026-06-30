@@ -46,18 +46,20 @@ export default async function handler(req, res) {
 
       const subjectClause = `SUBJAREA(${areas.join(" OR ")})`;
 
-      // Request fwci (Field-Weighted Citation Impact) — normalises citations by field and year.
-      // fwci > 1 means above-average impact for the field; more meaningful than raw citation count.
-      const fields = "prism:doi,dc:title,prism:coverDate,citedby-count,fwci";
-
       const uniPapers = {};
       await Promise.all(uniIds.map(async (id) => {
         const q = `AF-ID(${id}) AND ${subjectClause} AND PUBYEAR > 2021`;
+        // No &field= param — let Scopus return its default fields. Adding custom
+        // field lists (especially fwci) can cause 4xx errors on some API tiers
+        // and silently empties results when we catch !r.ok.
         const url = `https://api.elsevier.com/content/search/scopus?` +
-          `query=${encodeURIComponent(q)}&count=10&sort=citedby-count&field=${encodeURIComponent(fields)}`;
+          `query=${encodeURIComponent(q)}&count=10&sort=citedby-count`;
         try {
           const r = await fetch(url, { headers: scopusHeaders });
-          if (!r.ok) return;
+          if (!r.ok) {
+            console.error(`Scopus ${r.status} for AF-ID(${id}):`, await r.text().catch(() => ""));
+            return;
+          }
           const data = await r.json();
           const entries = data?.["search-results"]?.entry || [];
           const papers = entries.map(e => ({
@@ -68,7 +70,7 @@ export default async function handler(req, res) {
             fwci:      parseFloat(e["fwci"]) || null,
             url:       e["prism:doi"] ? `https://doi.org/${e["prism:doi"]}` : "",
           })).filter(p => p.title);
-          // Sort by fwci if available, otherwise raw citations; take the top paper
+          // Sort by fwci if the API happens to return it, otherwise raw citations
           papers.sort((a, b) => (b.fwci ?? -1) - (a.fwci ?? -1) || b.citations - a.citations);
           if (papers.length) uniPapers[id] = papers.slice(0, 1);
         } catch {}
