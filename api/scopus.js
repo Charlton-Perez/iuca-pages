@@ -1,10 +1,37 @@
 // api/scopus.js — Vercel serverless function
-// Queries Scopus using AFFILORG("university name") — one top paper per university per theme.
-// Uses TITLE-ABS-KEY terms to differentiate themes that share the same broad SUBJAREA code.
-// Sorts by citations-per-year (proxy for FWCI; true FWCI is not available via the Search API).
-// Tags papers with all IUCA co-institutions found in their affiliation list.
+// Returns top Scopus paper per IUCA university per theme.
+//
+// For atmosphere / oceans / cryosphere: fetches top 25 EART papers per university
+// and filters server-side by journal source-id (ASJC 1902 / 1910 / 1904).
+// This correctly excludes multi-disciplinary papers (e.g. Global Carbon Budget)
+// that are published in general-EART journals (ASJC 1900) not specific to any theme.
+//
+// For other themes: uses SUBJAREA codes which already differentiate them well.
+// For extremes: adds TITLE-ABS-KEY terms (specific enough not to cause cross-theme pollution).
+//
+// Papers ranked by citations-per-year (citations ÷ paper age in years).
+// FWCI is not available from the Scopus Search API — citesPerYear is the best proxy.
+
+import { JOURNAL_SETS } from './journal-sets.js';
 
 const CURRENT_YEAR = 2026;
+
+// Themes that use broad SUBJAREA(EART) + server-side journal filter
+const JOURNAL_FILTER_THEMES = new Set(['atmosphere', 'oceans', 'cryosphere']);
+
+// Theme → Scopus query config
+const THEME_QUERY = {
+  atmosphere: { subjarea: 'EART' },
+  oceans:     { subjarea: 'EART' },
+  cryosphere: { subjarea: 'EART' },
+  extremes:   { subjarea: 'EART OR ENVI',
+                terms: ['extreme event','heatwave','heat wave','flood','wildfire',
+                        'cyclone','hurricane','drought','disaster','storm surge'] },
+  ecosystems: { subjarea: 'ENVI OR AGRI' },
+  society:    { subjarea: 'ENVI OR SOCI' },
+  mitigation: { subjarea: 'ENER OR ENVI' },
+  food:       { subjarea: 'AGRI OR ENVI' },
+};
 
 function citesPerYear(citations, yearStr) {
   const year = parseInt(yearStr) || CURRENT_YEAR - 1;
@@ -13,79 +40,67 @@ function citesPerYear(citations, yearStr) {
 }
 
 export default async function handler(req, res) {
-  if (req.method !== "GET") return res.status(405).json({ error: "Method not allowed" });
+  if (req.method !== 'GET') return res.status(405).json({ error: 'Method not allowed' });
 
   const apiKey = process.env.SCOPUS_API_KEY;
-  if (!apiKey) return res.status(500).json({ error: "SCOPUS_API_KEY not configured" });
+  if (!apiKey) return res.status(500).json({ error: 'SCOPUS_API_KEY not configured' });
 
-  res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Cache-Control", "s-maxage=86400");
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Cache-Control', 's-maxage=86400');
 
-  const { affNames } = req.query;
-  if (!affNames) return res.status(400).json({ error: "Provide affNames" });
+  const { affNames, themeId } = req.query;
+  if (!affNames) return res.status(400).json({ error: 'Provide affNames' });
+  if (!themeId || !THEME_QUERY[themeId]) return res.status(400).json({ error: 'Provide valid themeId' });
 
-  const uniNames = affNames.split(",").map(s => s.trim()).filter(Boolean);
+  const uniNames  = affNames.split(',').map(s => s.trim()).filter(Boolean);
+  const config    = THEME_QUERY[themeId];
+  const journalSet = JOURNAL_FILTER_THEMES.has(themeId) ? JOURNAL_SETS[themeId] : null;
 
-  // SUBJAREA clause
-  const areas = (req.query.subjectAreas || "")
-    .split(",").map(s => s.trim().toUpperCase()).filter(Boolean);
-  const areaClause = areas.length
-    ? `SUBJAREA(${areas.join(" OR ")})`
-    : `SUBJAREA(EART OR ENVI OR AGRI OR ENER OR SOCI)`;
+  // Build TITLE-ABS-KEY clause for themes that use keyword refinement
+  const termClause = config.terms?.length
+    ? ` AND TITLE-ABS-KEY(${config.terms.map(t => `"${t}"`).join(' OR ')})`
+    : '';
 
-  // TITLE-ABS-KEY clause for themes that share a broad SUBJAREA (e.g. all EART themes)
-  const terms = (req.query.scopusTerms || "")
-    .split(",").map(s => s.trim()).filter(Boolean);
-  const termClause = terms.length
-    ? ` AND TITLE-ABS-KEY(${terms.map(t => `"${t}"`).join(" OR ")})`
-    : "";
-
-  const scopusHeaders = { "X-ELS-APIKey": apiKey, Accept: "application/json" };
-
-  // Build a Set of all known IUCA university names (lowercased) for co-institution detection
-  const iucaNameSet = new Set(uniNames.map(n => n.toLowerCase()));
-
-  // Map from normalised name → display name for co-institution tagging
-  const nameMap = {};
-  for (const n of uniNames) nameMap[n.toLowerCase()] = n;
-
-  // Fetch top papers for each university in parallel
-  const rawResults = {}; // name → [{ title, doi, year, citations, citesPerYear, url, affiliations }]
+  const scopusHeaders = { 'X-ELS-APIKey': apiKey, Accept: 'application/json' };
+  const iucaNameSet   = new Set(uniNames.map(n => n.toLowerCase()));
+  const nameMap       = Object.fromEntries(uniNames.map(n => [n.toLowerCase(), n]));
+  const rawResults    = {};
 
   await Promise.all(uniNames.map(async (name) => {
-    // Fetch top 5 by citation count; we re-sort by citesPerYear server-side
-    const q = `AFFILORG("${name}") AND ${areaClause}${termClause} AND PUBYEAR > 2021`;
+    const q = `AFFILORG("${name}") AND SUBJAREA(${config.subjarea})${termClause} AND PUBYEAR > 2021`;
+    // Fetch 25 papers (Scopus max per request). Journal-filtered themes need more candidates.
     const url = `https://api.elsevier.com/content/search/scopus?` +
-      `query=${encodeURIComponent(q)}&count=5&sort=citedby-count`;
+      `query=${encodeURIComponent(q)}&count=25&sort=citedby-count`;
     try {
       const r = await fetch(url, { headers: scopusHeaders });
-      if (!r.ok) {
-        console.error(`Scopus ${r.status} for AFFILORG("${name}")`);
-        return;
-      }
-      const data = await r.json();
-      const entries = data?.["search-results"]?.entry || [];
-      const papers = entries
-        .filter(e => e["dc:title"])
+      if (!r.ok) { console.error(`Scopus ${r.status} for "${name}" theme=${themeId}`); return; }
+      const data    = await r.json();
+      const entries = data?.['search-results']?.entry || [];
+
+      let papers = entries
+        .filter(e => e['dc:title'])
         .map(e => {
-          const year      = (e["prism:coverDate"] || "").slice(0, 4);
-          const citations = parseInt(e["citedby-count"] || "0");
-          // Collect affiliation names from the response
-          const rawAffs = Array.isArray(e.affiliation) ? e.affiliation
-            : e.affiliation ? [e.affiliation] : [];
-          const affiliations = rawAffs.map(a => a?.affilname || "").filter(Boolean);
+          const year      = (e['prism:coverDate'] || '').slice(0, 4);
+          const citations = parseInt(e['citedby-count'] || '0');
+          const rawAffs   = Array.isArray(e.affiliation) ? e.affiliation
+                          : e.affiliation ? [e.affiliation] : [];
           return {
-            title:         e["dc:title"] || "",
-            doi:           e["prism:doi"] || "",
+            title:        e['dc:title'] || '',
+            doi:          e['prism:doi'] || '',
             year,
             citations,
-            citesPerYear:  citesPerYear(citations, year),
-            url:           e["prism:doi"] ? `https://doi.org/${e["prism:doi"]}` : "",
-            affiliations,
+            citesPerYear: citesPerYear(citations, year),
+            url:          e['prism:doi'] ? `https://doi.org/${e['prism:doi']}` : '',
+            sourceId:     e['source-id'] || '',
+            affiliations: rawAffs.map(a => a?.affilname || '').filter(Boolean),
           };
         });
 
-      // Sort by citesPerYear (year-normalised citation rate) and take the best
+      // Apply journal-set filter for the three EART sub-themes
+      if (journalSet) {
+        papers = papers.filter(p => journalSet.has(p.sourceId));
+      }
+
       papers.sort((a, b) => b.citesPerYear - a.citesPerYear);
       if (papers.length) rawResults[name] = papers.slice(0, 1);
     } catch (err) {
@@ -93,9 +108,8 @@ export default async function handler(req, res) {
     }
   }));
 
-  // Cross-tag co-institutions: for each paper, detect other IUCA universities in its affiliations
-  // AND detect when the same DOI appears under multiple universities (multi-institution co-authorship)
-  const doiToUnis = {}; // doi → [uniName]
+  // Cross-tag co-institutions: papers appearing under multiple universities share co-authorship
+  const doiToUnis = {};
   for (const [uniName, papers] of Object.entries(rawResults)) {
     for (const p of papers) {
       if (p.doi) {
@@ -109,13 +123,12 @@ export default async function handler(req, res) {
   for (const [uniName, papers] of Object.entries(rawResults)) {
     const paper = papers[0];
 
-    // Detect co-institutions from the affiliation list in the API response
+    // Detect co-institutions from affiliation list (Scopus returns 2–3 affiliations)
     const coFromAffil = paper.affiliations
       .map(a => {
         const lower = a.toLowerCase();
-        // Check exact match or substring match against known IUCA names
         for (const knownLower of iucaNameSet) {
-          if (lower.includes(knownLower) || knownLower.includes(lower.split(" ")[0])) {
+          if (lower.includes(knownLower) || knownLower.includes(lower.split(' ')[0])) {
             return nameMap[knownLower];
           }
         }
@@ -123,21 +136,20 @@ export default async function handler(req, res) {
       })
       .filter(n => n && n !== uniName);
 
-    // Also collect any other universities that independently returned the same paper
+    // Also collect universities that independently returned the same DOI
     const coFromDoi = paper.doi
       ? (doiToUnis[paper.doi] || []).filter(n => n !== uniName)
       : [];
 
-    // Deduplicate co-institutions
     const coSet = new Set([...coFromAffil, ...coFromDoi]);
 
     uniPapers[uniName] = [{
-      title:        paper.title,
-      doi:          paper.doi,
-      year:         paper.year,
-      citations:    paper.citations,
-      citesPerYear: Math.round(paper.citesPerYear * 10) / 10,
-      url:          paper.url,
+      title:          paper.title,
+      doi:            paper.doi,
+      year:           paper.year,
+      citations:      paper.citations,
+      citesPerYear:   Math.round(paper.citesPerYear * 10) / 10,
+      url:            paper.url,
       coInstitutions: [...coSet],
     }];
   }

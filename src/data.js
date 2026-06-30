@@ -68,8 +68,7 @@ export const THEMES = [
     bg: "#0d1e32",
     description: "Forecasting, atmospheric dynamics, air quality and the physics of our changing skies.",
     subjectAreas: ["EART"],
-    // TITLE-ABS-KEY refinement — differentiates within the broad EART subject area (not user-editable)
-    scopusTerms: ["atmospheric","troposphere","stratosphere","precipitation","aerosol","meteorolog","monsoon","reanalysis","air quality","boundary layer"],
+    // Classified server-side by ASJC 1902 journal source-IDs (see api/journal-sets.js)
   },
   {
     id: "oceans",
@@ -79,7 +78,7 @@ export const THEMES = [
     bg: "#091e24",
     description: "Ocean heat, circulation, sea level rise, acidification and marine ecosystems under pressure.",
     subjectAreas: ["EART"],
-    scopusTerms: ["ocean","oceanograph","sea level","marine","thermohaline","salinity","upwelling","tidal","AMOC","sea surface temperature"],
+    // Classified server-side by ASJC 1910 journal source-IDs
   },
   {
     id: "cryosphere",
@@ -89,7 +88,7 @@ export const THEMES = [
     bg: "#101824",
     description: "Glaciers, ice sheets, Arctic sea ice and the frozen ground releasing ancient carbon.",
     subjectAreas: ["EART"],
-    scopusTerms: ["cryosphere","glacier","ice sheet","permafrost","sea ice","arctic","antarctic","snowpack","ice core","frozen ground"],
+    // Classified server-side by ASJC 1904 journal source-IDs
   },
   {
     id: "ecosystems",

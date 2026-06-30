@@ -3,11 +3,10 @@ import { UNIVERSITIES, THEMES } from "./data.js";
 
 async function fetchThemePapers(theme, universities) {
   const params = new URLSearchParams({
-    subjectAreas: (theme.subjectAreas || []).join(","),
-    affNames:     universities.map(u => u.name).join(","),
-    v: "12",
+    themeId:  theme.id,
+    affNames: universities.map(u => u.name).join(","),
+    v: "13",
   });
-  if (theme.scopusTerms?.length) params.set("scopusTerms", theme.scopusTerms.join(","));
   const resp = await fetch(`/api/scopus?${params}`);
   if (!resp.ok) throw new Error(`Scopus ${resp.status}`);
   return resp.json();
