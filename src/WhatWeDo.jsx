@@ -71,7 +71,6 @@ function UniChip({ name, flag, paper, colour }) {
   );
 }
 
-// uniPaperMap: { uniName: topPaper } built from Scopus data
 function SubcategoryCard({ sub, colour, universities, uniPaperMap }) {
   const [expanded, setExpanded] = useState(false);
   const unis = (sub.universities || [])
@@ -79,39 +78,62 @@ function SubcategoryCard({ sub, colour, universities, uniPaperMap }) {
     .filter(Boolean);
 
   return (
-    <div
-      onClick={() => setExpanded(e => !e)}
-      style={{
-        background: "rgba(255,255,255,0.04)", border: `1px solid rgba(255,255,255,0.08)`,
-        borderLeft: `3px solid ${colour}`, borderRadius: 8, padding: "0.85rem 1rem",
-        cursor: "pointer", transition: "background 0.15s", marginBottom: "0.5rem",
-      }}
-      onMouseEnter={e => e.currentTarget.style.background = "rgba(255,255,255,0.07)"}
-      onMouseLeave={e => e.currentTarget.style.background = "rgba(255,255,255,0.04)"}
-    >
-      <div style={{ display: "flex", justifyContent: "space-between", alignItems: "center" }}>
+    <div style={{
+      background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)",
+      borderLeft: `3px solid ${colour}`, borderRadius: 8, marginBottom: "0.5rem",
+    }}>
+      <div
+        onClick={() => setExpanded(e => !e)}
+        style={{ padding: "0.85rem 1rem", cursor: "pointer", display: "flex", justifyContent: "space-between", alignItems: "center" }}
+        onMouseEnter={e => e.currentTarget.style.background = "rgba(255,255,255,0.03)"}
+        onMouseLeave={e => e.currentTarget.style.background = "transparent"}
+      >
         <div>
           <div style={{ color: "rgba(255,255,255,0.92)", fontWeight: 600, fontSize: "0.88rem" }}>{sub.label}</div>
           {sub.summary && <div style={{ color: "rgba(255,255,255,0.45)", fontSize: "0.75rem", marginTop: "0.2rem", lineHeight: 1.5 }}>{sub.summary}</div>}
         </div>
         <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", flexShrink: 0, marginLeft: "1rem" }}>
-          <span style={{ fontSize: "0.7rem", color: colour, fontWeight: 600 }}>
-            {(sub.universities || []).length} universities
-          </span>
+          <span style={{ fontSize: "0.7rem", color: colour, fontWeight: 600 }}>{unis.length} universities</span>
           <span style={{ color: "rgba(255,255,255,0.3)", fontSize: "0.8rem" }}>{expanded ? "▲" : "▼"}</span>
         </div>
       </div>
+
       {expanded && (
-        <div style={{ marginTop: "0.85rem", paddingTop: "0.75rem", borderTop: "1px solid rgba(255,255,255,0.07)" }}>
-          <div style={{ fontSize: "0.68rem", color: "rgba(255,255,255,0.35)", textTransform: "uppercase", letterSpacing: "0.07em", marginBottom: "0.5rem" }}>
-            IUCA members active in this area — hover chip to see top cited paper
+        <div style={{ padding: "0 1rem 1rem 1rem", borderTop: "1px solid rgba(255,255,255,0.07)" }}>
+          <div style={{ fontSize: "0.65rem", color: "rgba(255,255,255,0.25)", textTransform: "uppercase", letterSpacing: "0.07em", margin: "0.65rem 0 0.75rem" }}>
+            IUCA members active in this area · top cited Scopus paper shown
           </div>
-          <div>
-            {unis.map(u => (
-              <UniChip key={u.name} name={u.name} flag={u.flag}
-                paper={uniPaperMap?.[u.name] || null} colour={colour} />
-            ))}
-          </div>
+          {unis.map(u => {
+            const paper = uniPaperMap?.[u.name];
+            return (
+              <div key={u.name} style={{ marginBottom: "0.75rem", paddingBottom: "0.75rem", borderBottom: "1px solid rgba(255,255,255,0.05)" }}>
+                <div style={{ display: "flex", alignItems: "center", gap: "0.5rem", marginBottom: "0.25rem" }}>
+                  <span style={{ fontSize: "1rem" }}>{u.flag}</span>
+                  <span style={{ fontSize: "0.8rem", fontWeight: 600, color: "rgba(255,255,255,0.9)" }}>{u.name}</span>
+                  {paper?.citations > 0 && (
+                    <span style={{ fontSize: "0.65rem", color: colour, background: `${colour}15`, padding: "0.1rem 0.4rem", borderRadius: 10 }}>
+                      {paper.citations} citations
+                    </span>
+                  )}
+                </div>
+                {paper?.url ? (
+                  <a href={paper.url} target="_blank" rel="noopener noreferrer" style={{
+                    display: "block", marginLeft: "1.6rem", fontSize: "0.73rem",
+                    color: "rgba(255,255,255,0.5)", lineHeight: 1.5, textDecoration: "none",
+                  }}
+                    onMouseEnter={e => e.currentTarget.style.color = colour}
+                    onMouseLeave={e => e.currentTarget.style.color = "rgba(255,255,255,0.5)"}
+                  >
+                    {paper.title}{paper.year ? ` (${paper.year})` : ""} ↗
+                  </a>
+                ) : (
+                  <span style={{ display: "block", marginLeft: "1.6rem", fontSize: "0.72rem", color: "rgba(255,255,255,0.2)", fontStyle: "italic" }}>
+                    No matching Scopus paper found
+                  </span>
+                )}
+              </div>
+            );
+          })}
         </div>
       )}
     </div>
