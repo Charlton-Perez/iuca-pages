@@ -38,19 +38,19 @@ export default async function handler(req, res) {
     if (affIds) {
       const uniIds = affIds.split(",").filter(Boolean);
 
-      // Build subject clause: prefer ASJC taxonomy codes; fall back to keyword search
-      const codes = (req.query.asjcCodes || "").split(",").map(s => s.trim()).filter(Boolean);
+      // Build subject clause using Scopus SUBJAREA abbreviations (EART, ENVI, AGRI, ENER, SOCI)
+      // plus optional TITLE-ABS-KEY keywords to differentiate themes within a broad subject area.
+      const areas = (req.query.subjectAreas || "").split(",").map(s => s.trim().toUpperCase()).filter(Boolean);
       const rawKeywords = req.query.keywords ? decodeURIComponent(req.query.keywords) : null;
 
       let subjectClause;
-      if (codes.length) {
-        subjectClause = `ASJC(${codes.join(" OR ")})`;
+      if (areas.length) {
+        subjectClause = `SUBJAREA(${areas.join(" OR ")})`;
         if (rawKeywords) subjectClause += ` AND TITLE-ABS-KEY(${rawKeywords})`;
       } else if (rawKeywords) {
-        // Legacy fallback — no ASJC codes, use keywords only
         subjectClause = `TITLE-ABS-KEY(${rawKeywords})`;
       } else {
-        return res.status(400).json({ error: "Provide asjcCodes or keywords" });
+        return res.status(400).json({ error: "Provide subjectAreas or keywords" });
       }
 
       const uniPapers = {};

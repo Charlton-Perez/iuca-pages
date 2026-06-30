@@ -52,10 +52,12 @@ export const DEFAULT_SUBJECT_CODES = [
   "0504", // Freshwater Science (Water Resources)
 ];
 
-// ASJC = All Science Journal Classification codes (Scopus journal-level taxonomy).
-// These are applied by Scopus to every journal; a paper inherits its journal's codes.
-// Find codes at: https://service.elsevier.com/app/answers/detail/a_id/15181/
-// keywords = optional extra AND filter on top of ASJC (comma-separated, saved via settings)
+// subjectAreas = Scopus SUBJAREA abbreviations (valid query field: SUBJAREA(EART OR ENVI)).
+// These map to broad journal-level subject classifications used by Scopus.
+// Valid codes: EART, ENVI, AGRI, ENER, SOCI, MULT, MEDI, PHYS, CHEM, COMP, ENGI
+// keywords = TITLE-ABS-KEY refinement ANDed on top — used to differentiate themes
+//            within the same broad subject area (e.g. distinguish atmosphere from oceans,
+//            both of which sit in EART).
 export const THEMES = [
   {
     id: "atmosphere",
@@ -64,8 +66,8 @@ export const THEMES = [
     colour: "#5b9bd5",
     bg: "#0d1e32",
     description: "Forecasting, atmospheric dynamics, air quality and the physics of our changing skies.",
-    asjcCodes: [1902],           // 1902 = Atmospheric Science
-    keywords: [],
+    subjectAreas: ["EART"],
+    keywords: ["atmosphere","weather","precipitation","aerosol","forecast","monsoon","troposphere","stratosphere"],
   },
   {
     id: "oceans",
@@ -74,8 +76,8 @@ export const THEMES = [
     colour: "#3ab5c6",
     bg: "#091e24",
     description: "Ocean heat, circulation, sea level rise, acidification and marine ecosystems under pressure.",
-    asjcCodes: [1910, 1104],     // 1910 = Oceanography; 1104 = Aquatic Science
-    keywords: [],
+    subjectAreas: ["EART"],
+    keywords: ["ocean","sea level","marine","coastal","acidification","salinity","thermohaline","upwelling"],
   },
   {
     id: "cryosphere",
@@ -84,8 +86,8 @@ export const THEMES = [
     colour: "#a8d4f0",
     bg: "#101824",
     description: "Glaciers, ice sheets, Arctic sea ice and the frozen ground releasing ancient carbon.",
-    asjcCodes: [1902, 1908],     // 1902 = Atmospheric Science; 1908 = Geophysics
-    keywords: ["glacier","permafrost","cryosphere","ice sheet","sea ice","snowpack"],
+    subjectAreas: ["EART"],
+    keywords: ["glacier","permafrost","arctic","cryosphere","ice sheet","sea ice","snowpack","tundra"],
   },
   {
     id: "ecosystems",
@@ -94,8 +96,8 @@ export const THEMES = [
     colour: "#5caa72",
     bg: "#0b1c12",
     description: "How climate change reshapes forests, wetlands, coral reefs and the species that depend on them.",
-    asjcCodes: [2303, 2309, 1105], // 2303 = Ecology; 2309 = Nature & Landscape Conservation; 1105 = Ecology/Evolution in AgBio
-    keywords: [],
+    subjectAreas: ["ENVI", "AGRI"],
+    keywords: ["biodiversity","ecosystem","deforestation","coral","peatland","habitat","species","rewilding"],
   },
   {
     id: "society",
@@ -104,8 +106,8 @@ export const THEMES = [
     colour: "#e8a44a",
     bg: "#1e1608",
     description: "Climate justice, health impacts, migration, urban resilience and how communities adapt.",
-    asjcCodes: [2308, 3305],     // 2308 = Management/Monitoring/Policy & Law; 3305 = Geography/Planning
-    keywords: ["climate"],
+    subjectAreas: ["ENVI", "SOCI"],
+    keywords: ["climate adaptation","climate justice","resilience","vulnerability","displacement","urban heat","migration"],
   },
   {
     id: "mitigation",
@@ -114,8 +116,8 @@ export const THEMES = [
     colour: "#c97fd4",
     bg: "#1a0f20",
     description: "Pathways to net zero: renewables, carbon capture, energy systems and emissions reduction.",
-    asjcCodes: [2105],           // 2105 = Renewable Energy, Sustainability & the Environment
-    keywords: [],
+    subjectAreas: ["ENER", "ENVI"],
+    keywords: ["renewable","solar","decarbonisation","emissions","carbon capture","net zero","photovoltaic","hydrogen"],
   },
   {
     id: "food",
@@ -124,8 +126,8 @@ export const THEMES = [
     colour: "#d4a843",
     bg: "#1c1508",
     description: "Agricultural resilience, water security and land-use change in a warming world.",
-    asjcCodes: [2312, 1102, 1107], // 2312 = Water Science & Technology; 1102 = Agronomy & Crop Science; 1107 = Forestry
-    keywords: [],
+    subjectAreas: ["AGRI", "ENVI"],
+    keywords: ["agriculture","drought","irrigation","crop","groundwater","food","agroforestry","land use"],
   },
   {
     id: "extremes",
@@ -134,7 +136,7 @@ export const THEMES = [
     colour: "#e07060",
     bg: "#1e0e0c",
     description: "Heatwaves, floods, wildfires and storms — attribution, prediction and disaster risk reduction.",
-    asjcCodes: [2306, 1902],     // 2306 = Global and Planetary Change; 1902 = Atmospheric Science
-    keywords: ["extreme","flood","drought","heatwave","wildfire","cyclone","hurricane","attribution"],
+    subjectAreas: ["EART", "ENVI"],
+    keywords: ["extreme","flood","wildfire","heatwave","cyclone","hurricane","attribution","disaster"],
   },
 ];

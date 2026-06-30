@@ -6,16 +6,13 @@ import { UNIVERSITIES, THEMES } from "./data.js";
 // Returns { uniPapers: { scopusId: [{ title, doi, year, citations, url }] } }
 async function fetchThemePapers(theme, universities) {
   const params = new URLSearchParams({
-    asjcCodes: (theme.asjcCodes || []).join(","),
-    affIds:    universities.map(u => u.scopusId).join(","),
-    v: "6",
+    subjectAreas: (theme.subjectAreas || theme.asjcCodes || []).join(","),
+    affIds:       universities.map(u => u.scopusId).join(","),
+    v: "7",
   });
   const kws = (theme.keywords || theme.scopusTerms || []);
   if (kws.length) {
-    const kwQuery = kws
-      .map(k => k.includes(" ") ? `"${k}"` : k)
-      .join(" OR ");
-    params.set("keywords", kwQuery);
+    params.set("keywords", kws.map(k => k.includes(" ") ? `"${k}"` : k).join(" OR "));
   }
   const resp = await fetch(`/api/scopus?${params}`);
   if (!resp.ok) throw new Error(`Scopus ${resp.status}`);
