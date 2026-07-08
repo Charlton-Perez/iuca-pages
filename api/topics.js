@@ -47,13 +47,13 @@ async function pool(items, limit, worker) {
   }));
 }
 
-async function fetchSciValBatch(ids, apiKey) {
+async function fetchSciValBatch(ids, apiKey, debug) {
   if (!ids.length) return {};
   const url = `https://api.elsevier.com/analytics/scival/publication/metrics` +
     `?metricTypes=FieldWeightedCitationImpact&publicationIds=${ids.join(',')}`;
   try {
     const r = await fetchWithRetry(url, { 'X-ELS-APIKey': apiKey, Accept: 'application/json' });
-    if (!r.ok) { console.error(`SciVal ${r.status}`); return {}; }
+    if (!r.ok) { debug.push(`SciVal ${r.status}: ${(await r.text()).slice(0, 200)}`); return {}; }
     const data = await r.json();
     const out  = {};
     for (const item of data.results || []) {
@@ -71,7 +71,7 @@ async function fetchSciValBatch(ids, apiKey) {
     }
     return out;
   } catch (err) {
-    console.error('SciVal batch error:', err.message);
+    debug.push(`SciVal batch error: ${err.message}`);
     return {};
   }
 }
@@ -125,11 +125,13 @@ async function computeTopics(universities, apiKey, debug) {
     for (let j = 0; j < PAR; j++) {
       const start = i + j * CHUNK;
       if (start >= allEids.length) break;
-      promises.push(fetchSciValBatch(allEids.slice(start, start + CHUNK), apiKey));
+      promises.push(fetchSciValBatch(allEids.slice(start, start + CHUNK), apiKey, debug));
     }
     const results = await Promise.all(promises);
     results.forEach(r => Object.assign(svData, r));
   }
+
+  debug.push(`stats: ${Object.keys(papersByUni).length} unis, ${allEids.length} eids, ${Object.keys(svData).length} scival records`);
 
   // ── Group papers by SciVal topic cluster ────────────────────────────────────
   const clusterMap = {};
