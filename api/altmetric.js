@@ -143,6 +143,40 @@ async function fetchFromExplorer(key, secret, publishedAfter, limit) {
   .slice(0, limit);
 }
 
+// OpenAlex fallback — free and not IP-entitled, unlike the Scopus Abstract API
+// which 403s from Vercel. Returns abstract + IUCA members from author institutions.
+async function fetchOpenAlex(doi) {
+  try {
+    const r = await fetch(`https://api.openalex.org/works/doi:${encodeURIComponent(doi)}`,
+      { headers: { Accept: "application/json" } });
+    if (!r.ok) return null;
+    const w = await r.json();
+
+    // Reconstruct abstract from OpenAlex's inverted index
+    let abstract = "";
+    if (w.abstract_inverted_index) {
+      const words = [];
+      for (const [word, positions] of Object.entries(w.abstract_inverted_index)) {
+        for (const pos of positions) words[pos] = word;
+      }
+      abstract = words.join(" ").slice(0, 280);
+    }
+
+    const seen = new Set();
+    const iucaFromScopus = (w.authorships || []).flatMap(a =>
+      (a.institutions || []).flatMap(inst =>
+        matchIUCA(inst.display_name || "")
+          .filter(u => { if (seen.has(u.name)) return false; seen.add(u.name); return true; })
+          .map(u => ({ name: u.name, flag: u.flag }))
+      )
+    );
+
+    return { eid: null, abstract, iucaFromScopus };
+  } catch {
+    return null;
+  }
+}
+
 // Fetch abstract + EID from Scopus Abstract Retrieval API for a single DOI
 async function fetchAbstract(doi, apiKey) {
   const url = `https://api.elsevier.com/content/abstract/doi/${encodeURIComponent(doi)}` +
@@ -231,7 +265,17 @@ export default async function handler(req, res) {
     await Promise.all(Array.from({ length: 3 }, async () => {
       while (queue.length) {
         const [p, i] = queue.shift();
-        if (p.doi && scopusKey) abstractResults[i] = await fetchAbstract(p.doi, scopusKey);
+        if (!p.doi) continue;
+        if (scopusKey) abstractResults[i] = await fetchAbstract(p.doi, scopusKey);
+        // Scopus Abstract API is IP-entitled and fails from Vercel — OpenAlex covers it
+        if (!abstractResults[i]?.abstract) {
+          const oa = await fetchOpenAlex(p.doi);
+          if (oa) abstractResults[i] = {
+            eid:            abstractResults[i]?.eid || null,
+            abstract:       oa.abstract || abstractResults[i]?.abstract || "",
+            iucaFromScopus: [...(abstractResults[i]?.iucaFromScopus || []), ...oa.iucaFromScopus],
+          };
+        }
       }
     }));
 
