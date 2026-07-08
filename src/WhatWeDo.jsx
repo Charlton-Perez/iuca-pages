@@ -139,7 +139,7 @@ export default function WhatWeDo({ universities = UNIVERSITIES, visibleClusters 
   const filtered = (() => {
     const seenDois = new Set();
     return clusters
-      .filter(c => !visibleClusters || visibleClusters.includes(String(c.id)))
+      .filter(c => !visibleClusters || visibleClusters.length === 0 || visibleClusters.includes(String(c.id)))
       .map(c => ({
         ...c,
         papers: c.papers.filter(p => {
