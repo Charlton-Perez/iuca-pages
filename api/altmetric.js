@@ -6,8 +6,17 @@
 //   - FWCI + topic cluster name (SciVal)
 
 import crypto from "crypto";
+import { kv as _kv } from "@vercel/kv";
 import { UNIVERSITIES } from "../src/data.js";
 import { elsevierHeaders } from "./topics.js";
+import { CLUSTER_TO_AREA } from "../src/climate-areas.js";
+import { IMPACT_SNAPSHOT } from "../src/impact-snapshot.js";
+
+// kv is null when KV_REST_API_URL isn't configured — serve snapshot instead
+let kv = null;
+try { kv = _kv; } catch {}
+const KV_KEY   = "impact_cache";
+const KV_TTL_S = 604800; // 7 days
 
 // GRID → university (Altmetric affiliations use GRID IDs)
 const GRID_TO_UNI = Object.fromEntries(UNIVERSITIES.map(u => [u.gridId, { name: u.name, flag: u.flag }]));
@@ -241,8 +250,9 @@ async function fetchSciVal(ids, apiKey) {
       const fwci   = Object.keys(byYear).sort((a, b) => b - a)
         .map(y => byYear[y]).find(v => v !== null) ?? null;
       out[id] = {
-        fwci:        fwci !== null ? Math.round(fwci * 100) / 100 : null,
-        topicCluster: pub.topicClusterName || "",
+        fwci:           fwci !== null ? Math.round(fwci * 100) / 100 : null,
+        topicCluster:   pub.topicClusterName || "",
+        topicClusterId: pub.topicClusterId   || null,
       };
     }
     return out;
@@ -251,83 +261,107 @@ async function fetchSciVal(ids, apiKey) {
   }
 }
 
+// Compute the enriched, area-categorised impact list. Exported so the weekly
+// refresh script (scripts/refresh-topics.mjs) can precompute it on a SciVal-
+// entitled network. `months` = publication window, `limit` = papers to return.
+export async function computeImpact({ months = 6, limit = 10, env = process.env } = {}) {
+  const cutoff = new Date();
+  cutoff.setMonth(cutoff.getMonth() - months);
+  const publishedAfter = cutoff.toISOString().slice(0, 10);
+  const explorerKey    = env.ALTMETRIC_EXPLORER_KEY;
+  const explorerSecret = env.ALTMETRIC_EXPLORER_SECRET;
+  const scopusKey      = env.SCOPUS_API_KEY;
+
+  if (!explorerKey || !explorerSecret) throw new Error("Altmetric Explorer credentials not configured");
+
+  // Step 1: Altmetric — papers published since the cutoff, ranked by attention score
+  const papers = await fetchFromExplorer(explorerKey, explorerSecret, publishedAfter, limit);
+
+  // Step 2: Scopus Abstract enrichment, 3 at a time to stay under Elsevier's
+  // concurrency limit (abstract + EID + extra IUCA members)
+  const abstractResults = new Array(papers.length).fill(null);
+  const queue = papers.map((p, i) => [p, i]);
+  await Promise.all(Array.from({ length: 3 }, async () => {
+    while (queue.length) {
+      const [p, i] = queue.shift();
+      if (!p.doi) continue;
+      if (scopusKey) abstractResults[i] = await fetchAbstract(p.doi, scopusKey);
+      // Scopus Abstract API is IP-entitled and fails from Vercel — OpenAlex covers it
+      if (!abstractResults[i]?.abstract) {
+        const oa = await fetchOpenAlex(p.doi);
+        if (oa) abstractResults[i] = {
+          eid:            abstractResults[i]?.eid || null,
+          abstract:       oa.abstract || abstractResults[i]?.abstract || "",
+          iucaFromScopus: [...(abstractResults[i]?.iucaFromScopus || []), ...oa.iucaFromScopus],
+        };
+      }
+    }
+  }));
+
+  // Step 3: Batch SciVal — FWCI + topic cluster
+  const eids = abstractResults.map(r => r?.eid).filter(Boolean);
+  const svData = scopusKey ? await fetchSciVal(eids, scopusKey) : {};
+
+  // Step 4: Merge, and tag each paper with its curated area (via SciVal cluster)
+  return papers.map((p, i) => {
+    const abs = abstractResults[i];
+    const sv  = abs?.eid ? svData[abs.eid] : null;
+
+    const scopusMembers = abs?.iucaFromScopus || [];
+    const combined = [...p.iucaMembers];
+    for (const u of scopusMembers) {
+      if (!combined.some(x => x.name === u.name)) combined.push(u);
+    }
+
+    const area = sv?.topicClusterId ? CLUSTER_TO_AREA[sv.topicClusterId] : null;
+
+    return {
+      ...p,
+      iucaMembers:  combined.length ? combined : [{ name: "IUCA Member", flag: "🌍" }],
+      abstract:     abs?.abstract || null,
+      fwci:         sv?.fwci ?? null,
+      topicCluster: sv?.topicCluster || null,
+      areaId:       area?.areaId   || null,
+      areaName:     area?.areaName || null,
+    };
+  });
+}
+
 export default async function handler(req, res) {
   if (req.method !== "GET") return res.status(405).json({ error: "Method not allowed" });
 
   res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Cache-Control", "s-maxage=3600"); // 1h cache for rich data
+  res.setHeader("Cache-Control", "s-maxage=3600");
 
-  // timeframe selects the publication window (papers published in the last N months)
   const months = { "1m": 1, "3m": 3, "6m": 6, "1y": 12 }[req.query.timeframe] || 6;
   const limit  = Math.min(parseInt(req.query.limit) || 10, 20);
-  const cutoff = new Date();
-  cutoff.setMonth(cutoff.getMonth() - months);
-  const publishedAfter = cutoff.toISOString().slice(0, 10);
-  const explorerKey    = process.env.ALTMETRIC_EXPLORER_KEY;
-  const explorerSecret = process.env.ALTMETRIC_EXPLORER_SECRET;
-  const scopusKey      = process.env.SCOPUS_API_KEY;
+  const force  = req.query.force === "1";
 
-  if (!explorerKey || !explorerSecret) {
-    return res.status(500).json({ error: "Altmetric Explorer credentials not configured" });
-  }
+  // Live Altmetric enrichment is slow (~10s) and Scopus/SciVal 403 from Vercel,
+  // so the impact list is precomputed weekly (cron → scripts) and served from a
+  // committed snapshot / KV. Live compute is only a fallback (e.g. local dev).
+  let stale = IMPACT_SNAPSHOT?.papers?.length ? IMPACT_SNAPSHOT : null;
+  try {
+    const cached = kv ? await kv.get(KV_KEY) : null;
+    if (cached?.papers?.length && cached?.fetchedAt) {
+      const ageMs = Date.now() - new Date(cached.fetchedAt).getTime();
+      if (ageMs < KV_TTL_S * 1000 && !force) {
+        return res.status(200).json({ ...cached, fromCache: true });
+      }
+      stale = cached;
+    }
+  } catch (err) { console.error("KV read error:", err.message); }
 
   try {
-    // Step 1: Altmetric — papers published since the cutoff, ranked by attention score
-    const papers = await fetchFromExplorer(explorerKey, explorerSecret, publishedAfter, limit);
-
-    // Step 2: Scopus Abstract enrichment, 3 at a time to stay under Elsevier's
-    // concurrency limit (abstract + EID + extra IUCA members)
-    const abstractResults = new Array(papers.length).fill(null);
-    const queue = papers.map((p, i) => [p, i]);
-    await Promise.all(Array.from({ length: 3 }, async () => {
-      while (queue.length) {
-        const [p, i] = queue.shift();
-        if (!p.doi) continue;
-        if (scopusKey) abstractResults[i] = await fetchAbstract(p.doi, scopusKey);
-        // Scopus Abstract API is IP-entitled and fails from Vercel — OpenAlex covers it
-        if (!abstractResults[i]?.abstract) {
-          const oa = await fetchOpenAlex(p.doi);
-          if (oa) abstractResults[i] = {
-            eid:            abstractResults[i]?.eid || null,
-            abstract:       oa.abstract || abstractResults[i]?.abstract || "",
-            iucaFromScopus: [...(abstractResults[i]?.iucaFromScopus || []), ...oa.iucaFromScopus],
-          };
-        }
-      }
-    }));
-
-    // Step 3: Batch SciVal — FWCI + topic cluster
-    const eids = abstractResults.map(r => r?.eid).filter(Boolean);
-    const svData = scopusKey ? await fetchSciVal(eids, scopusKey) : {};
-
-    // Step 4: Merge everything
-    const enriched = papers.map((p, i) => {
-      const abs = abstractResults[i];
-      const sv  = abs?.eid ? svData[abs.eid] : null;
-
-      // Merge IUCA members from Altmetric + Scopus affiliation (deduplicated)
-      const scopusMembers = abs?.iucaFromScopus || [];
-      const combined = [...p.iucaMembers];
-      for (const u of scopusMembers) {
-        if (!combined.some(x => x.name === u.name)) combined.push(u);
-      }
-
-      return {
-        ...p,
-        // Placeholder only when no member could be identified from either source
-        iucaMembers:  combined.length ? combined : [{ name: "IUCA Member", flag: "🌍" }],
-        abstract:     abs?.abstract || null,
-        fwci:         sv?.fwci ?? null,
-        topicCluster: sv?.topicCluster || null,
-      };
-    });
-
-    return res.status(200).json({
-      papers:    enriched,
-      total:     enriched.length,
-      fetchedAt: new Date().toISOString(),
-    });
+    const papers = await computeImpact({ months, limit });
+    const result = { papers, total: papers.length, fetchedAt: new Date().toISOString() };
+    if (kv && papers.length > 0) {
+      try { await kv.set(KV_KEY, result); } catch (err) { console.error("KV write error:", err.message); }
+    }
+    if (papers.length === 0 && stale) return res.status(200).json({ ...stale, fromCache: true, staleFallback: true });
+    return res.status(200).json(result);
   } catch (err) {
+    if (stale) return res.status(200).json({ ...stale, fromCache: true, staleFallback: true });
     return res.status(500).json({ error: err.message });
   }
 }

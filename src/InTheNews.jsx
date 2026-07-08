@@ -44,6 +44,16 @@ function PaperCard({ paper, rank }) {
 
         {/* Title + meta */}
         <div style={{ flex: 1, minWidth: 0 }}>
+          {paper.areaName && (
+            <div style={{
+              display: "inline-block", marginBottom: "0.5rem",
+              fontSize: "0.6rem", fontWeight: 600, letterSpacing: "0.04em", textTransform: "uppercase",
+              color: colour, background: `${colour}1e`, border: `1px solid ${colour}40`,
+              padding: "0.15rem 0.5rem", borderRadius: 20,
+            }}>
+              {paper.areaName}
+            </div>
+          )}
           <a
             href={paper.paperUrl}
             target="_blank"
