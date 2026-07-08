@@ -25,6 +25,23 @@ function normName(s = '') {
 // Pre-build normalised versions of IUCA names for fast matching
 const IUCA_NORM = UNIVERSITIES.map(u => ({ ...u, norm: normName(u.name) }));
 
+// Trim an abstract to a clean sentence boundary near `max` chars, so cards
+// never cut off mid-sentence. Prefers the last sentence end within the window;
+// falls back to the last word boundary with an ellipsis.
+function trimToSentence(text = "", max = 320) {
+  const clean = text.replace(/\s+/g, " ").trim();
+  if (clean.length <= max) return clean;
+  const window = clean.slice(0, max + 1);
+  // Last sentence-ending punctuation (. ! ?) followed by a space or end
+  const sentenceEnd = Math.max(
+    window.lastIndexOf(". "), window.lastIndexOf("! "), window.lastIndexOf("? ")
+  );
+  if (sentenceEnd >= max * 0.5) return clean.slice(0, sentenceEnd + 1);
+  // Otherwise cut at the last whole word and add an ellipsis
+  const lastSpace = window.lastIndexOf(" ");
+  return clean.slice(0, lastSpace > 0 ? lastSpace : max).trim() + "…";
+}
+
 // Find all IUCA members whose name substantially matches an affiliation string
 function matchIUCA(affilName = '') {
   const norm = normName(affilName);
@@ -159,7 +176,7 @@ async function fetchOpenAlex(doi) {
       for (const [word, positions] of Object.entries(w.abstract_inverted_index)) {
         for (const pos of positions) words[pos] = word;
       }
-      abstract = words.join(" ").slice(0, 280);
+      abstract = trimToSentence(words.join(" "), 320);
     }
 
     const seen = new Set();
@@ -200,7 +217,7 @@ async function fetchAbstract(doi, apiKey) {
         .map(u => ({ name: u.name, flag: u.flag }));
     });
 
-    return { eid, abstract: abstractText.slice(0, 280), iucaFromScopus };
+    return { eid, abstract: trimToSentence(abstractText, 320), iucaFromScopus };
   } catch {
     return null;
   }
