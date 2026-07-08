@@ -263,5 +263,5 @@ export const IMPACT_SNAPSHOT = {
   }
  ],
  "total": 10,
- "fetchedAt": "2026-07-08T15:38:54.113Z"
+ "fetchedAt": "2026-07-08T17:47:53.567Z"
 };

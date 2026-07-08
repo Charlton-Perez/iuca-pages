@@ -456,12 +456,12 @@ export const TOPICS_SNAPSHOT = {
        "flag": "🇬🇧"
       },
       {
-       "name": "ETH Zurich",
-       "flag": "🇨🇭"
-      },
-      {
        "name": "Sorbonne Université",
        "flag": "🇫🇷"
+      },
+      {
+       "name": "ETH Zurich",
+       "flag": "🇨🇭"
       },
       {
        "name": "University of Tasmania",
@@ -503,12 +503,12 @@ export const TOPICS_SNAPSHOT = {
        "flag": "🇬🇧"
       },
       {
-       "name": "ETH Zurich",
-       "flag": "🇨🇭"
-      },
-      {
        "name": "Sorbonne Université",
        "flag": "🇫🇷"
+      },
+      {
+       "name": "ETH Zurich",
+       "flag": "🇨🇭"
       },
       {
        "name": "University of Tasmania",
@@ -576,12 +576,12 @@ export const TOPICS_SNAPSHOT = {
        "flag": "🇬🇧"
       },
       {
-       "name": "ETH Zurich",
-       "flag": "🇨🇭"
-      },
-      {
        "name": "Sorbonne Université",
        "flag": "🇫🇷"
+      },
+      {
+       "name": "ETH Zurich",
+       "flag": "🇨🇭"
       },
       {
        "name": "University of Tasmania",
@@ -648,12 +648,12 @@ export const TOPICS_SNAPSHOT = {
        "flag": "🇬🇧"
       },
       {
-       "name": "ETH Zurich",
-       "flag": "🇨🇭"
-      },
-      {
        "name": "Sorbonne Université",
        "flag": "🇫🇷"
+      },
+      {
+       "name": "ETH Zurich",
+       "flag": "🇨🇭"
       },
       {
        "name": "University of Tasmania",
@@ -1082,6 +1082,6 @@ export const TOPICS_SNAPSHOT = {
    "clusterCount": 6
   }
  ],
- "updatedAt": "2026-07-08T12:37:44.734Z",
- "cachedAt": "2026-07-08T12:37:44.734Z"
+ "updatedAt": "2026-07-08T17:47:53.567Z",
+ "cachedAt": "2026-07-08T17:47:53.567Z"
 };
