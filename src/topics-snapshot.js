@@ -430,12 +430,12 @@ export const TOPICS_SNAPSHOT = {
      ]
     },
     {
-     "title": "Traditional knowledge for climate resilience in the Pacific Islands",
-     "doi": "10.1002/wcc.882",
-     "url": "https://doi.org/10.1002/wcc.882",
-     "year": "2024",
-     "journal": "Wiley Interdisciplinary Reviews Climate Change",
-     "fwci": 6.17,
+     "title": "The role of women in community resilience to climate change: A case study of an Indigenous Fijian community",
+     "doi": "10.1016/j.wsif.2021.102550",
+     "url": "https://doi.org/10.1016/j.wsif.2021.102550",
+     "year": "2022",
+     "journal": "Women S Studies International Forum",
+     "fwci": 9.26,
      "unis": [
       {
        "name": "University of the South Pacific",
@@ -444,16 +444,16 @@ export const TOPICS_SNAPSHOT = {
      ]
     },
     {
-     "title": "Local practices and production confer resilience to rural Pacific food systems during the COVID-19 pandemic",
-     "doi": "10.1016/j.marpol.2022.104954",
-     "url": "https://doi.org/10.1016/j.marpol.2022.104954",
+     "title": "Interrogating ‘effectiveness’ in climate change adaptation: 11 guiding principles for adaptation research and practice",
+     "doi": "10.1080/17565529.2021.1964937",
+     "url": "https://doi.org/10.1080/17565529.2021.1964937",
      "year": "2022",
-     "journal": "Marine Policy",
-     "fwci": 4.82,
+     "journal": "Climate and Development",
+     "fwci": 6.58,
      "unis": [
       {
-       "name": "University of the South Pacific",
-       "flag": "🇫🇯"
+       "name": "University of Cape Town",
+       "flag": "🇿🇦"
       }
      ]
     }
@@ -614,82 +614,80 @@ export const TOPICS_SNAPSHOT = {
    "score": 268.08
   },
   {
-   "id": 403,
-   "name": "Climate Policy and Carbon Emission Dynamics",
+   "id": 447,
+   "name": "Waste Management Strategies for Carbon Emission Reduction",
    "papers": [
     {
-     "title": "The 2024 state of the climate report: Perilous times on planet Earth",
-     "doi": "10.1093/biosci/biae087",
-     "url": "https://doi.org/10.1093/biosci/biae087",
-     "year": "2024",
-     "journal": "Bioscience",
-     "fwci": 64.62,
+     "title": "Half of global methane emissions come from highly variable aquatic ecosystem sources",
+     "doi": "10.1038/s41561-021-00715-2",
+     "url": "https://doi.org/10.1038/s41561-021-00715-2",
+     "year": "2021",
+     "journal": "Nature Geoscience",
+     "fwci": 42.62,
      "unis": [
       {
-       "name": "Nanjing University",
-       "flag": "🇨🇳"
+       "name": "Cornell University",
+       "flag": "🇺🇸"
+      },
+      {
+       "name": "Yale University",
+       "flag": "🇺🇸"
       }
      ]
     },
     {
-     "title": "The meaning of net zero and how to get it right",
-     "doi": "10.1038/s41558-021-01245-w",
-     "url": "https://doi.org/10.1038/s41558-021-01245-w",
-     "year": "2022",
-     "journal": "Nature Climate Change",
-     "fwci": 29.88,
-     "unis": [
-      {
-       "name": "University of Oxford",
-       "flag": "🇬🇧"
-      }
-     ]
-    },
-    {
-     "title": "Quantifying the human cost of global warming",
-     "doi": "10.1038/s41893-023-01132-6",
-     "url": "https://doi.org/10.1038/s41893-023-01132-6",
-     "year": "2023",
-     "journal": "Nature Sustainability",
-     "fwci": 27.72,
-     "unis": [
-      {
-       "name": "Nanjing University",
-       "flag": "🇨🇳"
-      }
-     ]
-    },
-    {
-     "title": "Fossil CO2 emissions in the post-COVID-19 era",
-     "doi": "10.1038/s41558-021-01001-0",
-     "url": "https://doi.org/10.1038/s41558-021-01001-0",
+     "title": "Expert assessment of future vulnerability of the global peatland carbon sink",
+     "doi": "10.1038/s41558-020-00944-0",
+     "url": "https://doi.org/10.1038/s41558-020-00944-0",
      "year": "2021",
      "journal": "Nature Climate Change",
-     "fwci": 22.61,
+     "fwci": 24.39,
      "unis": [
       {
-       "name": "Sorbonne Université",
-       "flag": "🇫🇷"
+       "name": "University of Reading",
+       "flag": "🇬🇧"
+      },
+      {
+       "name": "University of Helsinki",
+       "flag": "🇫🇮"
+      },
+      {
+       "name": "McGill University",
+       "flag": "🇨🇦"
       }
      ]
     },
     {
-     "title": "The IPCC Sixth Assessment Report WGIII climate assessment of mitigation pathways: from emissions to global temperatures",
-     "doi": "10.5194/gmd-15-9075-2022",
-     "url": "https://doi.org/10.5194/gmd-15-9075-2022",
-     "year": "2022",
-     "journal": "Geoscientific Model Development",
-     "fwci": 20.64,
+     "title": "Biomass for a sustainable bioeconomy: An overview of world biomass production and utilization",
+     "doi": "10.1016/j.rser.2020.110691",
+     "url": "https://doi.org/10.1016/j.rser.2020.110691",
+     "year": "2021",
+     "journal": "Renewable and Sustainable Energy Reviews",
+     "fwci": 6.39,
      "unis": [
       {
-       "name": "University of Melbourne",
-       "flag": "🇦🇺"
+       "name": "McGill University",
+       "flag": "🇨🇦"
+      }
+     ]
+    },
+    {
+     "title": "Tropical peatlands and their contribution to the global carbon cycle and climate change",
+     "doi": "10.1111/gcb.15408",
+     "url": "https://doi.org/10.1111/gcb.15408",
+     "year": "2021",
+     "journal": "Global Change Biology",
+     "fwci": 2.59,
+     "unis": [
+      {
+       "name": "University of São Paulo",
+       "flag": "🇧🇷"
       }
      ]
     }
    ],
-   "uniCount": 4,
-   "score": 258.48
+   "uniCount": 6,
+   "score": 255.71999999999997
   },
   {
    "id": 1218,
@@ -838,6 +836,84 @@ export const TOPICS_SNAPSHOT = {
    "score": 244.04
   },
   {
+   "id": 403,
+   "name": "Climate Policy and Carbon Emission Dynamics",
+   "papers": [
+    {
+     "title": "The 2024 state of the climate report: Perilous times on planet Earth",
+     "doi": "10.1093/biosci/biae087",
+     "url": "https://doi.org/10.1093/biosci/biae087",
+     "year": "2024",
+     "journal": "Bioscience",
+     "fwci": 64.62,
+     "unis": [
+      {
+       "name": "Nanjing University",
+       "flag": "🇨🇳"
+      }
+     ]
+    },
+    {
+     "title": "Assessment to China's Recent Emission Pattern Shifts",
+     "doi": "10.1029/2021EF002241",
+     "url": "https://doi.org/10.1029/2021EF002241",
+     "year": "2021",
+     "journal": "Earth S Future",
+     "fwci": 32.88,
+     "unis": [
+      {
+       "name": "Nanjing University",
+       "flag": "🇨🇳"
+      }
+     ]
+    },
+    {
+     "title": "The meaning of net zero and how to get it right",
+     "doi": "10.1038/s41558-021-01245-w",
+     "url": "https://doi.org/10.1038/s41558-021-01245-w",
+     "year": "2022",
+     "journal": "Nature Climate Change",
+     "fwci": 29.88,
+     "unis": [
+      {
+       "name": "University of Oxford",
+       "flag": "🇬🇧"
+      }
+     ]
+    },
+    {
+     "title": "Quantifying the human cost of global warming",
+     "doi": "10.1038/s41893-023-01132-6",
+     "url": "https://doi.org/10.1038/s41893-023-01132-6",
+     "year": "2023",
+     "journal": "Nature Sustainability",
+     "fwci": 27.72,
+     "unis": [
+      {
+       "name": "Nanjing University",
+       "flag": "🇨🇳"
+      }
+     ]
+    },
+    {
+     "title": "Fossil CO2 emissions in the post-COVID-19 era",
+     "doi": "10.1038/s41558-021-01001-0",
+     "url": "https://doi.org/10.1038/s41558-021-01001-0",
+     "year": "2021",
+     "journal": "Nature Climate Change",
+     "fwci": 22.61,
+     "unis": [
+      {
+       "name": "Sorbonne Université",
+       "flag": "🇫🇷"
+      }
+     ]
+    }
+   ],
+   "uniCount": 3,
+   "score": 193.86
+  },
+  {
    "id": 187,
    "name": "Hydrogen Production and Combustion Dynamics Insights",
    "papers": [
@@ -964,20 +1040,6 @@ export const TOPICS_SNAPSHOT = {
      ]
     },
     {
-     "title": "Phylotype diversity within soil fungal functional groups drives ecosystem stability",
-     "doi": "10.1038/s41559-022-01756-5",
-     "url": "https://doi.org/10.1038/s41559-022-01756-5",
-     "year": "2022",
-     "journal": "Nature Ecology and Evolution",
-     "fwci": 22.22,
-     "unis": [
-      {
-       "name": "University of Zurich",
-       "flag": "🇨🇭"
-      }
-     ]
-    },
-    {
      "title": "ForestGEO: Understanding forest diversity and dynamics through a global observatory network",
      "doi": "10.1016/j.biocon.2020.108907",
      "url": "https://doi.org/10.1016/j.biocon.2020.108907",
@@ -996,17 +1058,27 @@ export const TOPICS_SNAPSHOT = {
      ]
     },
     {
-     "title": "Taking the pulse of Earth's tropical forests using networks of highly distributed plots",
-     "doi": "10.1016/j.biocon.2020.108849",
-     "url": "https://doi.org/10.1016/j.biocon.2020.108849",
-     "year": "2021",
-     "journal": "Biological Conservation",
-     "fwci": 10.49,
+     "title": "Protecting irrecoverable carbon in Earth’s ecosystems",
+     "doi": "10.1038/s41558-020-0738-8",
+     "url": "https://doi.org/10.1038/s41558-020-0738-8",
+     "year": "2020",
+     "journal": "Nature Climate Change",
+     "fwci": null,
      "unis": [
       {
-       "name": "Hokkaido University",
-       "flag": "🇯🇵"
-      },
+       "name": "National University of Singapore",
+       "flag": "🇸🇬"
+      }
+     ]
+    },
+    {
+     "title": "Guidance for successful tree planting initiatives",
+     "doi": "10.1111/1365-2664.13725",
+     "url": "https://doi.org/10.1111/1365-2664.13725",
+     "year": "2020",
+     "journal": "Journal of Applied Ecology",
+     "fwci": null,
+     "unis": [
       {
        "name": "University of São Paulo",
        "flag": "🇧🇷"
@@ -1014,8 +1086,8 @@ export const TOPICS_SNAPSHOT = {
      ]
     }
    ],
-   "uniCount": 6,
-   "score": 189.48
+   "uniCount": 5,
+   "score": 157.89999999999998
   },
   {
    "id": 14,
@@ -1264,6 +1336,92 @@ export const TOPICS_SNAPSHOT = {
    "score": 130.54999999999998
   },
   {
+   "id": 592,
+   "name": "Vegetation and Climate Change Monitoring and Modeling",
+   "papers": [
+    {
+     "title": "Insight from CMIP6 SSP-RCP scenarios for future drought characteristics in China",
+     "doi": "10.1016/j.atmosres.2020.105375",
+     "url": "https://doi.org/10.1016/j.atmosres.2020.105375",
+     "year": "2021",
+     "journal": "Atmospheric Research",
+     "fwci": 18.55,
+     "unis": [
+      {
+       "name": "University of Leeds",
+       "flag": "🇬🇧"
+      },
+      {
+       "name": "Nanjing University",
+       "flag": "🇨🇳"
+      }
+     ]
+    },
+    {
+     "title": "Multifaceted characteristics of dryland aridity changes in a warming world",
+     "doi": "10.1038/s43017-021-00144-0",
+     "url": "https://doi.org/10.1038/s43017-021-00144-0",
+     "year": "2021",
+     "journal": "Nature Reviews Earth and Environment",
+     "fwci": 12.62,
+     "unis": [
+      {
+       "name": "Sorbonne Université",
+       "flag": "🇫🇷"
+      }
+     ]
+    },
+    {
+     "title": "High-Throughput Estimation of Crop Traits: A Review of Ground and Aerial Phenotyping Platforms",
+     "doi": "10.1109/MGRS.2020.2998816",
+     "url": "https://doi.org/10.1109/MGRS.2020.2998816",
+     "year": "2021",
+     "journal": "IEEE Geoscience and Remote Sensing Magazine",
+     "fwci": 5,
+     "unis": [
+      {
+       "name": "University of Melbourne",
+       "flag": "🇦🇺"
+      }
+     ]
+    },
+    {
+     "title": "Historical and future drought impacts in the Pacific islands and atolls",
+     "doi": "10.1007/s10584-021-03112-1",
+     "url": "https://doi.org/10.1007/s10584-021-03112-1",
+     "year": "2021",
+     "journal": "Climatic Change",
+     "fwci": 1.86,
+     "unis": [
+      {
+       "name": "University of the South Pacific",
+       "flag": "🇫🇯"
+      }
+     ]
+    },
+    {
+     "title": "Flash droughts present a new challenge for subseasonal-to-seasonal prediction",
+     "doi": "10.1038/s41558-020-0709-0",
+     "url": "https://doi.org/10.1038/s41558-020-0709-0",
+     "year": "2020",
+     "journal": "Nature Climate Change",
+     "fwci": null,
+     "unis": [
+      {
+       "name": "Monash University",
+       "flag": "🇦🇺"
+      },
+      {
+       "name": "University of Colorado Boulder",
+       "flag": "🇺🇸"
+      }
+     ]
+    }
+   ],
+   "uniCount": 7,
+   "score": 129.85
+  },
+  {
    "id": 1247,
    "name": "Climate Change Impacts on Ice Sheet Dynamics",
    "papers": [
@@ -1370,92 +1528,6 @@ export const TOPICS_SNAPSHOT = {
    "score": 117.2
   },
   {
-   "id": 592,
-   "name": "Vegetation and Climate Change Monitoring and Modeling",
-   "papers": [
-    {
-     "title": "Insight from CMIP6 SSP-RCP scenarios for future drought characteristics in China",
-     "doi": "10.1016/j.atmosres.2020.105375",
-     "url": "https://doi.org/10.1016/j.atmosres.2020.105375",
-     "year": "2021",
-     "journal": "Atmospheric Research",
-     "fwci": 18.55,
-     "unis": [
-      {
-       "name": "University of Leeds",
-       "flag": "🇬🇧"
-      },
-      {
-       "name": "Nanjing University",
-       "flag": "🇨🇳"
-      }
-     ]
-    },
-    {
-     "title": "High-Throughput Estimation of Crop Traits: A Review of Ground and Aerial Phenotyping Platforms",
-     "doi": "10.1109/MGRS.2020.2998816",
-     "url": "https://doi.org/10.1109/MGRS.2020.2998816",
-     "year": "2021",
-     "journal": "IEEE Geoscience and Remote Sensing Magazine",
-     "fwci": 5,
-     "unis": [
-      {
-       "name": "University of Melbourne",
-       "flag": "🇦🇺"
-      }
-     ]
-    },
-    {
-     "title": "Historical and future drought impacts in the Pacific islands and atolls",
-     "doi": "10.1007/s10584-021-03112-1",
-     "url": "https://doi.org/10.1007/s10584-021-03112-1",
-     "year": "2021",
-     "journal": "Climatic Change",
-     "fwci": 1.86,
-     "unis": [
-      {
-       "name": "University of the South Pacific",
-       "flag": "🇫🇯"
-      }
-     ]
-    },
-    {
-     "title": "Flash droughts present a new challenge for subseasonal-to-seasonal prediction",
-     "doi": "10.1038/s41558-020-0709-0",
-     "url": "https://doi.org/10.1038/s41558-020-0709-0",
-     "year": "2020",
-     "journal": "Nature Climate Change",
-     "fwci": null,
-     "unis": [
-      {
-       "name": "Monash University",
-       "flag": "🇦🇺"
-      },
-      {
-       "name": "University of Colorado Boulder",
-       "flag": "🇺🇸"
-      }
-     ]
-    },
-    {
-     "title": "Projections of future meteorological drought events under representative concentration pathways (RCPs) of CMIP5 over Kenya, East Africa",
-     "doi": "10.1016/j.atmosres.2020.105112",
-     "url": "https://doi.org/10.1016/j.atmosres.2020.105112",
-     "year": "2020",
-     "journal": "Atmospheric Research",
-     "fwci": null,
-     "unis": [
-      {
-       "name": "University of the South Pacific",
-       "flag": "🇫🇯"
-      }
-     ]
-    }
-   ],
-   "uniCount": 6,
-   "score": 111.30000000000001
-  },
-  {
    "id": 1129,
    "name": "Conservation Strategies for Biodiversity and Resource Management",
    "papers": [
@@ -1546,84 +1618,6 @@ export const TOPICS_SNAPSHOT = {
    "score": 110.69999999999999
   },
   {
-   "id": 202,
-   "name": "Oil Recovery and Carbon Storage",
-   "papers": [
-    {
-     "title": "Offshore Geological Storage of Hydrogen: Is This Our Best Option to Achieve Net-Zero?",
-     "doi": "10.1021/acsenergylett.1c00845",
-     "url": "https://doi.org/10.1021/acsenergylett.1c00845",
-     "year": "2021",
-     "journal": "ACS Energy Letters",
-     "fwci": 36.5,
-     "unis": [
-      {
-       "name": "University of Edinburgh",
-       "flag": "🇬🇧"
-      }
-     ]
-    },
-    {
-     "title": "Geological Hydrogen Storage: Geochemical Reactivity of Hydrogen with Sandstone Reservoirs",
-     "doi": "10.1021/acsenergylett.2c01024",
-     "url": "https://doi.org/10.1021/acsenergylett.2c01024",
-     "year": "2022",
-     "journal": "ACS Energy Letters",
-     "fwci": 15.95,
-     "unis": [
-      {
-       "name": "University of Edinburgh",
-       "flag": "🇬🇧"
-      }
-     ]
-    },
-    {
-     "title": "Hydrogen production, storage, utilisation and environmental impacts: a review",
-     "doi": "10.1007/s10311-021-01322-8",
-     "url": "https://doi.org/10.1007/s10311-021-01322-8",
-     "year": "2022",
-     "journal": "Environmental Chemistry Letters",
-     "fwci": 11.61,
-     "unis": [
-      {
-       "name": "ETH Zurich",
-       "flag": "🇨🇭"
-      }
-     ]
-    },
-    {
-     "title": "Enabling large-scale hydrogen storage in porous media-the scientific challenges",
-     "doi": "10.1039/d0ee03536j",
-     "url": "https://doi.org/10.1039/d0ee03536j",
-     "year": "2021",
-     "journal": "Energy and Environmental Science",
-     "fwci": 9.05,
-     "unis": [
-      {
-       "name": "University of Edinburgh",
-       "flag": "🇬🇧"
-      }
-     ]
-    },
-    {
-     "title": "Carbon capture utilization and storage in review: Sociotechnical implications for a carbon reliant world",
-     "doi": "10.1016/j.rser.2023.113215",
-     "url": "https://doi.org/10.1016/j.rser.2023.113215",
-     "year": "2023",
-     "journal": "Renewable and Sustainable Energy Reviews",
-     "fwci": 7.2,
-     "unis": [
-      {
-       "name": "University of Sussex",
-       "flag": "🇬🇧"
-      }
-     ]
-    }
-   ],
-   "uniCount": 3,
-   "score": 109.5
-  },
-  {
    "id": 1394,
    "name": "Gravity-Based Insights into Water Storage Dynamics",
    "papers": [
@@ -1672,12 +1666,26 @@ export const TOPICS_SNAPSHOT = {
      "fwci": 21.29,
      "unis": [
       {
-       "name": "Chinese University of Hong Kong",
+       "name": "University of Hong Kong",
        "flag": "🇭🇰"
       },
       {
-       "name": "University of Hong Kong",
+       "name": "Chinese University of Hong Kong",
        "flag": "🇭🇰"
+      }
+     ]
+    },
+    {
+     "title": "Evaluation of 30 urban land surface models in the Urban-PLUMBER project: Phase 1 results",
+     "doi": "10.1002/qj.4589",
+     "url": "https://doi.org/10.1002/qj.4589",
+     "year": "2024",
+     "journal": "Quarterly Journal of the Royal Meteorological Society",
+     "fwci": 13.69,
+     "unis": [
+      {
+       "name": "UNSW Sydney",
+       "flag": "🇦🇺"
       }
      ]
     },
@@ -1724,20 +1732,6 @@ export const TOPICS_SNAPSHOT = {
       {
        "name": "Chinese University of Hong Kong",
        "flag": "🇭🇰"
-      }
-     ]
-    },
-    {
-     "title": "Urbanization Impact on Regional Climate and Extreme Weather: Current Understanding, Uncertainties, and Future Research Directions",
-     "doi": "10.1007/s00376-021-1371-9",
-     "url": "https://doi.org/10.1007/s00376-021-1371-9",
-     "year": "2022",
-     "journal": "Advances in Atmospheric Sciences",
-     "fwci": 5.76,
-     "unis": [
-      {
-       "name": "Yale University",
-       "flag": "🇺🇸"
       }
      ]
     }
@@ -1922,64 +1916,6 @@ export const TOPICS_SNAPSHOT = {
    "score": 103.08
   },
   {
-   "id": 447,
-   "name": "Waste Management Strategies for Carbon Emission Reduction",
-   "papers": [
-    {
-     "title": "Expert assessment of future vulnerability of the global peatland carbon sink",
-     "doi": "10.1038/s41558-020-00944-0",
-     "url": "https://doi.org/10.1038/s41558-020-00944-0",
-     "year": "2021",
-     "journal": "Nature Climate Change",
-     "fwci": 24.39,
-     "unis": [
-      {
-       "name": "University of Reading",
-       "flag": "🇬🇧"
-      },
-      {
-       "name": "University of Helsinki",
-       "flag": "🇫🇮"
-      },
-      {
-       "name": "McGill University",
-       "flag": "🇨🇦"
-      }
-     ]
-    },
-    {
-     "title": "Biomass for a sustainable bioeconomy: An overview of world biomass production and utilization",
-     "doi": "10.1016/j.rser.2020.110691",
-     "url": "https://doi.org/10.1016/j.rser.2020.110691",
-     "year": "2021",
-     "journal": "Renewable and Sustainable Energy Reviews",
-     "fwci": 6.39,
-     "unis": [
-      {
-       "name": "McGill University",
-       "flag": "🇨🇦"
-      }
-     ]
-    },
-    {
-     "title": "Tropical peatlands and their contribution to the global carbon cycle and climate change",
-     "doi": "10.1111/gcb.15408",
-     "url": "https://doi.org/10.1111/gcb.15408",
-     "year": "2021",
-     "journal": "Global Change Biology",
-     "fwci": 2.59,
-     "unis": [
-      {
-       "name": "University of São Paulo",
-       "flag": "🇧🇷"
-      }
-     ]
-    }
-   ],
-   "uniCount": 4,
-   "score": 97.56
-  },
-  {
    "id": 140,
    "name": "Ecosystem Services and Land Use Dynamics",
    "papers": [
@@ -2162,12 +2098,12 @@ export const TOPICS_SNAPSHOT = {
      "fwci": 7.47,
      "unis": [
       {
-       "name": "University of Helsinki",
-       "flag": "🇫🇮"
-      },
-      {
        "name": "University of Bremen",
        "flag": "🇩🇪"
+      },
+      {
+       "name": "University of Helsinki",
+       "flag": "🇫🇮"
       }
      ]
     },
@@ -2222,17 +2158,35 @@ export const TOPICS_SNAPSHOT = {
    "score": 81.8
   },
   {
-   "id": 426,
-   "name": "Circular Economy and Life Cycle Assessment Integration",
+   "id": 240,
+   "name": "Photocatalytic Innovations in Carbon Dioxide Reduction",
    "papers": [
     {
-     "title": "Energy transition minerals and their intersection with land-connected peoples",
-     "doi": "10.1038/s41893-022-00994-6",
-     "url": "https://doi.org/10.1038/s41893-022-00994-6",
-     "year": "2023",
-     "journal": "Nature Sustainability",
-     "fwci": 21.58,
+     "title": "TiO2/FePS3 S-Scheme Heterojunction for Greatly Raised Photocatalytic Hydrogen Evolution",
+     "doi": "10.1002/aenm.202201449",
+     "url": "https://doi.org/10.1002/aenm.202201449",
+     "year": "2022",
+     "journal": "Advanced Energy Materials",
+     "fwci": 14.88,
      "unis": [
+      {
+       "name": "China University of Geosciences",
+       "flag": "🇨🇳"
+      }
+     ]
+    },
+    {
+     "title": "Tuning the Coordination Structure of Cu-N-C Single Atom Catalysts for Simultaneous Electrochemical Reduction of CO2 and NO3– to Urea",
+     "doi": "10.1002/aenm.202201500",
+     "url": "https://doi.org/10.1002/aenm.202201500",
+     "year": "2022",
+     "journal": "Advanced Energy Materials",
+     "fwci": 13.27,
+     "unis": [
+      {
+       "name": "UNSW Sydney",
+       "flag": "🇦🇺"
+      },
       {
        "name": "Monash University",
        "flag": "🇦🇺"
@@ -2240,36 +2194,114 @@ export const TOPICS_SNAPSHOT = {
      ]
     },
     {
-     "title": "Decarbonizing the oil refining industry: A systematic review of sociotechnical systems, technological innovations, and policy options",
-     "doi": "10.1016/j.erss.2022.102542",
-     "url": "https://doi.org/10.1016/j.erss.2022.102542",
+     "title": "Metal-organic framework-derived Ga-Cu/CeO2 catalyst for highly efficient photothermal catalytic CO2 reduction",
+     "doi": "10.1016/j.apcatb.2021.120519",
+     "url": "https://doi.org/10.1016/j.apcatb.2021.120519",
+     "year": "2021",
+     "journal": "Applied Catalysis B Environmental",
+     "fwci": 4.66,
+     "unis": [
+      {
+       "name": "Hokkaido University",
+       "flag": "🇯🇵"
+      }
+     ]
+    },
+    {
+     "title": "Toward solar-driven carbon recycling",
+     "doi": "10.1016/j.joule.2022.01.001",
+     "url": "https://doi.org/10.1016/j.joule.2022.01.001",
      "year": "2022",
-     "journal": "Energy Research and Social Science",
-     "fwci": 4.05,
+     "journal": "Joule",
+     "fwci": 3.81,
+     "unis": [
+      {
+       "name": "Hokkaido University",
+       "flag": "🇯🇵"
+      }
+     ]
+    },
+    {
+     "title": "Operando characterization techniques for electrocatalysis",
+     "doi": "10.1039/d0ee01706j",
+     "url": "https://doi.org/10.1039/d0ee01706j",
+     "year": "2020",
+     "journal": "Energy and Environmental Science",
+     "fwci": null,
+     "unis": [
+      {
+       "name": "National University of Singapore",
+       "flag": "🇸🇬"
+      }
+     ]
+    }
+   ],
+   "uniCount": 5,
+   "score": 74.4
+  },
+  {
+   "id": 202,
+   "name": "Oil Recovery and Carbon Storage",
+   "papers": [
+    {
+     "title": "Offshore Geological Storage of Hydrogen: Is This Our Best Option to Achieve Net-Zero?",
+     "doi": "10.1021/acsenergylett.1c00845",
+     "url": "https://doi.org/10.1021/acsenergylett.1c00845",
+     "year": "2021",
+     "journal": "ACS Energy Letters",
+     "fwci": 36.5,
+     "unis": [
+      {
+       "name": "University of Edinburgh",
+       "flag": "🇬🇧"
+      }
+     ]
+    },
+    {
+     "title": "Geological Hydrogen Storage: Geochemical Reactivity of Hydrogen with Sandstone Reservoirs",
+     "doi": "10.1021/acsenergylett.2c01024",
+     "url": "https://doi.org/10.1021/acsenergylett.2c01024",
+     "year": "2022",
+     "journal": "ACS Energy Letters",
+     "fwci": 15.95,
+     "unis": [
+      {
+       "name": "University of Edinburgh",
+       "flag": "🇬🇧"
+      }
+     ]
+    },
+    {
+     "title": "Enabling large-scale hydrogen storage in porous media-the scientific challenges",
+     "doi": "10.1039/d0ee03536j",
+     "url": "https://doi.org/10.1039/d0ee03536j",
+     "year": "2021",
+     "journal": "Energy and Environmental Science",
+     "fwci": 9.05,
+     "unis": [
+      {
+       "name": "University of Edinburgh",
+       "flag": "🇬🇧"
+      }
+     ]
+    },
+    {
+     "title": "Carbon capture utilization and storage in review: Sociotechnical implications for a carbon reliant world",
+     "doi": "10.1016/j.rser.2023.113215",
+     "url": "https://doi.org/10.1016/j.rser.2023.113215",
+     "year": "2023",
+     "journal": "Renewable and Sustainable Energy Reviews",
+     "fwci": 7.2,
      "unis": [
       {
        "name": "University of Sussex",
        "flag": "🇬🇧"
       }
      ]
-    },
-    {
-     "title": "A conceptual model for integrating circular economy in the built environment: An analysis of literature and local-based case studies",
-     "doi": "10.1016/j.jclepro.2024.141516",
-     "url": "https://doi.org/10.1016/j.jclepro.2024.141516",
-     "year": "2024",
-     "journal": "Journal of Cleaner Production",
-     "fwci": 3.84,
-     "unis": [
-      {
-       "name": "TERI School of Advanced Studies",
-       "flag": "🇮🇳"
-      }
-     ]
     }
    ],
-   "uniCount": 3,
-   "score": 64.74
+   "uniCount": 2,
+   "score": 73
   },
   {
    "id": 1062,
@@ -2330,42 +2362,40 @@ export const TOPICS_SNAPSHOT = {
    "score": 64.19
   },
   {
-   "id": 1262,
-   "name": "Urban Policy and Livelihood Strategies in the Global South",
+   "id": 589,
+   "name": "Efficiency and Sustainability in Fisheries Management",
    "papers": [
     {
-     "title": "A sustainable livelihoods framework for the 21st century",
-     "doi": "10.1016/j.worlddev.2022.105898",
-     "url": "https://doi.org/10.1016/j.worlddev.2022.105898",
-     "year": "2022",
-     "journal": "World Development",
-     "fwci": 28.31,
+     "title": "Next-generation ensemble projections reveal higher climate risks for marine ecosystems",
+     "doi": "10.1038/s41558-021-01173-9",
+     "url": "https://doi.org/10.1038/s41558-021-01173-9",
+     "year": "2021",
+     "journal": "Nature Climate Change",
+     "fwci": 15.03,
      "unis": [
       {
-       "name": "King's College London",
-       "flag": "🇬🇧"
-      }
-     ]
-    },
-    {
-     "title": "Why does everyone think cities can save the planet?",
-     "doi": "10.1177/0042098020919081",
-     "url": "https://doi.org/10.1177/0042098020919081",
-     "year": "2020",
-     "journal": "Urban Studies",
-     "fwci": null,
-     "unis": [
+       "name": "Sorbonne Université",
+       "flag": "🇫🇷"
+      },
+      {
+       "name": "University of Tasmania",
+       "flag": "🇦🇺"
+      },
       {
        "name": "McGill University",
        "flag": "🇨🇦"
+      },
+      {
+       "name": "University of Cape Town",
+       "flag": "🇿🇦"
       }
      ]
     }
    ],
-   "uniCount": 2,
-   "score": 56.62
+   "uniCount": 4,
+   "score": 60.12
   }
  ],
- "updatedAt": "2026-07-08T11:40:01.525Z",
- "cachedAt": "2026-07-08T11:40:01.525Z"
+ "updatedAt": "2026-07-08T12:00:30.917Z",
+ "cachedAt": "2026-07-08T12:00:30.917Z"
 };
