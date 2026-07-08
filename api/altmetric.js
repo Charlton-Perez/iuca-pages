@@ -8,9 +8,31 @@
 import crypto from "crypto";
 import { UNIVERSITIES } from "../src/data.js";
 
-// Build lookup maps from the authoritative UNIVERSITIES list in data.js
-const GRID_TO_UNI  = Object.fromEntries(UNIVERSITIES.map(u => [u.gridId,   { name: u.name, flag: u.flag }]));
-const SCOPUS_TO_UNI = Object.fromEntries(UNIVERSITIES.map(u => [u.scopusId, { name: u.name, flag: u.flag }]));
+// GRID → university (Altmetric affiliations use GRID IDs)
+const GRID_TO_UNI = Object.fromEntries(UNIVERSITIES.map(u => [u.gridId, { name: u.name, flag: u.flag }]));
+
+// Normalise institution name for fuzzy matching:
+// lowercase, strip diacritics, collapse punctuation/spaces
+function normName(s = '') {
+  return s.toLowerCase()
+    .normalize('NFD').replace(/[̀-ͯ]/g, '')
+    .replace(/[^a-z0-9 ]/g, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+// Pre-build normalised versions of IUCA names for fast matching
+const IUCA_NORM = UNIVERSITIES.map(u => ({ ...u, norm: normName(u.name) }));
+
+// Find all IUCA members whose name substantially matches an affiliation string
+function matchIUCA(affilName = '') {
+  const norm = normName(affilName);
+  return IUCA_NORM.filter(u => {
+    // Both must be at least 6 chars to avoid spurious "university" matches
+    if (u.norm.length < 6 || norm.length < 6) return false;
+    return norm.includes(u.norm) || u.norm.includes(norm);
+  });
+}
 
 const IUCA_GRID_IDS = UNIVERSITIES.map(u => u.gridId);
 
@@ -63,23 +85,24 @@ async function fetchFromExplorer(key, secret, timeframe, limit) {
     const pubStr   = attr["publication-date"] || null;
     const publishedOn = pubStr ? new Date(pubStr).getTime() / 1000 : null;
 
-    // Collect ALL IUCA co-authors from affiliation relationships
+    // Collect ALL IUCA co-authors from Altmetric affiliation relationships
     const affiliationIds = item.relationships?.affiliations?.data?.map(a => a.id) || [];
-    const iucaMembers = affiliationIds
-      .map(affId => {
-        if (GRID_TO_UNI[affId]) return GRID_TO_UNI[affId];
-        const match = included.find(i => i.type === "affiliation" && i.id === affId);
-        if (match?.attributes?.name) {
-          // Try to match by name to get flag
-          const found = UNIVERSITIES.find(u =>
-            u.name.toLowerCase() === match.attributes.name.toLowerCase()
-          );
-          return found ? { name: found.name, flag: found.flag } : null;
-        }
-        return null;
-      })
-      .filter(Boolean)
-      .filter((u, i, arr) => arr.findIndex(x => x.name === u.name) === i); // dedupe
+    const seenNames = new Set();
+    const iucaMembers = affiliationIds.flatMap(affId => {
+      // First try direct GRID lookup
+      if (GRID_TO_UNI[affId]) {
+        const u = GRID_TO_UNI[affId];
+        if (seenNames.has(u.name)) return [];
+        seenNames.add(u.name);
+        return [u];
+      }
+      // Fall back to name matching via the included affiliations sidecar
+      const match = included.find(i => i.type === "affiliation" && i.id === affId);
+      const affName = match?.attributes?.name || "";
+      return matchIUCA(affName)
+        .filter(u => { if (seenNames.has(u.name)) return false; seenNames.add(u.name); return true; })
+        .map(u => ({ name: u.name, flag: u.flag }));
+    });
 
     const journalId  = item.relationships?.journal?.data?.id;
     const journalObj = journalId ? included.find(i => i.type === "journal" && i.id === journalId) : null;
@@ -119,19 +142,16 @@ async function fetchAbstract(doi, apiKey) {
     const eid   = (core.eid || "").replace("2-s2.0-", "");
     const abstractText = core["dc:description"] || "";
 
-    // Full affiliation list for IUCA member detection
+    // Full affiliation list — normalised name matching (Scopus aff IDs ≠ data.js scopusIds)
     const rawAffs = data?.["abstracts-retrieval-response"]?.affiliation || [];
     const affsArr = Array.isArray(rawAffs) ? rawAffs : [rawAffs];
-    const iucaFromScopus = affsArr
-      .map(a => {
-        const sid = a?.["@id"];
-        if (sid && SCOPUS_TO_UNI[sid]) return SCOPUS_TO_UNI[sid];
-        const name = (a?.affilname || a?.["affiliation-city"] || "").toLowerCase();
-        const found = UNIVERSITIES.find(u => u.name.toLowerCase().includes(name) || name.includes(u.name.toLowerCase().split(" ")[0]));
-        return found ? { name: found.name, flag: found.flag } : null;
-      })
-      .filter(Boolean)
-      .filter((u, i, arr) => arr.findIndex(x => x.name === u.name) === i);
+    const seenScopus = new Set();
+    const iucaFromScopus = affsArr.flatMap(a => {
+      const affName = a?.affilname || "";
+      return matchIUCA(affName)
+        .filter(u => { if (seenScopus.has(u.name)) return false; seenScopus.add(u.name); return true; })
+        .map(u => ({ name: u.name, flag: u.flag }));
+    });
 
     return { eid, abstract: abstractText.slice(0, 280), iucaFromScopus };
   } catch {
@@ -174,8 +194,10 @@ export default async function handler(req, res) {
   res.setHeader("Cache-Control", "s-maxage=3600"); // 1h cache for rich data
 
   const timeframe      = ["1m","3m","6m","1y","3y","5y"].includes(req.query.timeframe)
-    ? req.query.timeframe : "1y";
+    ? req.query.timeframe : "6m";
   const limit          = Math.min(parseInt(req.query.limit) || 10, 20);
+  // Six months ago — used to filter to recently published papers
+  const sixMonthsAgo   = Date.now() / 1000 - 183 * 24 * 3600;
   const explorerKey    = process.env.ALTMETRIC_EXPLORER_KEY;
   const explorerSecret = process.env.ALTMETRIC_EXPLORER_SECRET;
   const scopusKey      = process.env.SCOPUS_API_KEY;
@@ -185,8 +207,12 @@ export default async function handler(req, res) {
   }
 
   try {
-    // Step 1: Altmetric — top papers by attention score
-    const papers = await fetchFromExplorer(explorerKey, explorerSecret, timeframe, limit);
+    // Step 1: Altmetric — fetch extra candidates then filter to recently published
+    const candidates = await fetchFromExplorer(explorerKey, explorerSecret, timeframe, Math.min(limit * 4, 50));
+    // Keep only papers published in the last 6 months (or those with no date, to avoid hiding new papers)
+    const papers = candidates
+      .filter(p => !p.publishedOn || p.publishedOn >= sixMonthsAgo)
+      .slice(0, limit);
 
     // Step 2: Parallel Scopus Abstract enrichment (abstract + EID + extra IUCA members)
     const abstractResults = await Promise.all(

@@ -12,7 +12,7 @@ const TIMEFRAME_OPTIONS = [
 ];
 
 export const DEFAULT_DISPLAY = {
-  timeframe:       "1y",
+  timeframe:       "6m",
   paperCount:      10,
   visibleClusters: null, // null = all visible
 };

@@ -3,12 +3,20 @@
 // enriches with SciVal topic clusters + FWCI, and returns the
 // most prominent topic clusters with their IUCA papers.
 //
-// Cached 24 hours at Vercel CDN — the first hit per day is slow
-// (~5-10s) but all subsequent requests are instant.
+// Caching strategy:
+//   1. Serve from Vercel KV if cached < 24 hours old (instant)
+//   2. If stale/missing: compute fresh, store to KV, return result
+//   3. CDN s-maxage=300 as a secondary cache layer
+//
+// First request of the day may take 10-20s; all subsequent are instant.
 
 import { UNIVERSITIES } from '../src/data.js';
 
-const CURRENT_YEAR = 2026;
+let kv;
+try { ({ kv } = await import('@vercel/kv')); } catch {}
+
+const KV_KEY   = 'topics_cache';
+const KV_TTL_S = 86400; // 24 hours
 
 async function fetchSciValBatch(ids, apiKey) {
   if (!ids.length) return {};
@@ -18,7 +26,7 @@ async function fetchSciValBatch(ids, apiKey) {
     const r = await fetch(url, { headers: { 'X-ELS-APIKey': apiKey, Accept: 'application/json' } });
     if (!r.ok) { console.error(`SciVal ${r.status}`); return {}; }
     const data = await r.json();
-    const out = {};
+    const out  = {};
     for (const item of data.results || []) {
       const pub = item.publication || {};
       const id  = String(pub.id || '');
@@ -27,7 +35,7 @@ async function fetchSciValBatch(ids, apiKey) {
       const fwci   = Object.keys(byYear).sort((a, b) => b - a)
         .map(y => byYear[y]).find(v => v !== null) ?? null;
       out[id] = {
-        fwci:             fwci,
+        fwci,
         topicClusterId:   pub.topicClusterId   || null,
         topicClusterName: pub.topicClusterName || '',
       };
@@ -39,37 +47,24 @@ async function fetchSciValBatch(ids, apiKey) {
   }
 }
 
-export default async function handler(req, res) {
-  if (req.method !== 'GET') return res.status(405).json({ error: 'Method not allowed' });
-  res.setHeader('Access-Control-Allow-Origin', '*');
-  res.setHeader('Cache-Control', 's-maxage=86400');
+async function computeTopics(universities, apiKey) {
+  const uniMeta     = Object.fromEntries(universities.map(u => [u.name, { name: u.name, flag: u.flag }]));
+  const scopusHdrs  = { 'X-ELS-APIKey': apiKey, Accept: 'application/json' };
 
-  const apiKey = process.env.SCOPUS_API_KEY;
-  if (!apiKey) return res.status(500).json({ error: 'SCOPUS_API_KEY not configured' });
-
-  // Allow the frontend to pass a custom university list (Scopus IDs)
-  const requestedIds = req.query.scopusIds
-    ? req.query.scopusIds.split(',').filter(Boolean)
-    : UNIVERSITIES.map(u => u.scopusId);
-
-  const uniMeta = Object.fromEntries(
-    UNIVERSITIES.map(u => [u.scopusId, { name: u.name, flag: u.flag }])
-  );
-  const scopusHeaders = { 'X-ELS-APIKey': apiKey, Accept: 'application/json' };
-
-  // ── Step 1: Fetch top 25 climate papers per university (all in parallel) ───
-  const papersByUni = {}; // scopusId → [{ eid, doi, title, journal, year, citations }]
-
-  await Promise.all(requestedIds.map(async (sid) => {
-    const q = `AF-ID(${sid}) AND SUBJAREA(EART OR ENVI OR AGRI OR ENER OR SOCI) AND PUBYEAR > 2019`;
+  // ── Fetch top 25 climate papers per university (all in parallel) ────────────
+  // Use AFFILORG("name") — AF-ID values in data.js are SciVal institution IDs,
+  // not Scopus affiliation IDs, so AF-ID() would return wrong results.
+  const papersByUni = {};
+  await Promise.all(universities.map(async (uni) => {
+    const q = `AFFILORG("${uni.name}") AND SUBJAREA(EART OR ENVI OR AGRI OR ENER OR SOCI) AND PUBYEAR > 2019`;
     const url = `https://api.elsevier.com/content/search/scopus?` +
       `query=${encodeURIComponent(q)}&count=25&sort=citedby-count`;
     try {
-      const r = await fetch(url, { headers: scopusHeaders });
-      if (!r.ok) { console.error(`Scopus ${r.status} for AF-ID(${sid})`); return; }
-      const data = await r.json();
+      const r = await fetch(url, { headers: scopusHdrs });
+      if (!r.ok) { console.error(`Scopus ${r.status} for "${uni.name}"`); return; }
+      const data    = await r.json();
       const entries = data?.['search-results']?.entry || [];
-      papersByUni[sid] = entries
+      papersByUni[uni.name] = entries
         .filter(e => e['dc:title'])
         .map(e => ({
           eid:       (e.eid || '').replace('2-s2.0-', ''),
@@ -80,56 +75,51 @@ export default async function handler(req, res) {
           citations: parseInt(e['citedby-count'] || '0'),
         }));
     } catch (err) {
-      console.error(`Scopus fetch error for AF-ID(${sid}):`, err.message);
+      console.error(`Scopus error for "${uni.name}":`, err.message);
     }
   }));
 
-  // ── Step 2: Batch SciVal enrichment (parallelise up to 5 chunks at once) ──
+  // ── Batch SciVal enrichment (up to 5 chunks in parallel) ───────────────────
   const allEids = [...new Set(
     Object.values(papersByUni).flat().map(p => p.eid).filter(Boolean)
   )];
 
-  const CHUNK_SIZE = 25;
-  const MAX_PARALLEL = 5;
+  const CHUNK = 25;
+  const PAR   = 5;
   const svData = {};
-
-  for (let i = 0; i < allEids.length; i += CHUNK_SIZE * MAX_PARALLEL) {
-    const batchPromises = [];
-    for (let j = 0; j < MAX_PARALLEL; j++) {
-      const start = i + j * CHUNK_SIZE;
+  for (let i = 0; i < allEids.length; i += CHUNK * PAR) {
+    const promises = [];
+    for (let j = 0; j < PAR; j++) {
+      const start = i + j * CHUNK;
       if (start >= allEids.length) break;
-      batchPromises.push(fetchSciValBatch(allEids.slice(start, start + CHUNK_SIZE), apiKey));
+      promises.push(fetchSciValBatch(allEids.slice(start, start + CHUNK), apiKey));
     }
-    const results = await Promise.all(batchPromises);
+    const results = await Promise.all(promises);
     results.forEach(r => Object.assign(svData, r));
   }
 
-  // ── Step 3: Group papers by topic cluster ──────────────────────────────────
-  // Each cluster entry tracks which IUCA universities have papers in it.
+  // ── Group papers by SciVal topic cluster ────────────────────────────────────
   const clusterMap = {};
-
-  for (const [sid, papers] of Object.entries(papersByUni)) {
-    const meta = uniMeta[sid] || { name: sid, flag: '🌍' };
+  for (const [uniName, papers] of Object.entries(papersByUni)) {
+    const meta = uniMeta[uniName] || { name: uniName, flag: '🌍' };
     for (const p of papers) {
       if (!p.eid) continue;
       const sv = svData[p.eid];
       if (!sv?.topicClusterId) continue;
 
       const cid = sv.topicClusterId;
-      if (!clusterMap[cid]) {
-        clusterMap[cid] = { id: cid, name: sv.topicClusterName, doiMap: {} };
-      }
+      if (!clusterMap[cid]) clusterMap[cid] = { id: cid, name: sv.topicClusterName, doiMap: {} };
 
       const key = p.doi || p.eid;
       if (!clusterMap[cid].doiMap[key]) {
         clusterMap[cid].doiMap[key] = {
-          title:    p.title,
-          doi:      p.doi,
-          url:      p.doi ? `https://doi.org/${p.doi}` : '',
-          year:     p.year,
-          journal:  p.journal,
-          fwci:     sv.fwci !== null ? Math.round(sv.fwci * 100) / 100 : null,
-          unis:     [],
+          title:   p.title,
+          doi:     p.doi,
+          url:     p.doi ? `https://doi.org/${p.doi}` : '',
+          year:    p.year,
+          journal: p.journal,
+          fwci:    sv.fwci !== null ? Math.round(sv.fwci * 100) / 100 : null,
+          unis:    [],
         };
       }
       const entry = clusterMap[cid].doiMap[key];
@@ -139,23 +129,68 @@ export default async function handler(req, res) {
     }
   }
 
-  // ── Step 4: Rank clusters and papers ──────────────────────────────────────
+  // ── Rank clusters ────────────────────────────────────────────────────────────
   const clusters = Object.values(clusterMap)
     .map(c => {
       const papers = Object.values(c.doiMap)
         .sort((a, b) => (b.fwci ?? 0) - (a.fwci ?? 0))
         .slice(0, 5);
-
-      // Prominence score: distinct universities × best FWCI
       const distinctUnis = new Set(papers.flatMap(p => p.unis.map(u => u.name))).size;
-      const bestFwci     = papers[0]?.fwci ?? 0;
-      const score        = distinctUnis * (bestFwci || 1);
-
-      return { id: c.id, name: c.name, papers, uniCount: distinctUnis, score };
+      return { id: c.id, name: c.name, papers, uniCount: distinctUnis, score: distinctUnis * (papers[0]?.fwci || 1) };
     })
-    .filter(c => c.papers.length > 0 && c.uniCount >= 1)
+    .filter(c => c.papers.length > 0)
     .sort((a, b) => b.score - a.score)
     .slice(0, 30);
 
-  return res.status(200).json({ clusters, updatedAt: new Date().toISOString() });
+  return clusters;
+}
+
+export default async function handler(req, res) {
+  if (req.method !== 'GET') return res.status(405).json({ error: 'Method not allowed' });
+  res.setHeader('Access-Control-Allow-Origin', '*');
+  res.setHeader('Cache-Control', 's-maxage=300'); // 5-min CDN cache; KV is the primary store
+
+  const apiKey = process.env.SCOPUS_API_KEY;
+  if (!apiKey) return res.status(500).json({ error: 'SCOPUS_API_KEY not configured' });
+
+  // Respect a custom university list passed from frontend (e.g. after members edit)
+  const requestedNames = req.query.scopusNames
+    ? req.query.scopusNames.split('|').map(s => s.trim()).filter(Boolean)
+    : null;
+  const universities = requestedNames
+    ? UNIVERSITIES.filter(u => requestedNames.includes(u.name))
+    : UNIVERSITIES;
+
+  const force = req.query.force === '1';
+
+  // ── 1. Try KV cache first ──────────────────────────────────────────────────
+  if (kv && !force) {
+    try {
+      const cached = await kv.get(KV_KEY);
+      if (cached?.clusters && cached?.cachedAt) {
+        const ageMs = Date.now() - new Date(cached.cachedAt).getTime();
+        if (ageMs < KV_TTL_S * 1000) {
+          return res.status(200).json({ ...cached, fromCache: true });
+        }
+      }
+    } catch (err) {
+      console.error('KV read error:', err.message);
+    }
+  }
+
+  // ── 2. Compute fresh ───────────────────────────────────────────────────────
+  try {
+    const clusters  = await computeTopics(universities, apiKey);
+    const result    = { clusters, updatedAt: new Date().toISOString(), cachedAt: new Date().toISOString() };
+
+    // Store to KV for subsequent requests
+    if (kv) {
+      try { await kv.set(KV_KEY, result, { ex: KV_TTL_S }); }
+      catch (err) { console.error('KV write error:', err.message); }
+    }
+
+    return res.status(200).json(result);
+  } catch (err) {
+    return res.status(500).json({ error: err.message });
+  }
 }
