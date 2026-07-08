@@ -11,9 +11,11 @@
 // First request of the day may take 10-20s; all subsequent are instant.
 
 import { UNIVERSITIES } from '../src/data.js';
+import { kv as _kv } from '@vercel/kv';
 
-let kv;
-try { ({ kv } = await import('@vercel/kv')); } catch {}
+// kv is null if KV_REST_API_URL is not configured — compute and return without caching
+let kv = null;
+try { kv = _kv; } catch {}
 
 const KV_KEY   = 'topics_cache';
 const KV_TTL_S = 86400; // 24 hours
