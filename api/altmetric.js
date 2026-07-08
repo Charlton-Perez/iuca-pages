@@ -7,6 +7,7 @@
 
 import crypto from "crypto";
 import { UNIVERSITIES } from "../src/data.js";
+import { elsevierHeaders } from "./topics.js";
 
 // GRID → university (Altmetric affiliations use GRID IDs)
 const GRID_TO_UNI = Object.fromEntries(UNIVERSITIES.map(u => [u.gridId, { name: u.name, flag: u.flag }]));
@@ -147,7 +148,7 @@ async function fetchAbstract(doi, apiKey) {
   const url = `https://api.elsevier.com/content/abstract/doi/${encodeURIComponent(doi)}` +
     `?field=dc:description,eid,affiliation`;
   try {
-    const r = await fetchWithRetry(url, { "X-ELS-APIKey": apiKey, Accept: "application/json" });
+    const r = await fetchWithRetry(url, elsevierHeaders(apiKey));
     if (!r.ok) return null;
     const data  = await r.json();
     const core  = data?.["abstracts-retrieval-response"]?.coredata || {};
@@ -177,7 +178,7 @@ async function fetchSciVal(ids, apiKey) {
   const url = `https://api.elsevier.com/analytics/scival/publication/metrics` +
     `?metricTypes=FieldWeightedCitationImpact&publicationIds=${ids.join(",")}`;
   try {
-    const r = await fetchWithRetry(url, { "X-ELS-APIKey": apiKey, Accept: "application/json" });
+    const r = await fetchWithRetry(url, elsevierHeaders(apiKey));
     if (!r.ok) return {};
     const data = await r.json();
     const out  = {};

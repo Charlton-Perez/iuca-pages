@@ -25,6 +25,13 @@ export const config = { maxDuration: 60 };
 
 const sleep = ms => new Promise(r => setTimeout(r, ms));
 
+// SciVal entitlement is IP-based; an Elsevier insttoken lifts that restriction
+export function elsevierHeaders(apiKey) {
+  const h = { 'X-ELS-APIKey': apiKey, Accept: 'application/json' };
+  if (process.env.ELSEVIER_INST_TOKEN) h['X-ELS-Insttoken'] = process.env.ELSEVIER_INST_TOKEN;
+  return h;
+}
+
 // Elsevier throttles concurrent requests hard (429 RATE_LIMIT_EXCEEDED),
 // so retry with backoff on 429 rather than failing the whole university.
 async function fetchWithRetry(url, headers, tries = 4) {
@@ -52,7 +59,7 @@ async function fetchSciValBatch(ids, apiKey, debug) {
   const url = `https://api.elsevier.com/analytics/scival/publication/metrics` +
     `?metricTypes=FieldWeightedCitationImpact&publicationIds=${ids.join(',')}`;
   try {
-    const r = await fetchWithRetry(url, { 'X-ELS-APIKey': apiKey, Accept: 'application/json' });
+    const r = await fetchWithRetry(url, elsevierHeaders(apiKey));
     if (!r.ok) { debug.push(`SciVal ${r.status}: ${(await r.text()).slice(0, 200)}`); return {}; }
     const data = await r.json();
     const out  = {};
@@ -76,9 +83,9 @@ async function fetchSciValBatch(ids, apiKey, debug) {
   }
 }
 
-async function computeTopics(universities, apiKey, debug) {
+export async function computeTopics(universities, apiKey, debug) {
   const uniMeta     = Object.fromEntries(universities.map(u => [u.name, { name: u.name, flag: u.flag }]));
-  const scopusHdrs  = { 'X-ELS-APIKey': apiKey, Accept: 'application/json' };
+  const scopusHdrs  = elsevierHeaders(apiKey);
 
   // ── Fetch top 25 climate papers per university (all in parallel) ────────────
   // Use AFFILORG("name") — AF-ID values in data.js are SciVal institution IDs,
@@ -200,18 +207,18 @@ export default async function handler(req, res) {
   const force = req.query.force === '1';
 
   // ── 1. Try KV cache first ──────────────────────────────────────────────────
-  if (kv && !force) {
-    try {
-      const cached = await kv.get(KV_KEY);
-      if (cached?.clusters && cached?.cachedAt) {
-        const ageMs = Date.now() - new Date(cached.cachedAt).getTime();
-        if (ageMs < KV_TTL_S * 1000) {
-          return res.status(200).json({ ...cached, fromCache: true });
-        }
+  let stale = null;
+  try {
+    const cached = kv ? await kv.get(KV_KEY) : null;
+    if (cached?.clusters?.length && cached?.cachedAt) {
+      const ageMs = Date.now() - new Date(cached.cachedAt).getTime();
+      if (ageMs < KV_TTL_S * 1000 && !force) {
+        return res.status(200).json({ ...cached, fromCache: true });
       }
-    } catch (err) {
-      console.error('KV read error:', err.message);
+      stale = cached; // keep as fallback if fresh compute fails
     }
+  } catch (err) {
+    console.error('KV read error:', err.message);
   }
 
   // ── 2. Compute fresh ───────────────────────────────────────────────────────
@@ -223,13 +230,20 @@ export default async function handler(req, res) {
     // Only cache non-empty results — an empty set means something upstream
     // failed, and caching it would serve emptiness for 24 hours.
     if (kv && clusters.length > 0) {
-      try { await kv.set(KV_KEY, result, { ex: KV_TTL_S }); }
+      try { await kv.set(KV_KEY, result); }
       catch (err) { console.error('KV write error:', err.message); }
+    }
+
+    // SciVal is IP-entitled and may fail from Vercel — a stale cache
+    // (populated via scripts/refresh-topics.mjs) beats an empty page.
+    if (clusters.length === 0 && stale) {
+      return res.status(200).json({ ...stale, fromCache: true, staleFallback: true });
     }
 
     if (req.query.debug === '1') result.debug = debug.slice(0, 10);
     return res.status(200).json(result);
   } catch (err) {
+    if (stale) return res.status(200).json({ ...stale, fromCache: true, staleFallback: true });
     return res.status(500).json({ error: err.message });
   }
 }
