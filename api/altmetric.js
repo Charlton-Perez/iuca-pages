@@ -36,6 +36,20 @@ function matchIUCA(affilName = '') {
 
 const IUCA_GRID_IDS = UNIVERSITIES.map(u => u.gridId);
 
+export const config = { maxDuration: 60 };
+
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+// Elsevier throttles concurrent requests (429) — retry with backoff
+async function fetchWithRetry(url, headers, tries = 4) {
+  for (let attempt = 0; attempt < tries; attempt++) {
+    const r = await fetch(url, { headers });
+    if (r.status !== 429) return r;
+    await sleep(500 * 2 ** attempt);
+  }
+  return fetch(url, { headers });
+}
+
 // HMAC digest for Altmetric Explorer signed requests
 function buildDigest(secret, filters) {
   const parts = [];
@@ -48,8 +62,8 @@ function buildDigest(secret, filters) {
   return crypto.createHmac("sha1", secret).update(parts.join("|")).digest("hex");
 }
 
-async function fetchFromExplorer(key, secret, timeframe, limit) {
-  const filters = { affiliations: IUCA_GRID_IDS, q: "climate", scope: "all", timeframe };
+async function fetchFromExplorer(key, secret, publishedAfter, limit) {
+  const filters = { affiliations: IUCA_GRID_IDS, published_after: publishedAfter, q: "climate", scope: "all" };
   const digest  = buildDigest(secret, filters);
 
   const affiliationQs = IUCA_GRID_IDS.map(id => `filter[affiliations][]=${id}`).join("&");
@@ -57,7 +71,7 @@ async function fetchFromExplorer(key, secret, timeframe, limit) {
     `key=${key}`,
     affiliationQs,
     `filter[q]=climate`,
-    `filter[timeframe]=${timeframe}`,
+    `filter[published_after]=${publishedAfter}`,
     `filter[scope]=all`,
     `filter[order]=score_desc`,
     `page[size]=${Math.min(limit, 100)}`,
@@ -114,7 +128,7 @@ async function fetchFromExplorer(key, secret, timeframe, limit) {
       journal,
       score,
       publishedOn,
-      iucaMembers:    iucaMembers.length ? iucaMembers : [{ name: "IUCA Member", flag: "🌍" }],
+      iucaMembers,
       newsOutlets:    mentions.msm    || 0,
       policyMentions: mentions.policy || 0,
       blogMentions:   mentions.blog   || 0,
@@ -133,9 +147,7 @@ async function fetchAbstract(doi, apiKey) {
   const url = `https://api.elsevier.com/content/abstract/doi/${encodeURIComponent(doi)}` +
     `?field=dc:description,eid,affiliation`;
   try {
-    const r = await fetch(url, {
-      headers: { "X-ELS-APIKey": apiKey, Accept: "application/json" },
-    });
+    const r = await fetchWithRetry(url, { "X-ELS-APIKey": apiKey, Accept: "application/json" });
     if (!r.ok) return null;
     const data  = await r.json();
     const core  = data?.["abstracts-retrieval-response"]?.coredata || {};
@@ -165,7 +177,7 @@ async function fetchSciVal(ids, apiKey) {
   const url = `https://api.elsevier.com/analytics/scival/publication/metrics` +
     `?metricTypes=FieldWeightedCitationImpact&publicationIds=${ids.join(",")}`;
   try {
-    const r = await fetch(url, { headers: { "X-ELS-APIKey": apiKey, Accept: "application/json" } });
+    const r = await fetchWithRetry(url, { "X-ELS-APIKey": apiKey, Accept: "application/json" });
     if (!r.ok) return {};
     const data = await r.json();
     const out  = {};
@@ -193,11 +205,12 @@ export default async function handler(req, res) {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Cache-Control", "s-maxage=3600"); // 1h cache for rich data
 
-  const timeframe      = ["1m","3m","6m","1y","3y","5y"].includes(req.query.timeframe)
-    ? req.query.timeframe : "6m";
-  const limit          = Math.min(parseInt(req.query.limit) || 10, 20);
-  // Six months ago — used to filter to recently published papers
-  const sixMonthsAgo   = Date.now() / 1000 - 183 * 24 * 3600;
+  // timeframe selects the publication window (papers published in the last N months)
+  const months = { "1m": 1, "3m": 3, "6m": 6, "1y": 12 }[req.query.timeframe] || 6;
+  const limit  = Math.min(parseInt(req.query.limit) || 10, 20);
+  const cutoff = new Date();
+  cutoff.setMonth(cutoff.getMonth() - months);
+  const publishedAfter = cutoff.toISOString().slice(0, 10);
   const explorerKey    = process.env.ALTMETRIC_EXPLORER_KEY;
   const explorerSecret = process.env.ALTMETRIC_EXPLORER_SECRET;
   const scopusKey      = process.env.SCOPUS_API_KEY;
@@ -207,19 +220,19 @@ export default async function handler(req, res) {
   }
 
   try {
-    // Step 1: Altmetric — fetch 100 candidates, filter to recently published, take top N by score
-    // The timeframe controls attention window; publishedOn filter ensures recent publication.
-    // We need 100 candidates because not all high-attention papers are recently published.
-    const candidates = await fetchFromExplorer(explorerKey, explorerSecret, timeframe, 100);
-    const papers = candidates
-      .filter(p => !p.publishedOn || p.publishedOn >= sixMonthsAgo)
-      .sort((a, b) => b.score - a.score)
-      .slice(0, limit);
+    // Step 1: Altmetric — papers published since the cutoff, ranked by attention score
+    const papers = await fetchFromExplorer(explorerKey, explorerSecret, publishedAfter, limit);
 
-    // Step 2: Parallel Scopus Abstract enrichment (abstract + EID + extra IUCA members)
-    const abstractResults = await Promise.all(
-      papers.map(p => p.doi && scopusKey ? fetchAbstract(p.doi, scopusKey) : Promise.resolve(null))
-    );
+    // Step 2: Scopus Abstract enrichment, 3 at a time to stay under Elsevier's
+    // concurrency limit (abstract + EID + extra IUCA members)
+    const abstractResults = new Array(papers.length).fill(null);
+    const queue = papers.map((p, i) => [p, i]);
+    await Promise.all(Array.from({ length: 3 }, async () => {
+      while (queue.length) {
+        const [p, i] = queue.shift();
+        if (p.doi && scopusKey) abstractResults[i] = await fetchAbstract(p.doi, scopusKey);
+      }
+    }));
 
     // Step 3: Batch SciVal — FWCI + topic cluster
     const eids = abstractResults.map(r => r?.eid).filter(Boolean);
@@ -239,7 +252,8 @@ export default async function handler(req, res) {
 
       return {
         ...p,
-        iucaMembers:  combined,
+        // Placeholder only when no member could be identified from either source
+        iucaMembers:  combined.length ? combined : [{ name: "IUCA Member", flag: "🌍" }],
         abstract:     abs?.abstract || null,
         fwci:         sv?.fwci ?? null,
         topicCluster: sv?.topicCluster || null,

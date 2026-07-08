@@ -20,12 +20,39 @@ try { kv = _kv; } catch {}
 const KV_KEY   = 'topics_cache';
 const KV_TTL_S = 86400; // 24 hours
 
+// Allow up to 60s — the fresh compute makes ~40 throttled Elsevier calls
+export const config = { maxDuration: 60 };
+
+const sleep = ms => new Promise(r => setTimeout(r, ms));
+
+// Elsevier throttles concurrent requests hard (429 RATE_LIMIT_EXCEEDED),
+// so retry with backoff on 429 rather than failing the whole university.
+async function fetchWithRetry(url, headers, tries = 4) {
+  for (let attempt = 0; attempt < tries; attempt++) {
+    const r = await fetch(url, { headers });
+    if (r.status !== 429) return r;
+    await sleep(500 * 2 ** attempt);
+  }
+  return fetch(url, { headers });
+}
+
+// Run tasks with limited concurrency — Elsevier rejects bursts of parallel calls
+async function pool(items, limit, worker) {
+  const queue = [...items.entries()];
+  await Promise.all(Array.from({ length: limit }, async () => {
+    while (queue.length) {
+      const [i, item] = queue.shift();
+      await worker(item, i);
+    }
+  }));
+}
+
 async function fetchSciValBatch(ids, apiKey) {
   if (!ids.length) return {};
   const url = `https://api.elsevier.com/analytics/scival/publication/metrics` +
     `?metricTypes=FieldWeightedCitationImpact&publicationIds=${ids.join(',')}`;
   try {
-    const r = await fetch(url, { headers: { 'X-ELS-APIKey': apiKey, Accept: 'application/json' } });
+    const r = await fetchWithRetry(url, { 'X-ELS-APIKey': apiKey, Accept: 'application/json' });
     if (!r.ok) { console.error(`SciVal ${r.status}`); return {}; }
     const data = await r.json();
     const out  = {};
@@ -57,12 +84,12 @@ async function computeTopics(universities, apiKey, debug) {
   // Use AFFILORG("name") — AF-ID values in data.js are SciVal institution IDs,
   // not Scopus affiliation IDs, so AF-ID() would return wrong results.
   const papersByUni = {};
-  await Promise.all(universities.map(async (uni) => {
+  await pool(universities, 3, async (uni) => {
     const q = `AFFILORG("${uni.name}") AND SUBJAREA(EART OR ENVI OR AGRI OR ENER OR SOCI) AND PUBYEAR > 2019`;
     const url = `https://api.elsevier.com/content/search/scopus?` +
       `query=${encodeURIComponent(q)}&count=25&sort=citedby-count`;
     try {
-      const r = await fetch(url, { headers: scopusHdrs });
+      const r = await fetchWithRetry(url, scopusHdrs);
       if (!r.ok) {
         const body = await r.text();
         debug.push(`Scopus ${r.status} for "${uni.name}": ${body.slice(0, 200)}`);
@@ -83,7 +110,7 @@ async function computeTopics(universities, apiKey, debug) {
     } catch (err) {
       debug.push(`Scopus fetch error for "${uni.name}": ${err.message}`);
     }
-  }));
+  });
 
   // ── Batch SciVal enrichment (up to 5 chunks in parallel) ───────────────────
   const allEids = [...new Set(
@@ -91,7 +118,7 @@ async function computeTopics(universities, apiKey, debug) {
   )];
 
   const CHUNK = 25;
-  const PAR   = 5;
+  const PAR   = 2;
   const svData = {};
   for (let i = 0; i < allEids.length; i += CHUNK * PAR) {
     const promises = [];
@@ -111,7 +138,8 @@ async function computeTopics(universities, apiKey, debug) {
     for (const p of papers) {
       if (!p.eid) continue;
       const sv = svData[p.eid];
-      if (!sv?.topicClusterId) continue;
+      // Some SciVal records return a cluster ID with no name — unusable for display
+      if (!sv?.topicClusterId || !sv.topicClusterName) continue;
 
       const cid = sv.topicClusterId;
       if (!clusterMap[cid]) clusterMap[cid] = { id: cid, name: sv.topicClusterName, doiMap: {} };
