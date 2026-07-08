@@ -46,7 +46,7 @@ function ThemePanel({ theme, universities, isOpen, onToggle, claimedDois, claimD
     const results = [
       ...Object.values(byDoi),
       ...noDoi,
-    ].sort((a, b) => (b.paper.citesPerYear || 0) - (a.paper.citesPerYear || 0));
+    ].sort((a, b) => (b.paper.fwci || b.paper.citesPerYear || 0) - (a.paper.fwci || a.paper.citesPerYear || 0));
 
     // Register these DOIs as claimed by this theme
     const newDois = results.map(r => r.paper.doi).filter(Boolean);
@@ -108,7 +108,7 @@ function ThemePanel({ theme, universities, isOpen, onToggle, claimedDois, claimD
 
               <div style={{ fontSize: "0.65rem", color: "rgba(255,255,255,0.25)", textTransform: "uppercase", letterSpacing: "0.08em", marginBottom: "0.85rem" }}>
                 {uniquePapers.length > 0
-                  ? `${uniquePapers.length} papers from ${universities.length} member universities · ranked by citations/year`
+                  ? `${uniquePapers.length} papers from ${universities.length} member universities · ranked by field-weighted citation impact`
                   : `No matching papers found in Scopus for this theme`}
               </div>
 
@@ -126,12 +126,12 @@ function ThemePanel({ theme, universities, isOpen, onToggle, claimedDois, claimD
                           <span style={{ fontSize: "0.78rem", fontWeight: 600, color: "rgba(255,255,255,0.85)" }}>{u.name}</span>
                         </span>
                       ))}
-                      {paper.citesPerYear > 0 && (
+                      {paper.fwci > 0 && (
                         <span style={{
                           fontSize: "0.62rem", padding: "0.1rem 0.45rem", borderRadius: 10,
                           background: `${theme.colour}18`, color: theme.colour, fontWeight: 600,
-                        }} title={`${paper.citations?.toLocaleString()} total citations`}>
-                          {paper.citesPerYear} cites/yr
+                        }} title={`Field-Weighted Citation Impact: ${paper.fwci}× field average · ${paper.citations?.toLocaleString()} total citations`}>
+                          FWCI {paper.fwci}
                         </span>
                       )}
                       {paper.year && (
@@ -235,7 +235,7 @@ export default function WhatWeDo({ universities = UNIVERSITIES, themes = THEMES,
       </div>
 
       <div style={{ textAlign: "center", paddingBottom: "3rem", color: "rgba(255,255,255,0.18)", fontSize: "0.7rem" }}>
-        Papers ranked by citations per year · Scopus data · {new Date().getFullYear()} IUCA
+        Papers ranked by Field-Weighted Citation Impact (FWCI) · Scopus + SciVal data · {new Date().getFullYear()} IUCA
       </div>
     </div>
   );
