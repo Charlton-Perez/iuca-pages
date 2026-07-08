@@ -207,11 +207,13 @@ export default async function handler(req, res) {
   }
 
   try {
-    // Step 1: Altmetric — fetch extra candidates then filter to recently published
-    const candidates = await fetchFromExplorer(explorerKey, explorerSecret, timeframe, Math.min(limit * 4, 50));
-    // Keep only papers published in the last 6 months (or those with no date, to avoid hiding new papers)
+    // Step 1: Altmetric — fetch 100 candidates, filter to recently published, take top N by score
+    // The timeframe controls attention window; publishedOn filter ensures recent publication.
+    // We need 100 candidates because not all high-attention papers are recently published.
+    const candidates = await fetchFromExplorer(explorerKey, explorerSecret, timeframe, 100);
     const papers = candidates
       .filter(p => !p.publishedOn || p.publishedOn >= sixMonthsAgo)
+      .sort((a, b) => b.score - a.score)
       .slice(0, limit);
 
     // Step 2: Parallel Scopus Abstract enrichment (abstract + EID + extra IUCA members)
