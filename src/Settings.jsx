@@ -115,12 +115,12 @@ function MembersTab({ universities, onUpdate }) {
   useEffect(() => { setText(universitiesToText(universities)); }, [universities]);
 
   function universitiesToText(unis) {
-    return unis.map(u => `${u.name} | ${u.flag} | ${u.researchUrl}`).join("\n");
+    return unis.map(u => `${u.name} | ${u.researchUrl}`).join("\n");
   }
 
   function textToUniversities(raw) {
-    // Preserve gridId (used by Altmetric matching) and scopusId by looking them
-    // up from the current member list by name — they're stable and not edited here.
+    // Preserve flag, gridId (Altmetric matching) and scopusId by looking them up
+    // from the current member list by name — stable identifiers not edited here.
     const byName = Object.fromEntries(universities.map(u => [u.name, u]));
     return raw.split("\n")
       .map(line => line.trim())
@@ -131,8 +131,8 @@ function MembersTab({ universities, onUpdate }) {
         const prev  = byName[name] || {};
         return {
           name,
-          flag:        parts[1] || "🌍",
-          researchUrl: parts[2] || "",
+          researchUrl: parts[1] || "",
+          flag:        prev.flag     || "🌍",
           gridId:      prev.gridId   || "",
           scopusId:    prev.scopusId || "",
         };
@@ -168,7 +168,8 @@ function MembersTab({ universities, onUpdate }) {
     <div>
       <div style={sectionHead}>Member universities — {parsed.length} entries</div>
       <p style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.35)", marginBottom: "0.75rem", lineHeight: 1.6 }}>
-        One university per line. Format: <code style={{ background: "rgba(255,255,255,0.08)", padding: "0.1rem 0.3rem", borderRadius: 3 }}>Name | 🏳️ | Research URL</code><br />
+        One university per line. Format: <code style={{ background: "rgba(255,255,255,0.08)", padding: "0.1rem 0.3rem", borderRadius: 3 }}>Name | Research URL</code><br />
+        Logos are fetched automatically by <code style={{ background: "rgba(255,255,255,0.08)", padding: "0.1rem 0.3rem", borderRadius: 3 }}>scripts/fetch-logos.mjs</code> — new members show a lettered chip until you run it.<br />
         To remove a member, delete their line. To add one, paste a new line at the bottom.
       </p>
       <textarea

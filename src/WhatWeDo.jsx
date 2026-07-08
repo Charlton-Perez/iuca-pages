@@ -1,5 +1,6 @@
 import { useState, useEffect } from "react";
 import { UNIVERSITIES } from "./data.js";
+import UniLogo from "./UniLogo.jsx";
 
 // Deterministic accent colour by position in the area list
 const PALETTE = [
@@ -77,8 +78,8 @@ function AreaPanel({ cluster, colourIndex, isOpen, onToggle }) {
                 {/* IUCA members */}
                 <div style={{ display: "flex", alignItems: "center", gap: "0.4rem", flexWrap: "wrap", marginBottom: "0.3rem" }}>
                   {paper.unis.map(u => (
-                    <span key={u.name} style={{ display: "inline-flex", alignItems: "center", gap: "0.25rem" }}>
-                      <span style={{ fontSize: "0.85rem" }}>{u.flag}</span>
+                    <span key={u.name} style={{ display: "inline-flex", alignItems: "center", gap: "0.3rem" }}>
+                      <UniLogo name={u.name} size={16} />
                       <span style={{ fontSize: "0.73rem", fontWeight: 600, color: "rgba(255,255,255,0.8)" }}>{u.name}</span>
                     </span>
                   ))}

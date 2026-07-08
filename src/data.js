@@ -1,6 +1,14 @@
 // src/data.js — shared source-of-truth for universities and themes.
 // Used by the frontend as defaults; the server reads from Vercel KV and falls back to these.
 
+// Slug used to locate a university's logo at public/logos/<slug>.png.
+// Must stay in sync with slug() in scripts/fetch-logos.mjs.
+export function slugForLogo(name = "") {
+  return name.toLowerCase()
+    .normalize("NFD").replace(/[̀-ͯ]/g, "")
+    .replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+}
+
 export const UNIVERSITIES = [
   { name: "University of Reading",            flag: "🇬🇧", scopusId: "60006462", gridId: "grid.9025.f",    researchUrl: "https://research.reading.ac.uk/research-themes/climate-and-earth-system-science/" },
   { name: "University of Oxford",             flag: "🇬🇧", scopusId: "60023256", gridId: "grid.4991.5",    researchUrl: "https://www.ox.ac.uk/research/research-in-conversation/climate-change" },

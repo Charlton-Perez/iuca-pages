@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import UniLogo from "./UniLogo.jsx";
 
 function formatDate(ts) {
   if (!ts) return "";
@@ -102,8 +103,10 @@ function PaperCard({ paper, rank }) {
           IUCA
         </span>
         {paper.iucaMembers.map(u => (
-          <span key={u.name} style={{ display: "inline-flex", alignItems: "center", gap: "0.25rem" }}>
-            <span style={{ fontSize: "0.85rem" }}>{u.flag}</span>
+          <span key={u.name} style={{ display: "inline-flex", alignItems: "center", gap: "0.3rem" }}>
+            {u.name === "IUCA Member"
+              ? <span style={{ fontSize: "0.85rem" }}>🌍</span>
+              : <UniLogo name={u.name} size={16} />}
             <span style={{ fontSize: "0.72rem", color: "rgba(255,255,255,0.6)", fontWeight: 500 }}>{u.name}</span>
           </span>
         ))}
