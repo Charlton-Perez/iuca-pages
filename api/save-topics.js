@@ -10,20 +10,20 @@ export default async function handler(req, res) {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
 
-  const { password, clusters } = req.body;
+  const { password, areas } = req.body;
 
   const correctPassword = process.env.SETTINGS_PASSWORD;
   if (!correctPassword) return res.status(500).json({ error: "SETTINGS_PASSWORD not configured on server" });
   if (password !== correctPassword) return res.status(401).json({ error: "Incorrect password" });
 
-  if (!Array.isArray(clusters) || clusters.length === 0) {
-    return res.status(400).json({ error: "clusters must be a non-empty array" });
+  if (!Array.isArray(areas) || areas.length === 0) {
+    return res.status(400).json({ error: "areas must be a non-empty array" });
   }
 
   try {
     const now = new Date().toISOString();
-    await kv.set("topics_cache", { clusters, updatedAt: now, cachedAt: now });
-    return res.status(200).json({ ok: true, clusters: clusters.length });
+    await kv.set("topics_cache", { areas, updatedAt: now, cachedAt: now });
+    return res.status(200).json({ ok: true, areas: areas.length });
   } catch (err) {
     return res.status(500).json({ error: "Could not save — Vercel KV not connected.", detail: err.message });
   }

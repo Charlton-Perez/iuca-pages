@@ -13,6 +13,7 @@
 import { UNIVERSITIES } from '../src/data.js';
 import { kv as _kv } from '@vercel/kv';
 import { TOPICS_SNAPSHOT } from '../src/topics-snapshot.js';
+import { CLIMATE_AREAS, CLUSTER_TO_AREA } from '../src/climate-areas.js';
 
 // kv is null if KV_REST_API_URL is not configured — compute and return without caching
 let kv = null;
@@ -141,52 +142,66 @@ export async function computeTopics(universities, apiKey, debug) {
 
   debug.push(`stats: ${Object.keys(papersByUni).length} unis, ${allEids.length} eids, ${Object.keys(svData).length} scival records`);
 
-  // ── Group papers by SciVal topic cluster ────────────────────────────────────
-  const clusterMap = {};
+  // ── Bucket papers into curated AREAS ────────────────────────────────────────
+  // A paper is kept only if its SciVal cluster is in the curated whitelist
+  // (src/climate-areas.js). Papers are then grouped by the area that owns the
+  // cluster, deduplicated by DOI, and carry the set of IUCA members involved.
+  const areaMap = Object.fromEntries(
+    CLIMATE_AREAS.map(a => [a.id, { id: a.id, name: a.name, blurb: a.blurb, doiMap: {}, clusterIds: new Set() }])
+  );
+
   for (const [uniName, papers] of Object.entries(papersByUni)) {
     const meta = uniMeta[uniName] || { name: uniName, flag: '🌍' };
     for (const p of papers) {
       if (!p.eid) continue;
       const sv = svData[p.eid];
-      // Some SciVal records return a cluster ID with no name — unusable for display
-      if (!sv?.topicClusterId || !sv.topicClusterName) continue;
+      if (!sv?.topicClusterId) continue;
 
-      const cid = sv.topicClusterId;
-      if (!clusterMap[cid]) clusterMap[cid] = { id: cid, name: sv.topicClusterName, doiMap: {} };
+      const area = CLUSTER_TO_AREA[sv.topicClusterId];
+      if (!area) continue; // cluster not in any curated area — drop it
+
+      const bucket = areaMap[area.areaId];
+      bucket.clusterIds.add(sv.topicClusterId);
 
       const key = p.doi || p.eid;
-      if (!clusterMap[cid].doiMap[key]) {
-        clusterMap[cid].doiMap[key] = {
-          title:   p.title,
-          doi:     p.doi,
-          url:     p.doi ? `https://doi.org/${p.doi}` : '',
-          year:    p.year,
-          journal: p.journal,
-          fwci:    sv.fwci !== null ? Math.round(sv.fwci * 100) / 100 : null,
-          unis:    [],
+      if (!bucket.doiMap[key]) {
+        bucket.doiMap[key] = {
+          title:        p.title,
+          doi:          p.doi,
+          url:          p.doi ? `https://doi.org/${p.doi}` : '',
+          year:         p.year,
+          journal:      p.journal,
+          fwci:         sv.fwci !== null ? Math.round(sv.fwci * 100) / 100 : null,
+          topicCluster: sv.topicClusterName || area.clusterName,
+          unis:         [],
         };
       }
-      const entry = clusterMap[cid].doiMap[key];
+      const entry = bucket.doiMap[key];
       if (!entry.unis.some(u => u.name === meta.name)) {
         entry.unis.push({ name: meta.name, flag: meta.flag });
       }
     }
   }
 
-  // ── Rank clusters ────────────────────────────────────────────────────────────
-  const clusters = Object.values(clusterMap)
-    .map(c => {
-      const papers = Object.values(c.doiMap)
-        .sort((a, b) => (b.fwci ?? 0) - (a.fwci ?? 0))
-        .slice(0, 5);
-      const distinctUnis = new Set(papers.flatMap(p => p.unis.map(u => u.name))).size;
-      return { id: c.id, name: c.name, papers, uniCount: distinctUnis, score: distinctUnis * (papers[0]?.fwci || 1) };
-    })
-    .filter(c => c.papers.length > 0)
-    .sort((a, b) => b.score - a.score)
-    .slice(0, 30);
+  // ── Assemble areas in the configured order ──────────────────────────────────
+  const areas = CLIMATE_AREAS.map(cfg => {
+    const bucket = areaMap[cfg.id];
+    const papers = Object.values(bucket.doiMap)
+      .sort((a, b) => (b.fwci ?? 0) - (a.fwci ?? 0))
+      .slice(0, 6);
+    const uniCount = new Set(Object.values(bucket.doiMap).flatMap(p => p.unis.map(u => u.name))).size;
+    return {
+      id:          cfg.id,
+      name:        cfg.name,
+      blurb:       cfg.blurb,
+      papers,
+      uniCount,
+      paperCount:  Object.keys(bucket.doiMap).length,
+      clusterCount: bucket.clusterIds.size,
+    };
+  }).filter(a => a.papers.length > 0);
 
-  return clusters;
+  return areas;
 }
 
 export default async function handler(req, res) {
@@ -210,10 +225,10 @@ export default async function handler(req, res) {
   // ── 1. Try KV cache first ──────────────────────────────────────────────────
   // Committed snapshot (from scripts/refresh-topics.mjs) is the fallback of
   // last resort — SciVal is IP-entitled and usually 403s from Vercel.
-  let stale = TOPICS_SNAPSHOT?.clusters?.length ? TOPICS_SNAPSHOT : null;
+  let stale = TOPICS_SNAPSHOT?.areas?.length ? TOPICS_SNAPSHOT : null;
   try {
     const cached = kv ? await kv.get(KV_KEY) : null;
-    if (cached?.clusters?.length && cached?.cachedAt) {
+    if (cached?.areas?.length && cached?.cachedAt) {
       const ageMs = Date.now() - new Date(cached.cachedAt).getTime();
       if (ageMs < KV_TTL_S * 1000 && !force) {
         return res.status(200).json({ ...cached, fromCache: true });
@@ -226,20 +241,20 @@ export default async function handler(req, res) {
 
   // ── 2. Compute fresh ───────────────────────────────────────────────────────
   try {
-    const debug     = [];
-    const clusters  = await computeTopics(universities, apiKey, debug);
-    const result    = { clusters, updatedAt: new Date().toISOString(), cachedAt: new Date().toISOString() };
+    const debug  = [];
+    const areas  = await computeTopics(universities, apiKey, debug);
+    const result = { areas, updatedAt: new Date().toISOString(), cachedAt: new Date().toISOString() };
 
     // Only cache non-empty results — an empty set means something upstream
     // failed, and caching it would serve emptiness for 24 hours.
-    if (kv && clusters.length > 0) {
+    if (kv && areas.length > 0) {
       try { await kv.set(KV_KEY, result); }
       catch (err) { console.error('KV write error:', err.message); }
     }
 
     // SciVal is IP-entitled and may fail from Vercel — a stale cache
     // (populated via scripts/refresh-topics.mjs) beats an empty page.
-    if (clusters.length === 0 && stale) {
+    if (areas.length === 0 && stale) {
       return res.status(200).json({ ...stale, fromCache: true, staleFallback: true });
     }
 

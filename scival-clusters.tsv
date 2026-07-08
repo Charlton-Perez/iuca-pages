@@ -1,0 +1,1529 @@
+id	prominence	scholarlyOutput	topicCount	name
+1	99	254699	247	COVID-19, Its Impact, and Vaccination
+2	92	59087	179	Synthetic Aperture Radar Technologies
+3	97	65444	154	MIMO Antenna Systems and Channel Estimation
+4	89	46587	140	Lymphoma Pathogenesis and Treatment Insights
+5	100	147480	194	Machine Learning Techniques in Sentiment Analysis
+6	98	56138	360	Antioxidant Compounds and Their Medicinal Potential
+7	69	15517	402	Hydrogen Bonding and Complexation in Crystalline Structures
+8	80	22952	350	Quantum Chemistry and Molecular Interaction Insights
+9	95	50602	142	Quantum Information and Optical State Manipulation
+10	79	30344	310	Genetic Diversity and Evolutionary Insights Across Species
+11	87	32271	140	Asthma Management and Quality of Life Enhancements
+12	89	47505	114	Power Electronics Control Systems
+13	93	29411	126	Ferroelectric Materials for Energy Storage Applications
+14	92	41311	180	Climate Variability and Tropical Cyclone Dynamics
+15	84	38885	127	Antenna Design and Wireless Power Transfer
+16	95	39437	149	Innovative Approaches in Diabetes Management and Monitoring
+17	79	21158	110	Interplay of DNA, RNA, and Protein Dynamics
+18	85	28756	157	Hypertension Management and Dietary Sodium Impact
+19	88	22119	106	Carbon Nanotubes in Advanced Material Applications
+20	97	43714	253	Soil Carbon Dynamics in Agricultural Ecosystems
+21	96	45372	98	Antibiotic Resistance Mechanisms in Clinical Infections
+22	92	32267	132	Interplay of Quantum Gravity and Cosmological Models
+23	95	40850	136	Atmospheric Aerosol Emissions and Pollution Dynamics
+24	94	34550	152	Optimization Algorithms in Multi-Objective Systems
+25	98	36066	163	Value Creation in Supply Chain Management Systems
+26	77	28887	171	Enhancing Patient Safety through Medication Management
+27	76	18223	124	Neutrino Mass and Higgs Mechanisms
+28	82	38782	87	Biomechanics and Treatment Strategies in Spinal Health
+29	80	28179	96	Breast Cancer Management and Imaging Techniques
+30	96	52438	115	Interconnected Dynamics of Social Networks and Data Privacy
+31	77	30457	273	Geochronology and Mineral Evolution in Orogenic Belts
+32	82	42441	294	Migration Dynamics and Socioeconomic Impacts
+33	68	30205	80	Aortic Aneurysm Management and Outcomes
+34	71	23594	117	Innovative Techniques in Image Processing and Calibration
+35	76	23513	124	Cognitive and Physical Health in Schizophrenia
+36	96	35924	74	Epigenetic Mechanisms and Telomere Dynamics in Cancer
+37	91	33774	88	Routing Protocols and Quality of Service in Networks
+38	89	23893	79	Zinc Oxide Nanostructures and Applications
+39	85	24824	94	Surface Plasmon Resonance in Material Characterization
+40	88	33261	152	Microbial Diversity and Gene Analysis in Pathogens
+41	88	37898	82	Retinal Disease Detection and Treatment
+42	92	33625	98	MicroRNA Roles in Cancer and Gene Regulation
+43	76	16342	104	Cell Death Mechanisms in Cancer Progression
+44	69	28452	93	Glaucoma Management and Corneal Health Insights
+45	98	42555	157	Corporate Governance and Ownership Impact on Performance
+46	76	21704	114	Energy-Efficient Wireless Sensor Network Innovations
+47	98	35214	153	Transformative Business Models in Digital Innovation
+48	87	33153	114	Optimization Techniques in Power Distribution Systems
+49	98	37191	100	Biomass Conversion and Catalytic Innovations
+50	91	27934	136	Software Engineering Innovations in Open Source Development
+51	88	35245	100	Implant Innovations in Orthodontics and Bone Health
+52	91	25482	96	Quantum States and Metamaterials in Superfluid Systems
+53	86	22161	95	Star Formation and Galaxy Evolution in High-Redshift Universe
+54	98	39751	127	Adsorption Mechanisms for Metal Ion Removal
+55	94	36415	164	Plant Responses to Abiotic Stress Mechanisms
+56	56	16766	100	Laser Pulse Dynamics in High-Energy Applications
+57	92	41088	130	Enhancing Athletic Performance through Muscle and Gait Analysis
+58	96	32312	99	Luminescent Phosphors and Upconversion Nanomaterials Applications
+59	64	16751	82	Gallium Nitride Innovations in High-Performance Devices
+60	99	53155	146	Innovative Materials for Enhanced Concrete Performance
+61	64	28739	125	Fixed Point Theorems in Metric Spaces and Optimization
+62	93	23293	108	Photocatalytic Properties of Titanium Dioxide Structures
+63	84	22812	83	Mesenchymal Stem Cells in Regenerative Medicine
+64	71	21855	224	Bird Behavior and Habitat Dynamics
+65	91	27410	68	Prostate Cancer Management and Diagnostic Innovations
+66	80	29543	122	Speech Recognition and Processing
+67	82	27649	77	Sepsis Management and Biomarkers in Critical Care
+68	55	18697	109	Pituitary Gland Disorders and Hormonal Regulation
+69	99	45656	94	Biogas, Biochar, and Microbial Fuel Cells
+70	72	22751	97	Interplay of Quantum Gravity and Conformal Field Theory
+71	46	22435	148	Graph Theory and Optimization in Computational Geometry
+72	58	21561	64	Bladder Health and Quality of Life Innovations
+73	99	54503	53	Perovskite and Dye-Sensitized Solar Cell Innovations
+74	87	28434	79	Osteoarthritis Mechanisms and Treatment Innovations
+75	72	23786	97	Tuberculosis Treatment and Diagnostic Innovations
+76	30	8836	119	Quality of Service in Network Protocols and Architectures
+77	45	19943	118	Seismic Data Processing Techniques
+78	80	21012	76	Influenza Virus Dynamics and Vaccination Strategies
+79	98	26900	86	Fuel Cells and Polymer Electrolytes
+80	99	69767	81	Gut Microbiota and Its Role in Health
+81	81	18934	90	Magnetic Properties and Applications in Technology
+82	76	22902	89	Zoonotic Tick-Borne Diseases and Host Interactions
+83	81	28056	73	Cognitive and Clinical Insights in Multiple Sclerosis
+84	97	30608	66	Carbon Quantum Dots and Organic Light Emitting Devices
+85	76	27456	130	Enhancing Medical Education and Workforce Retention
+86	99	43647	128	Influence of Technology on Consumer Behavior
+87	70	29293	215	China's Strategic Influence in Global Relations
+88	79	30522	108	Fractional Calculus Applications in Differential Equations
+89	67	18410	83	Clostridium Difficile and Stem Cell Transplantation Insights
+90	99	38121	72	Catalytic Innovations for Hydrogen and Ammonia Production
+91	79	24452	81	Invasive Fungal Infections and Antifungal Resistance
+92	99	53864	87	Properties and Applications of Two-Dimensional Materials
+93	65	22601	68	Cancer Treatment and Renal Cell Carcinoma Insights
+94	47	13444	152	Semantic Web Technologies for Enhanced Data Integration
+95	95	28355	142	Organizational Dynamics in Employee Engagement and Ethics
+96	100	51124	42	High-Performance Materials for Lithium Batteries
+97	91	30902	88	Functional Imaging Techniques in Brain Connectivity
+98	40	11752	69	Pharmacotherapy and Antiphospholipid Antibody Insights
+99	99	35942	87	Metal-Organic Frameworks in Environmental Applications
+100	78	18254	82	Gamma-Ray Emissions and Stellar Evolution Insights
+101	86	26739	134	Peer Review Dynamics in Biomedical Research Networks
+102	95	32213	99	Volatility and Investor Behavior in Financial Markets
+103	77	23342	92	Fiber Optic Sensing Technologies
+104	80	23664	208	Methane Reduction through Feed Supplementation Strategies
+105	85	26875	80	Robotic Systems for Upper Limb Rehabilitation
+106	25	17589	217	Psychoanalysis and Group Therapy Dynamics
+107	86	24779	95	Adaptive Control Systems for Nonlinear Dynamics
+108	68	20108	72	Quantum Photonics and Optical Resonator Innovations
+109	84	26041	64	Inflammatory Bowel Disease and Patient Quality of Life
+110	51	20830	86	Integration of Antennas and Electronic Circuits
+111	74	21709	112	Turbulent Flow Dynamics and Boundary Layer Control
+112	80	17116	73	Microfluidic Systems for Enhanced Analytical Applications
+113	82	25773	73	Ischemic Stroke Management and Imaging Techniques
+114	87	27575	76	Melanoma Diagnosis and Treatment
+115	65	24314	74	Visual Perception and Surgical Innovations in Ophthalmology
+116	68	20466	80	Innovative Techniques in Optical Imaging and Measurement
+117	73	26394	87	Opioid Use and Management in Healthcare
+118	98	41881	136	Sustainable Development in the Tourism Industry
+119	92	28699	101	Magnetohydrodynamic Effects in Heat Transfer Systems
+120	47	12015	122	Nuclear Structure and Dynamics in Astrophysics
+121	82	25726	60	Biometric Recognition Systems for Enhanced Security
+122	66	15451	73	Microelectromechanical Systems and Sensing
+123	70	12656	72	Regulatory T Cells and Immune Response Dynamics
+124	92	26756	93	Flavonoids and Their Impact on Health
+125	70	23652	70	Thyroid Cancer Diagnosis and Treatment Innovations
+126	75	15300	68	Prion Proteins and Amyloid Aggregation in Disease
+127	90	33151	133	Rock Mechanics and Structural Integrity
+128	83	29579	89	Image Encryption and Quantum Security
+129	98	38233	73	Multifunctional Nanoparticles in Cancer Treatment
+130	57	11687	95	Quantum Dots and Photovoltaic Innovations in Energy
+131	99	44936	133	Interconnections of Economic Growth and Environmental Impact
+132	88	34385	69	Frailty and Care in Intensive Care Units
+133	99	48645	80	Additive Manufacturing and Corrosion Resistance
+134	83	21752	95	Innovative Approaches in Clinical Trial Design
+135	68	18572	57	Osteoporosis Risk Assessment and Treatment Strategies
+136	86	24097	66	Obesity, Metabolic Health, and Quality of Life
+137	94	30372	78	Cognitive Impairment and Neuroimaging in Alzheimer's Disease
+138	88	28231	104	Collaborative Edge Computing for Task Offloading
+139	85	20504	58	Cellular Pathways in Cancer Stem Cell Dynamics
+140	96	32027	142	Ecosystem Services and Land Use Dynamics
+141	36	19123	76	Molecular Insights into Tumor Dynamics and Treatment
+142	75	24043	153	Criminal Justice and Social Dynamics in Criminology
+143	36	12928	71	Integrated Circuit Design and Reliability
+144	86	24683	143	Genetic Resistance and Expression in Plant Pathology
+145	62	26602	56	Shoulder Joint Instability and Treatment Innovations
+146	65	19448	53	Coronary Interventions and Patient Outcomes
+147	89	21860	85	Innovative Drug Delivery Systems for Enhanced Absorption
+148	78	22648	94	Chronic Pain and Anxiety Disorders
+149	70	19600	80	Cervical Cancer Prevention and HPV Awareness
+150	88	26300	81	Cloud Computing and Data Security
+151	72	18541	76	Cell Cycle Proteins in Chromosomal Dynamics
+152	68	22888	74	Neonatal Care and Intubation Techniques
+153	98	35730	64	Environmental Impact of Pharmaceuticals and Contaminants
+154	33	12818	103	Formal Verification and Automata Theory Innovations
+155	80	18573	56	Mammalian Target of Rapamycin in Cancer Pathways
+156	71	17019	88	Dynamics of Stellar Systems and Planetary Atmospheres
+157	97	32578	79	Electrochemical Innovations in Genome Editing Techniques
+158	95	33817	81	Image Classification and Mapping
+159	86	25529	69	Innovative Approaches in Glioma Treatment and Drug Delivery
+160	93	36359	133	Social Media and Data-Driven Learning Insights
+161	47	12525	67	Human Immunodeficiency Virus Dynamics
+162	86	27489	96	Fuzzy Logic Applications in Decision-Making Models
+163	89	21027	112	Composite Structures in Vibration and Impact Resistance
+164	32	11874	74	Optical Innovations in Signal Processing and Modulation
+165	62	10303	91	Liquid Crystal Innovations in Optical Applications
+166	77	25718	55	Knee Injury Management and Rehabilitation Techniques
+167	50	12625	108	Robust Control Systems with Linear Matrix Inequalities
+168	55	10832	91	Interactions in Particle Physics Models
+169	19	6425	73	Resource Allocation and Performance in Wireless Networks
+170	63	16799	181	Medicinal Plant Extracts for Pain Management
+171	83	16443	93	Polycyclic Aromatic Hydrocarbons in Environmental Contexts
+172	86	22790	91	Machining and Residual Stress Management
+173	84	27997	98	Causal Inference and Estimation in Health Research
+174	38	14230	61	Power Amplifiers and Communication Systems
+175	51	12705	84	Quark Gluon Plasma and Phase Transitions
+176	93	22204	66	Nanofibers and Their Multifunctional Applications
+177	83	25398	69	Nutrition and Quality of Life in Cancer Care
+178	71	16654	117	Microstructural Transformations in High-Performance Steels
+179	63	13923	60	Diabetes and Beta Cell Function
+180	87	25644	164	Transformative Approaches in Teacher Professional Development
+181	90	29144	165	Media Influence on Political Communication Dynamics
+182	73	23434	44	Cardiovascular Imaging and Risk Management Innovations
+183	83	22960	68	Mechanical Strength and Bonding in Dental Materials
+184	82	24165	65	Genetic Insights and Treatment Strategies in Leukemia
+185	66	19901	59	Liver Health and Organ Donation Dynamics
+186	66	19340	59	Quality of Life and Kidney Health Dynamics
+187	98	29933	98	Hydrogen Production and Combustion Dynamics Insights
+188	70	11541	88	Hydrogels and Polymers in Drug Delivery Systems
+189	38	19274	84	Facial Nerve Innovations in Surgical Techniques
+190	47	18882	57	Cerebral Aneurysm and Vascular Treatments
+191	72	15580	93	Molecular Dynamics and Hydrogen Bonding in Water
+192	76	16793	96	Machine Learning Techniques for Predictive Modeling
+193	90	32237	46	Chiral Metamaterials and Antenna Innovations
+194	74	22389	55	Obstructive Sleep Apnea and Quality of Life
+195	71	23182	57	Lung Cancer Screening and Treatment Innovations
+196	81	19444	80	Ultrasonic Machining and Surface Polishing
+197	85	19742	86	Strength and Properties of Advanced Metal Alloys
+198	79	23542	60	Security Protocols for Cloud and Network Authentication
+199	96	37028	83	Machine Learning Techniques for Data Classification and Prediction
+200	63	10125	68	Magnetic Properties and Phase Transitions in Perovskite Structures
+201	71	22398	63	Enhancing Quality of Life through Cosmetic Treatments
+202	87	23666	96	Oil Recovery and Carbon Storage
+203	51	14844	51	Wireless Communication and Network Coding
+204	72	25501	57	Valve Replacement and Repair Techniques
+205	49	9408	66	Tumor Suppressor Proteins and Gene Therapy Insights
+206	79	17140	108	Combustion Engine Performance and Emissions
+207	31	22343	241	Cognitive Linguistics and Language Development Insights
+208	46	12821	79	Mechanical Properties and Cardiac Function in Patients
+209	60	16409	56	Optical Imaging Techniques for Tissue Analysis
+210	96	25158	61	Innovative Approaches in Drug Discovery and Protein Structure
+211	41	10928	84	Interactions of Sympathetic Nervous System and Thrombophilia
+212	98	46368	63	Integration of Electric Vehicles in Smart Grids
+213	68	21335	64	Impact of HPV on Squamous Cell Carcinoma Outcomes
+214	73	20388	52	Pancreatic Cancer Treatment and Research
+215	93	27242	83	Optimized Logistics and Vehicle Routing Solutions
+216	73	16638	78	Lipoprotein Dynamics and Cardiovascular Risk Management
+217	56	19975	52	Autoimmune Diseases and Vasculitis Mechanisms
+218	49	14636	65	Transplantation and Kidney Function Management
+219	79	24549	69	RFID and Wireless Localization Technologies in IoT
+220	93	28083	61	Epigenetic Mechanisms in Cancer and Development
+221	57	19833	102	Statistical Models for Reliability and Risk Assessment
+222	42	13213	65	Innovative Circuit Designs for Enhanced Signal Processing
+223	79	23929	58	Hepatocellular Carcinoma Management
+224	66	17895	67	HIV Prevention and Care Strategies for Communities
+225	91	24564	66	Arsenic Contamination in Soil and Water Systems
+226	88	19167	73	Microglia, Neuralgia and Central Nervous System
+227	89	19560	69	Drug Delivery and Skin Protection
+228	56	23681	45	Outcomes and Innovations in Hip Joint Treatments
+229	75	19130	133	Language Development and Literacy Challenges in Children
+230	58	13162	67	Resistance Mechanisms in Salmonella and Campylobacter Infections
+231	77	13991	66	T Cell Dynamics and Immunoglobulin Recombination Insights
+232	85	20709	83	Melatonin's Influence on Circadian Rhythms and Stress Response
+233	52	17480	52	Breast Cancer Detection and Treatment Innovations
+234	71	17240	62	Cognitive Mechanisms in Visual Perception and Memory
+235	58	18328	50	Gastroesophageal Reflux and Quality of Life Impacts
+236	73	23169	50	Endometriosis and Pregnancy Complications in Women
+237	62	15838	49	Chronic Hepatitis B and Myeloproliferative Neoplasms
+238	40	12299	73	Network Architecture and Security
+239	32	7930	78	Quantum Well Structures in Silicon Devices
+240	100	61208	36	Photocatalytic Innovations in Carbon Dioxide Reduction
+241	69	15093	78	Neural Mechanisms of Reward and Substance Use
+242	100	61630	33	Innovative Electrocatalysts for Energy Conversion Applications
+243	52	12262	131	Crack Propagation and Fatigue in Engineering Materials
+244	61	21158	47	Innovative Approaches in Rectal Cancer Treatment
+245	65	16010	170	Innovation Systems and Regional Economic Development
+246	41	21012	137	Justice, Autonomy, and Democracy in Global Contexts
+247	65	18402	69	Preeclampsia and Prenatal Screening Innovations
+248	63	20025	65	Maternal Health and Delivery Outcomes in Obstetrics
+249	63	19211	159	Dynamics of Democracy and Electoral Systems
+250	63	15432	96	Integrative Approaches in Data Mining and Machine Learning
+251	94	28101	81	Health Impacts of Air Pollution Exposure
+252	99	36210	53	Hydrogels and Bioprinting in Tissue Engineering
+253	64	12846	61	Induced Pluripotent Stem Cells in Regenerative Medicine
+254	67	12655	63	Cellular Mechanisms Linking Diabetes and Cancer Risk
+255	69	20301	48	Transformations in Optical Beam Manipulation Techniques
+256	62	16445	121	Seismic Insights into Tectonic and Hydrothermal Systems
+257	60	17522	44	Ventricular Assist Devices and Pulmonary Hypertension
+258	46	12847	77	Solar Magnetic Fields and Cosmic Ray Variations
+259	76	22875	64	Endodontics and Dental Regeneration
+260	65	16513	80	Interactions of Atmospheric Layers and Water Vapor
+261	44	16766	60	Management Strategies for Acute Pancreatitis and Trauma
+262	94	25537	131	Trade Dynamics and Economic Development Insights
+263	97	30622	102	Urban Heat Management and Thermal Comfort Solutions
+264	88	21846	42	Tau Protein Dynamics in Neurodegenerative Disorders
+265	48	17325	49	Thrombosis Management and Pulmonary Embolism Insights
+266	43	17351	84	Electromagnetic Compatibility in Power Systems and Antennas
+267	67	16197	70	Food Allergies and Immunotherapy Approaches
+268	92	21821	66	Thermoelectric Materials and Their Performance Optimization
+269	61	11376	64	Neuronal Plasticity and Glutamate Receptor Dynamics
+270	97	30433	83	Additive Manufacturing and Material Properties
+271	68	17443	122	Monetary Policy and Economic Dynamics in Markets
+272	69	20256	76	Palliative Care and End-of-Life Decision Making
+273	80	21096	61	Chronic Kidney Disease and Patient Care Dynamics
+274	54	8879	55	DNA and Gene Expression Profiling Innovations
+275	88	24237	148	Antioxidant and Antimicrobial Properties of Essential Oils
+276	40	18046	75	Innovative Techniques in Nasal and Mandibular Surgery
+277	51	15513	68	Fungal Infections and Immune Responses in Patients
+278	51	13125	167	Paleoclimate Insights from Glacial Sediments and Foraminifera
+279	42	8128	54	Immune Responses and Therapeutics in HIV Infection
+280	90	31821	55	Control Strategies for Renewable Energy Systems
+281	48	9379	128	Protein Structures and Enzyme Mechanisms in Bacteria
+282	99	37184	42	Piezoelectric Energy Harvesting Technologies
+283	93	27249	120	Integrating Language Learning and Cultural Competence
+284	82	20946	57	Emotional Processing and Social Understanding in Children
+285	95	35028	62	Integrated Energy Systems and Market Dynamics
+286	39	8161	62	Hafnium Oxide Innovations in Memory Devices
+287	74	14727	51	Oligodendrocyte Dynamics in Central Nervous System Recovery
+288	73	16984	92	Genetic Insights into Rice and Wheat Traits
+289	91	23068	54	NLRP3 Inflammasome and Immune Response Mechanisms
+290	81	17133	68	Composite Materials in Structural Integrity and Performance
+291	18	9505	137	X-Ray Free Electron Laser Innovations in Accelerator Technology
+292	72	18853	59	Electroencephalography and Temporal Lobe Epilepsy Insights
+293	73	19064	92	Fluoride and Oral Health in Children
+294	67	18478	52	Somatostatin Receptor Dynamics in Tumor Treatment
+295	78	27192	50	Power Conversion and Management
+296	85	19900	72	Anorexia Nervosa and Body Image Dynamics
+297	62	17802	57	Vitamin D's Role in Health and Disease Prevention
+298	83	14427	61	Quantum Dots and Their Multifaceted Applications
+299	79	17120	54	Quorum Sensing and Biofilm Dynamics in Bacteria
+300	54	10227	69	Integrin Interactions in Cancer and Endothelial Dynamics
+301	85	20454	84	Structural Health Monitoring Using Acoustic Techniques
+302	97	33127	53	Properties and Applications of Silver Nanoparticles
+303	97	22721	33	High-Performance Materials for Lithium-Ion Batteries
+304	63	18244	58	Patient-Specific Innovations in Radiation Therapy
+305	74	21407	43	Direct Oral Anticoagulants in Atrial Fibrillation Management
+306	57	13899	51	Staphylococcus aureus: Insights into Resistance Mechanisms
+307	11	4745	68	Video Coding and Compression Techniques
+308	81	15859	66	Microbial Solutions for Hydrocarbon Biodegradation
+309	40	11372	81	Plasma Control and Diagnostics
+310	79	20094	125	Integrating Science Education for Student Success
+311	49	12115	77	Tobacco Control and Smoking Cessation Strategies
+312	60	13434	50	Therapeutic Advances in Lysosomal Storage Disorders
+313	64	20334	73	Magnetic Field Analysis and Motor Design
+314	89	30125	53	Collective Control Systems in Robotic Networks
+315	76	21926	52	Interstitial Lung Disease and Systemic Sclerosis Insights
+316	72	18075	59	Transcranial Magnetic Stimulation and Diffusion Imaging Insights
+317	42	14113	138	Diversity and Conservation of Amphibian Species
+318	58	13437	57	Robust Control Systems with Delay Management
+319	70	12365	52	Vascular Endothelial Growth Factor in Tumor Dynamics
+320	65	21739	56	Outcomes and Innovations in Knee Arthroplasty
+321	100	49189	62	Human-Robot Interaction and Emotion Recognition Advances
+322	88	17116	60	Optimizing Scheduling in Complex Manufacturing Systems
+323	61	14406	93	Sperm Quality and Male Fertility Factors
+324	87	20637	105	Microbial Solutions for Water Quality and Ecosystem Health
+325	61	18071	48	Ankle Joint Cartilage Repair
+326	57	14071	135	Biodiversity and Aquaculture in Marine Ecosystems
+327	67	14604	75	Innovative Approaches in Finite Element Analysis and Crack Propagation
+328	85	25871	106	Seismic Resilience in Structural Design and Analysis
+329	56	13664	66	Magnetic Resonance Imaging Techniques
+330	38	11454	65	Photonic Signal Processing and Networks
+331	94	30142	43	Neural Networks and Memristive Devices in Computing
+332	51	11767	80	Innovative Techniques in Image Processing and Rendering
+333	100	44870	44	Biodegradable Polymers and Microplastics in Environment
+334	50	16221	51	Calcium Regulation and Parathyroid Disorders in Patients
+335	85	12873	63	Solid Oxide Fuel Cell Technology
+336	63	19701	94	Hydraulic Fracturing and Reservoir Management Innovations
+337	93	26573	53	Chimeric Antigen Receptor T Cell Innovations
+338	94	35689	51	Integration of Robotics and Action Recognition Techniques
+339	85	23761	72	Resilience and Mental Health in Trauma Contexts
+340	84	15780	89	Coal Gasification and Pyrolysis Processes
+341	64	17946	69	Supportive Care Strategies in Neonatal Outcomes
+342	23	13426	54	Endoscopic and Diagnostic Techniques
+343	78	18402	56	Dengue and Zika Virus Dynamics in Public Health
+344	86	25965	61	Sarcopenia and Quality of Life in Patients
+345	63	11187	52	Hormonal Influence on Cancer and Women's Health
+346	66	22157	63	Transformer Insulation and Dielectric Properties Insights
+347	62	8436	46	Silicon-Based Solar Cell Technologies
+348	74	17111	50	Respiratory Virus Infections and Immune Responses
+349	54	18698	47	Surgical Innovations in Hernia and Prostate Care
+350	58	19003	41	Diagnostic Innovations in Pancreatic and Gastric Tumors
+351	55	11894	57	Genetic Diversity and Treatment Strategies in Malaria
+352	67	11977	45	Neurogenesis and Cellular Mechanisms in Brain Disorders
+353	73	17911	85	Diversity and Health in Social Insects
+354	55	11299	49	Helicobacter Pylori and Gastric Cancer Dynamics
+355	46	11139	77	Reliability and Performance of Solder Joints in Electronics
+356	95	32649	64	Photovoltaic Energy Systems and Storage
+357	79	17961	86	Diversity and Interactions in Forest Ecosystems
+358	27	19816	97	Interplay of Knowledge, Belief, and Language
+359	90	19428	37	Aptamer Applications in Cancer Detection and Treatment
+360	98	32232	48	High-Performance Supercapacitors with Advanced Materials
+361	62	17305	53	Mechanical Ventilation and Acute Lung Injury Management
+362	98	38929	64	Augmented Reality and Gesture Recognition Innovations
+363	58	11127	56	Star Formation and Emission in Circumstellar Disks
+364	47	15929	49	Outcomes and Innovations in Bladder Cancer Treatment
+365	71	14442	76	Integration of Electronic Health Records in Patient Care
+366	61	12419	43	Nrf2 Regulation and Aquaporin Function in Cells
+367	93	21926	79	Energy Systems and Refrigeration
+368	83	17181	52	Graphene Innovations in Electronic and Optical Applications
+369	71	16080	51	Targeted Therapies and Genetic Insights in Cancer
+370	69	18224	132	Genetic Insights into Crop Yield Enhancement
+371	67	17277	83	Mechanical Properties and Fluid Dynamics in Drilling
+372	68	22564	121	Shale Gas Reservoirs and Hydrocarbon Source Dynamics
+373	24	7970	61	Lithography and Optical Technologies
+374	54	11165	50	Ion Channel Dynamics in Neurological Disorders
+375	82	17398	93	Integrative Framework for Decision-Making Models
+376	70	13617	106	Synthesis and Antimicrobial Activity of Derivatives
+377	94	26545	40	Diabetes Management and Cardiovascular Health Insights
+378	60	14463	62	Gastrointestinal Disorders and Treatment Approaches
+379	89	23649	122	Groundwater Quality and Resource Management Insights
+380	43	16423	46	Congenital Heart Disease and Patient Outcomes
+381	90	24137	81	Health Impacts of Climate Change and Ergonomics
+382	50	14169	66	Erythrocyte Dynamics in Sickle Cell Disease
+383	94	30845	70	Cybersecurity Frameworks for Enhanced User Protection
+384	81	15330	74	Cholesterol Management and Antioxidant Properties in Oils
+385	49	11002	142	Genetic Innovations in Plant Regeneration and Metabolite Production
+386	82	14002	91	Quality Management Systems in Diverse Industries
+387	37	7056	82	Chromatography for Protein Separation
+388	96	23079	54	Innovative Gas Sensors for Environmental Monitoring
+389	75	12043	106	Knowledge Sharing and Intellectual Capital Dynamics
+390	84	15436	54	Magnetic Nanoparticles in Biomedical Applications
+391	59	18248	67	Adaptive Optics and Communication in Turbulent Environments
+392	32	6662	71	Impact of Anti-Inflammatory Drugs on Cancer Progression
+393	23	5997	64	Endothelial Function and Nitric Oxide Dynamics
+394	86	18155	89	Investment Strategies and Financial Structures in Banking
+395	25	13160	45	Congenital Heart and Kidney Treatments
+396	88	24604	54	Sleep Quality and Health Across Life Stages
+397	41	17972	62	Existence and Solutions of Nonlinear Elliptic Equations
+398	58	13211	107	Radon and Radionuclide Management in Environmental Safety
+399	75	21536	63	Image Processing and Recognition Systems
+400	30	7514	119	Quantum Chemistry and Molecular Dynamics in Energy Systems
+401	81	19582	92	Strengthening Concrete Structures with Advanced Materials
+402	83	17600	80	Data Mining Techniques for Enhanced Decision Making
+403	96	24550	88	Climate Policy and Carbon Emission Dynamics
+404	97	24875	73	High Entropy Alloys and Advanced Coating Technologies
+405	50	8658	63	Membrane Proteins and Lipid Dynamics in Cells
+406	89	18858	69	Biodiesel Production and Environmental Impacts
+407	65	14693	85	Tribology and Lubrication Systems
+408	43	12752	98	Innovative Approaches in Computational Fluid Dynamics
+409	78	17302	39	Adipose Tissue Dynamics in Metabolic Health
+410	58	11976	83	Harmful Algal Blooms and Acanthamoeba Dynamics
+411	56	15125	62	Cerebrospinal Fluid Dynamics and Clinical Implications
+412	56	16875	51	Silicon Carbide Innovations in Power Electronics
+413	57	14089	100	Earthquake Dynamics and Volcanic Processes
+414	43	8126	47	Interplay of Leptin and Ghrelin in Energy Regulation
+415	49	14488	50	Ovarian Cancer Management and Patient Outcomes
+416	39	10762	62	Image Processing Techniques for Enhanced Signal Clarity
+417	66	11925	47	Histone Modulation and Gene Expression Dynamics
+418	57	16212	37	Cerebral Hemorrhage Management and Rehabilitation Insights
+419	85	17744	91	Ethylene Regulation and Antioxidant Activity in Fruits
+420	75	19504	72	Innovative Approaches to Soil Liquefaction and Mechanics
+421	97	44387	45	Immune Checkpoint Inhibitors in Cancer Therapy
+422	48	15720	53	Bayesian Mixture Models in Regression Analysis
+423	92	25102	87	Gamification and Interactive Learning in Education
+424	81	15211	51	Ionic Liquids in Catalysis and Extraction Processes
+425	56	15365	75	Contraceptive Methods and Women's Health Access
+426	99	33041	82	Circular Economy and Life Cycle Assessment Integration
+427	80	15140	76	Pool Boiling and Turbulent Flow Dynamics
+428	78	16877	77	Innovative Modal Analysis for Structural Health Monitoring
+429	67	14412	68	Gene Expression and Immune Responses in Insects
+430	67	16202	80	Vortex Induced Vibration in Fluid-Structure Systems
+431	99	63584	68	Blockchain Applications in Energy and Security Systems
+432	72	11897	77	Corrosion Resistance in Duplex Stainless Steel Applications
+433	90	18268	45	Innovative Approaches in Wastewater Treatment Technologies
+434	45	8451	43	Quantum Systems and Nanostructured Interfaces in Electronics
+435	54	10333	70	Solidification Dynamics in Aluminum Silicon Alloys
+436	30	7749	110	Thermodynamic Insights into Solvent Systems and Extraction
+437	62	18022	89	Gender Dynamics and Engineering Education Reform
+438	93	28575	83	Resilience Strategies for Climate Change and Disasters
+439	15	5278	99	Electron Dynamics and Ionization Processes in Molecules
+440	59	14619	59	Language Processing and Communication in the Brain
+441	97	25880	50	Thermal Energy Storage and Electrochromic Innovations
+442	80	19944	49	Heart Failure Management and Patient Outcomes
+443	59	12909	49	Ultrasonic Innovations in Medical Imaging and Treatment
+444	71	18952	72	Power System Reliability and Control
+445	79	18476	55	Physical Activity and Health Promotion Strategies
+446	79	19965	81	Childhood Abuse and Family Dynamics Impact
+447	91	21021	70	Waste Management Strategies for Carbon Emission Reduction
+448	68	14852	58	Rheumatoid Arthritis Management and Patient Outcomes
+449	75	17866	76	Caregiver Support and Quality of Life in Dementia
+450	91	22902	62	Catalytic Innovations in Organic Synthesis and Activation
+451	49	8698	72	Quality of Service in Web Service Composition
+452	41	12478	66	Iodine Deficiency and Thyroid Health in Infants
+453	91	23104	57	Autism Spectrum Disorder, Behavior and Early Interventions
+454	45	11520	62	Imaging Techniques for Medical Applications
+455	70	16504	43	Deep Brain Stimulation and Robotic Innovations in Tremor Management
+456	64	12333	52	Copper and Iron Proteins in Disease Mechanisms
+457	53	12692	58	Innovative Mechanisms in Robotic Manipulation and Control
+458	90	20186	59	Nutrition Patterns and Health Outcomes Across Cultures
+459	90	24873	55	Genetic Insights into Trait Association and Disease Risk
+460	83	23943	42	Image Quality and Video Streaming Optimization
+461	87	21183	84	Structural Integrity and Performance of Fiber Reinforced Concrete
+462	77	19805	132	Qualitative Insights into Health and Education Dynamics
+463	56	13260	91	Alcohol Use and Prevention Strategies Among Adolescents
+464	67	11324	45	Diamond Films and Their Multifaceted Applications
+465	36	9880	42	High Power Fiber Laser Innovations and Applications
+466	88	22529	70	Emotional Wellbeing and Life Satisfaction Insights
+467	89	18215	82	Reliability Management in Engineering Systems
+468	59	13609	54	CGRP Pathways and Migraine Management Insights
+469	56	9240	48	Proteomic Techniques for Biomarker Discovery and Analysis
+470	74	11766	69	Innovative Methods for Dye Removal and Analysis
+471	72	16878	64	Impact of Atopic Dermatitis on Quality of Life
+472	74	18967	101	Mathematics Education and Teacher Development Insights
+473	71	15423	85	Nursing Education and Job Satisfaction Dynamics
+474	96	32845	53	Data-Driven Innovations in Transportation Systems
+475	84	14855	43	Plasmonic Nanoparticles in Surface-Enhanced Spectroscopy
+476	91	25138	46	Brain-Computer Interface Technologies
+477	88	13893	35	Organic Solar Cell Polymers
+478	77	19646	70	Intimate Partner Violence and Its Impacts
+479	74	15737	81	Coral Reefs and Marine Ecosystem Resilience
+480	70	13513	75	Heat Transfer Dynamics in Enhanced Systems
+481	97	27250	65	Entrepreneurship and Family Business Dynamics
+482	95	23808	45	Superhydrophobic Coatings for Oil-Water Separation
+483	92	24552	41	Non-Alcoholic Fatty Liver Disease and Fibrosis Insights
+484	58	8625	53	Layered Double Hydroxides in Polymer Nanocomposites
+485	83	20660	49	Parkinson's Disease: Gait, Cognition, and Quality of Life
+486	94	15397	104	Ion Exchange and Lithium Recovery
+487	81	19586	56	Innovative Robotic Systems for Enhanced Manipulation
+488	62	16475	73	Computational Fluid Dynamics and Aeroacoustics
+489	82	22799	64	Innovative Algorithms for Mobile Robot Navigation
+490	89	24691	80	Burnout and Job Satisfaction in Healthcare Professionals
+491	87	17137	61	Bacteriophage Applications in Food Safety and Health
+492	52	13343	53	Cerebellum Dynamics and Eye Movement Control
+493	72	17450	115	Public Administration and Gender Representation Dynamics
+494	90	27670	51	Health Literacy and Social Media in Patient Care
+495	69	17576	75	Soil Mechanics and Foundation Design
+496	42	8721	89	Innovative Approaches in Product Design Engineering
+497	80	14853	43	Macrophage Responses in Tuberculosis and Protein Interactions
+498	90	20859	60	Interactions of Plant Growth-Promoting Rhizobacteria
+499	100	35808	68	Sustainability and Corporate Responsibility in Business
+500	58	11429	48	Genetic Factors and Microparticles in Hemostasis
+501	94	23599	42	Integration of Gene Expression and Protein Interaction Networks
+502	32	13443	57	Biliary Complications and Management Strategies in Cholecystectomy
+503	61	9036	68	Zeolite Catalysts in Chemical Reaction Optimization
+504	41	13658	85	Innovative Control Systems for Spacecraft Operations
+505	39	11361	48	Eosinophilic Inflammation and Quality of Life in Rhinosinusitis
+506	48	14977	37	Esophageal and Gastric Cancer Treatment Innovations
+507	49	10575	87	Hydraulic Models for Soil and Water Management
+508	41	14073	43	Atrial Fibrillation Ablation Techniques and Patient Outcomes
+509	35	9402	45	Myocardial Function and Coronary Health Insights
+510	78	19117	89	Soil Mechanics and Stability Analysis
+511	51	14394	55	Radiation Exposure and Kidney Stone Management
+512	42	10234	44	Silicon Photonics in Optical Device Innovation
+513	90	26259	62	Integrating User Preferences in Recommendation Systems
+514	35	12641	51	Vascular Access and Infection Prevention
+515	39	15144	53	Point-of-Care Ultrasound in Neonatal Care
+516	66	13148	87	Interplay of Personality Traits and Cognitive Function
+517	20	13370	70	Matrix Representations and Polynomial Identities in Mathematics
+518	96	30544	60	Machine Learning Applications in Transport and Commerce
+519	53	11240	54	Gene Expression and Embryo Development in Reproductive Biology
+520	87	12462	43	Innovative Strategies in Gene Delivery Systems
+521	94	19080	46	Innovative Strategies in Supply Chain Management
+522	59	13606	43	Colorectal Cancer Screening and Detection Innovations
+523	85	17196	69	Nitrogen Dynamics and Greenhouse Gas Emissions
+524	65	16044	50	Pediatric Sedation Practices and Safety Protocols
+525	89	19575	43	Probiotics and Their Impact on Health
+526	25	5980	62	Superconductivity and Magnetic Phase Transitions in Complex Materials
+527	20	8167	51	Data Management and Query Optimization in Cloud Systems
+528	35	15551	48	Innovative Techniques in Mandibular Reconstruction and Patient Outcomes
+529	95	23174	52	Innovative Solar Technologies for Energy and Water
+530	41	11380	65	Innovative Approaches in Target Detection and Estimation
+531	15	8189	65	Electromagnetic Field Solutions
+532	64	14387	48	Photonic Crystal and Optical Device Design
+533	67	16768	71	Health Inequality and Discrimination Across Socioeconomic Contexts
+534	40	11750	65	Ionospheric Dynamics and Solar Interactions in Planetary Atmospheres
+535	47	10552	41	Herpes Simplex Virus and Oncolytic Therapy Insights
+536	52	15311	40	Infection Management in Joint Replacement Procedures
+537	67	12422	59	Plasma Applications in Medical and Environmental Solutions
+538	86	18167	55	Thermal Management Innovations in Nanofluids and Heat Pipes
+539	76	15461	67	Water and Carbon Dynamics in Ecosystems
+540	84	15931	72	Spectroscopy and Imaging Techniques
+541	95	24665	64	Hybrid Energy Management in Electric Vehicles
+542	45	18083	122	LGBTQIA+ Identities and Sexual Citizenship
+543	33	9347	51	Metal-Oxide-Semiconductor Transistor Technology
+544	21	5332	73	Dynamics of Liquid Glass Transition and Lithography
+545	77	18443	45	Innovative Prosthetics and Haptic Feedback Systems
+546	29	10657	42	Cardiac Device Therapies and Management
+547	82	15908	74	Public-Private Partnerships in Construction Management
+548	90	20951	66	Polysaccharides and Their Multifaceted Biological Activities
+549	40	7959	47	Pneumococcal Disease and Vaccine Innovations
+550	71	12538	76	Electronic Properties and Structural Dynamics of Advanced Materials
+551	70	16470	57	Soliton Solutions in Nonlinear Schrödinger Dynamics
+552	61	16413	55	Fault Protection for Power Systems
+553	35	8934	68	Genetic Dynamics in Sexual Selection and Speciation
+554	91	18909	57	Microalgae Utilization for Lipid Production and Wastewater Treatment
+555	94	18494	45	Membrane Technologies for Water Treatment and Desalination
+556	5	11829	161	Literary and Social Discourse on Slavery, Politics, Religion
+557	68	11068	50	Fluorescent Probes for Reactive Oxygen Species Detection
+558	93	23968	42	Vibration Analysis and Blind Signal Separation Techniques
+559	66	14603	42	Innovative Techniques in Image Segmentation and Analysis
+560	71	13479	42	Synthetic Biology Models in Metabolic Engineering
+561	94	24301	65	Strength and Sustainability in Concrete Structures
+562	70	11673	41	Fluorescent Probes and Molecular Receptors in Detection
+563	49	13476	54	Motor Control Systems and Techniques
+564	56	12998	37	Systemic Lupus Erythematosus and Patient Outcomes
+565	76	16012	69	Transport Networks and Their Economic Impacts
+566	69	17688	35	Psoriasis Management and Quality of Life Insights
+567	83	20571	52	Traffic Control Systems for Enhanced Transport Efficiency
+568	81	17371	53	Thermoelastic Behavior of Functionally Graded Materials
+569	40	14170	64	Lightning Protection and Railway Systems
+570	84	23624	34	Circular RNA and Cell Proliferation Mechanisms
+571	55	9286	74	Humidity Sensors and Microfluidic Technologies
+572	25	12277	49	Salivary Gland Tumors and Congenital Conditions
+573	43	7967	49	Matrix Metalloproteinases in Disease Mechanisms
+574	51	17693	100	Culturally Responsive Education and Social Justice
+575	29	12658	44	Tumor Characteristics and Treatment Outcomes in Bone Lesions
+576	87	14551	93	Fatherhood and Justice in Organizational Performance
+577	63	6748	54	Mesoporous Silica Materials for Advanced Applications
+578	46	9257	56	Dynamics of Chaotic Systems and Synchronization
+579	93	18049	67	Nanozymes and Pesticide Residue Detection Methods
+580	13	11490	62	Homotopy Theory and Algebraic Structures in Geometry
+581	38	12953	49	Tissue Engineering and Urethral Repair
+582	96	22787	71	Protein Emulsification and Functional Food Applications
+583	72	12997	77	Climate Change Impacts on Soil Moisture Dynamics
+584	78	13752	49	Mitochondrial Dynamics and Protein Import Mechanisms
+585	53	10458	52	Glycogen Synthase Kinase 3 in Bipolar Disorder
+586	50	7748	48	Block Copolymer Applications and Synthesis
+587	18	12870	72	Properties of Analytic Functions and Operators
+588	76	12820	56	Interplay of Taste and Olfactory Sensations
+589	76	15337	81	Efficiency and Sustainability in Fisheries Management
+590	58	13690	86	Sediment Transport Dynamics in River Systems
+591	64	10041	37	Natural Killer Cells and Immune Response Dynamics
+592	95	26639	55	Vegetation and Climate Change Monitoring and Modeling
+593	75	15329	66	Plant Responses to Climate Change and Water Efficiency
+594	40	13305	57	Enhancing Emergency Medical Services and Traffic Safety
+595	77	15297	79	Herbicide Resistance and Weed Management Innovations
+596	60	14215	57	Empathy and Shared Decision Making in Healthcare
+597	48	11037	83	Sexual Behavior and Health Among Adolescents
+598	50	9955	55	Zinc Supplementation and Metabolic Disorders in Newborns
+599	21	10573	53	Testicular and Splenic Tumors
+600	59	13402	42	Prognostic Factors in Cancer and Inflammation
+601	75	18113	58	Robotic Systems for Dynamic Environment Navigation
+602	82	20434	44	Object Recognition and Image Processing
+603	67	15024	45	Quality of Life and Survivorship in Cancer Care
+604	76	18083	64	Intergroup Relations and Implicit Bias
+605	43	7502	57	Interactions of Gas Hydrates and Colloidal Particles
+606	34	10885	40	Outcomes of Assisted Reproductive Technology in Pregnancy
+607	77	17234	47	Cannabis Effects on Health and Regulation
+608	45	12573	45	Botulinum Toxin Applications in Movement Disorders
+609	57	11639	32	Steganography and Watermarking Techniques
+610	37	12380	41	Surgical Outcomes and Treatment Strategies for Uterine Conditions
+611	25	4772	45	Silicon Nanostructures and Their Optical Properties
+612	90	18912	38	Immune Cell Dynamics in Tumor Microenvironments
+613	81	13468	52	Innovative Drug Delivery Systems Using Nanoparticles
+614	35	9910	59	Market Dynamics in Cooperative Auctions and Games
+615	85	16516	69	Heavy Metal Pollution and Organic Waste Management
+616	34	10895	45	Pain Management and Imaging Techniques
+617	55	9364	36	Apolipoproteins and Lipid Dynamics in Disease
+618	45	10742	57	Genotype-Guided Warfarin Dosing and Patient Outcomes
+619	53	12739	53	Optimization Models for Multidisciplinary Design Challenges
+620	90	48677	44	Mental Health Impacts of COVID-19 Pandemic
+621	53	11418	57	Heart Rate Variability and Autonomic Function Insights
+622	57	10338	57	Neural Mechanisms of Memory and Emotion Processing
+623	71	17450	70	Interconnected Health and Behavior in Species
+624	50	7398	42	Organic Transistors and Molecular Structures in Electronics
+625	53	8443	60	Quantum Dynamics and Photosynthetic Protein Interactions
+626	94	20311	37	Catalytic Pyrolysis and Bio-Oil Production Potential
+627	88	14707	50	Microbial Innovations in Wastewater Nitrogen Removal
+628	85	18083	42	Metabolomics and Its Role in Disease Understanding
+629	46	10162	84	Ecosystem Dynamics and Carbon Management in Fisheries
+630	89	18176	59	Antioxidant Compounds in Wine and Tea
+631	74	17368	42	Fall Prevention and Health Improvement in Older Adults
+632	49	10524	70	Atomization and Combustion Dynamics
+633	30	7772	39	Antiplatelet Strategies in Coronary Interventions
+634	82	11409	45	Wearable Biosensors for Glucose and Hydrogen Peroxide Detection
+635	73	11993	62	Internationalization and Cultural Dynamics in Emerging Markets
+636	62	14882	41	Cardiovascular Monitoring and Neonatal Care
+637	89	15206	73	Thermal Decomposition and Energetic Material Properties
+638	87	13992	80	Enhancing Customer Loyalty through Service Quality
+639	15	5013	50	Wireless Network Performance and Quality of Service
+640	92	26278	38	Long Noncoding RNA and Extracellular Vesicles in Cancer
+641	40	11599	72	Geophysical Methods for Subsurface Characterization
+642	76	13597	53	Mycotoxin Detection and Impact on Health
+643	57	10846	68	Marine Ecosystems and Climate Change Interactions
+644	78	17275	70	Traffic Safety Models and Pedestrian Behavior Insights
+645	69	10326	46	Catalytic Innovations in Diesel Emission Control
+646	30	10460	41	Peripheral Artery Disease and Critical Limb Ischemia Insights
+647	60	12524	46	Point Cloud Processing and 3D Modeling
+648	64	12749	47	Interconnections Between Oral Health and Systemic Diseases
+649	42	10061	33	Cytomegalovirus and Community-Acquired Pneumonia Insights
+650	80	11437	74	Carbon-Based Membranes for Enhanced Gas Separation
+651	44	11216	44	Cognitive Radio Innovations in Spectrum Management
+652	45	10239	45	Impact of Rotavirus and Norovirus on Child Health
+653	93	21666	31	Graphene-Based Nanocomposites for Enhanced Properties
+654	73	18657	38	Resource Management in Software-Defined Networks
+655	33	10015	104	Nuclear Fuel and Thermal Hydraulics
+656	96	17495	51	Electromagnetic Properties of Advanced Composite Materials
+657	46	10702	70	Turbomachinery and Cooling Systems
+658	63	12620	41	Enhancing Quality of Life through Ulcer Management
+659	80	17965	59	Innovative Approaches in Wind and Tidal Energy
+660	60	12903	84	Fusarium Resistance and Biological Control in Agriculture
+661	8	2820	48	Trust and Efficiency in Peer-to-Peer Networks
+662	39	9159	41	Leishmania and Macrophage Interactions in Disease
+663	95	27963	44	Network Security and Intrusion Detection
+664	28	5351	73	Crystallization Dynamics in Polymer Blends and Composites
+665	55	11271	82	Economic Growth and Structural Change in Development
+666	45	9947	40	Pharmacogenomics and Chemotherapy in Colorectal Cancer
+667	61	9483	70	Palladium Catalysis in Cross-Coupling Reactions
+668	44	7453	36	Heat Shock Proteins in Cancer and Neurodegeneration
+669	29	8985	40	Fiber Optics and Supercontinuum Generation
+670	52	12129	74	Parasite Dynamics in Livestock and Wildlife
+671	27	6294	55	Magnetic Resonance Techniques in Structural Biology
+672	26	6387	81	Agent-Based Systems in Intelligent Manufacturing Design
+673	54	9606	48	Laser Pulse Applications in Material Fabrication
+674	46	12259	52	Nutritional Strategies for Preterm Infant Growth
+675	32	10006	49	Sexual Health Dynamics Among Men Who Have Sex with Men
+676	95	22988	65	Energy Optimization in Building Systems Design
+677	24	7994	80	Neutron Applications in Cancer Treatment and Detection
+678	26	10364	55	Pediatric Ear Disease Management
+679	92	33500	45	Reinforcement Learning Applications in Autonomous Systems
+680	52	9159	54	Oxytocin and Cortisol in Behavioral Neuroscience
+681	61	11464	69	User-Centered Design in Digital Interaction
+682	19	4693	66	Grid Computing and Resource Management in Cloud Environments
+683	65	12332	50	Athlete Health and Muscle Performance Insights
+684	64	9913	50	ADHD and Associated Neuropsychiatric Disorders
+685	52	10022	32	Muscle Regeneration and Dystrophy Mechanisms
+686	55	11638	121	Invasive Species Management and Plant Community Dynamics
+687	37	8757	52	Complementary and Alternative Medicine in Patient Care
+688	53	10702	41	Neutrinos and Dark Matter Phenomena
+689	52	12390	98	Conservation Strategies for Endangered Species Management
+690	11	4069	47	Optical Network Management and Protection
+691	22	6172	44	Innovative Approaches in Object Detection and Tracking
+692	69	10821	54	Thermal Barrier Coatings and Oxidation Resistance
+693	30	8932	47	Erectile Dysfunction and Sexual Health Insights
+694	91	17365	43	Mercury Dynamics in Environmental and Health Contexts
+695	54	10326	68	Mental Health and Acculturation Among Immigrant Populations
+696	12	3354	49	Superconductivity Innovations in Yttrium Barium Compounds
+697	60	10199	38	Laminopathies and Ubiquitin Pathways in Disease
+698	50	10828	46	Cystic Fibrosis: Genetic Insights and Cellular Mechanisms
+699	36	10870	60	Forensic Insights into Pediatric Trauma and Burns
+700	12	9702	66	Dynamics and Geometry in Manifold Theory
+701	61	13332	61	Decision Making and Risk in Behavioral Economics
+702	74	14225	73	Integrating Safety Management in Occupational Health
+703	27	11063	44	Autoimmune Bullous Skin Diseases
+704	11	5493	37	Channel Coding for Communication Systems
+705	57	9552	47	Multidrug Resistance Mechanisms in Cancer Treatment
+706	61	13230	54	Community Support and Mental Health Integration
+707	29	5500	62	Catalytic Polymerization and Coordination Complexes in Synthesis
+708	59	13074	56	Innovative Antenna Applications in Medical and Environmental Fields
+709	29	10589	38	Craniosynostosis and Pediatric Health Outcomes
+710	36	7743	43	Folic Acid and Homocysteine in Health Outcomes
+711	84	20059	64	Integrating Remote Sensing for Environmental Monitoring
+712	33	8807	36	Microsatellite Instability and Cancer Risk Assessment
+713	84	17036	63	Nutritional Enhancements in Aquaculture Feed Systems
+714	40	8196	40	Selenium and Vitamin C in Health Management
+715	45	8665	36	Stability and Synchronization in Neural Networks
+716	73	12524	37	Targeted Antibody Therapies in Cancer Treatment
+717	74	16535	75	Social Support and Loneliness in Aging Populations
+718	81	12257	39	Electrochemical Sensors and Molecular Imprinting Techniques
+719	70	16554	66	Innovative Control Systems for Autonomous Vehicles
+720	34	8374	52	Genetic Insights into Intersex Conditions and Disorders
+721	39	9729	87	Salmon Population Dynamics and Water Management Challenges
+722	69	9287	54	Enzyme Immobilization Techniques for Enhanced Biocatalysis
+723	21	6320	44	Microelectromechanical Systems Design
+724	81	14633	76	Income Inequality and Financial Literacy Dynamics
+725	21	11656	41	Wrist Joint and Tendon Treatments
+726	37	9892	75	Plant Virus Resistance and RNA Mechanisms
+727	38	9281	61	Innovative Approaches in Metal Forming and Ductile Fracture
+728	64	12592	39	Melanocyte Function and Vitiligo Treatment Insights
+729	35	8844	54	Substance Abuse and Health Care Integration Challenges
+730	69	17010	42	Simulation-Based Training in Nursing and Pediatrics
+731	70	14597	50	Innovative Approaches in ECG Signal Processing and Monitoring
+732	36	9502	35	Complement System and Hereditary Angioedema Insights
+733	29	7764	47	Neural Mechanisms of Auditory Processing and Hearing
+734	18	10377	37	Clinical Insights into Appendicitis and Diverticulitis
+735	20	8438	49	Data Structures and Complexity Theory
+736	49	13521	53	Precision Navigation Systems and Signal Processing
+737	87	16451	67	Starch Properties and Applications in Food Science
+738	3	5381	102	Psychoanalysis and Patient Care Dynamics
+739	16	11738	51	Geometric Structures and Curvature in Manifolds
+740	36	13023	99	Democracy and Justice in European Integration
+741	45	10544	52	Mental Health Risks and Deception in Offenders
+742	77	15946	44	Physical Activity and Motor Skills in Children
+743	50	11893	58	Cost Utility in Health Care Decision Making
+744	61	14458	39	Cardiac Resuscitation Techniques and Patient Outcomes
+745	18	8931	43	Testicular and Germ Cell Tumors
+746	14	6853	50	Plasma Dynamics and Electron Beam Innovations
+747	48	12450	59	Dry Eye Disease and Ocular Health
+748	17	12689	134	Intersections of Education, Territory, and Trafficking
+749	51	13538	96	Democracy, Trust, and Political Dynamics in Society
+750	58	7704	56	Microstructural Innovations in Titanium Alloys
+751	55	13465	42	Mathematical Models in Disease Dynamics and Control
+752	71	19179	115	Language Ideologies and Multilingual Education Dynamics
+753	53	9827	47	Molecular Mechanisms in Aging and Cancer Risk
+754	45	10010	36	Retinal Degeneration Therapies
+755	97	15798	55	Influence of Brand Equity on Consumer Behavior
+756	18	5693	54	Memory Architecture and Processor Design
+757	97	25505	42	Narcissism and Social Media Influence on Youth
+758	32	8728	70	Ethics and Informed Consent in Clinical Trials
+759	60	15219	66	Enhancing Maternal Health Services in Communities
+760	22	8108	34	Coronary Bypass Techniques and Patient Outcomes
+761	51	7420	47	Protein Interactions and High-Pressure Processing Effects
+762	92	28835	51	IoT Integration for Smart Agriculture and Healthcare
+763	89	19135	59	Innovative Asphalt Mixtures for Enhanced Performance
+764	11	10775	136	Intersections of Religion, Society, and Education
+765	49	8851	49	Childhood Obesity and Nutritional Interventions
+766	64	11315	54	Genetic and Environmental Influences on Health Disparities
+767	27	9441	41	Drug Hypersensitivity and Viral Infections in Humans
+768	67	9197	55	Organic Matter Dynamics in Environmental Systems
+769	53	9447	46	Photodynamic Therapy and Reactive Oxygen Species in Cancer Treatment
+770	55	11358	80	Social Capital and Housing Dynamics in Urban Areas
+771	81	15749	65	Anthocyanins and Their Multifaceted Health Benefits
+772	69	15803	33	Uric Acid and Inflammatory Disease Management
+773	29	5009	62	Surfactant Micelles in Drug Delivery Systems
+774	81	16234	62	Climate Change Impacts on Precipitation Patterns and Extreme Events
+775	55	9026	45	Omega-3 Fatty Acids in Health and Disease
+776	66	9247	39	Magnetic Properties and Phase Transitions in Alloys
+777	44	7982	58	Crystallization Dynamics and Nonlinear Optical Properties
+778	38	7036	42	Neuroscience Insights into Visual and Auditory Systems
+779	32	6069	58	Catalytic Innovations in Silicon-Based Organic Compounds
+780	37	8432	32	Toxoplasma and Cryptosporidium Infections in Hosts
+781	59	6977	48	Cationic Antimicrobial Peptides in Drug Development
+782	73	12217	36	Genetic and Cellular Mechanisms in Parkinson's Disease
+783	59	11726	38	Diabetes and Its Complications in Foot Health
+784	33	6498	55	Asymmetric Catalysis in Chiral Compound Synthesis
+785	42	10054	39	Peripheral Nerve Regeneration and Clinical Implications
+786	57	9627	48	Food Safety Challenges with Listeria and Clostridium
+787	33	9831	58	Bone Health and Mechanical Properties in Osteoporosis
+788	34	6212	61	Synthesis and Mechanisms in Organic Chemistry
+789	63	12933	37	Soil Moisture Dynamics and Climate Impact Assessment
+790	35	11213	34	Transfusion Strategies and Patient Outcomes in Surgery
+791	47	9610	49	Tungsten Applications in Fusion and Spectroscopy
+792	21	7105	79	Measurement Standards and Techniques in Analytical Chemistry
+793	26	8506	106	Fossil Record Insights into Biostratigraphy Evolution
+794	18	13673	122	Capabilities, Culture, and Justice in India
+795	50	9465	41	Magnetic Properties and Residual Stress in Steel Alloys
+796	80	15411	76	Inclusive Education for Children with Disabilities
+797	48	7746	39	Hepatocyte Dynamics in Liver Health and Disease
+798	80	12686	44	Polyurethane and Carbon Dioxide Utilization
+799	44	14464	70	Pragmatic Discourse in Language and Media Contexts
+800	56	11692	49	Olfactory and Drug Delivery Innovations in Health
+801	79	19876	49	Transgender Health and Identity in Diverse Contexts
+802	67	9415	37	Shape Memory Alloys and Martensitic Transformations
+803	69	11790	44	Psychoactive Substances and Forensic Toxicology Insights
+804	84	15631	36	Nanoparticles in Environmental and Health Applications
+805	60	7867	40	Supramolecular Complexation in Advanced Material Design
+806	31	7620	57	Innovative Approaches to Sound Insulation and Control
+807	19	4897	46	Integration of Search Engines and Case-Based Reasoning
+808	88	17225	46	Mechanical Properties of Natural Fiber Composites
+809	15	9634	59	Integral Operators and Hardy Spaces in Geometry
+810	41	9364	52	Real-Time Systems and Network Communication Protocols
+811	38	6365	59	Composite Materials and Crack Propagation Dynamics
+812	62	12204	49	Wave Energy Conversion and Hydrodynamic Modeling
+813	8	10004	111	Philosophical Foundations of Art and Politics
+814	86	16627	57	Microbial Dynamics and Soil Health Interactions
+815	63	13775	59	Dynamic Interactions in Railway Systems and Structures
+816	30	6401	38	Interactions of GTP Binding Proteins in Muscle Function
+817	74	13061	58	Moisture Dynamics and Energy Efficiency in Drying
+818	31	5030	46	Nicotinic Receptor Dynamics in Neurological Contexts
+819	37	12687	100	Intersections of Peacebuilding, International Interventions and Religion
+820	25	11032	37	Meningioma Management and Imaging
+821	31	6934	53	Neural Mechanisms of Visual Motion and Color Perception
+822	27	8267	38	Hedgehog Pathway and Cancer Cell Dynamics
+823	71	9787	39	Hydroxyapatite Applications in Biomedical Engineering
+824	60	9884	53	Health Risks of Lead and Cadmium Exposure
+825	12	8376	58	Interconnections of Algebraic Structures and Quantum Theory
+826	14	3386	54	Superconductivity and Magnetic Interactions in Cuprates
+827	43	8527	40	Mitochondrial DNA Variations in Human Health
+828	22	7339	51	Interactions of Plasma and Magnetic Fields in Space
+829	86	17586	55	Solar Energy and Photovoltaic Systems
+830	53	12672	37	Concussion Management and Athlete Recovery Insights
+831	78	12953	51	Flotation Techniques for Mineral and Wastewater Treatment
+832	25	9915	45	Impact of Eye Health on Quality of Life
+833	97	23786	52	Consumer Behavior and Climate Change Awareness
+834	57	8695	36	Hypoxia and Tumor Metabolism in Cancer Progression
+835	86	18150	69	Landslide Susceptibility and Risk Management Framework
+836	53	11291	53	Integrated Care Models for Chronic Health Management
+837	91	12331	47	Innovative Approaches to Carbon Dioxide Capture
+838	43	12979	67	Forgiveness and Decision Making in Legal Contexts
+839	57	12666	60	Reflective Practice in Student Learning Development
+840	35	11389	43	Stochastic Models for Pricing and Risk Management
+841	55	12164	83	Gender Discrimination and Educational Policy Dynamics
+842	54	10119	69	Coastal Dynamics and Sediment Transport Mechanisms
+843	62	11879	52	Enhancing Properties of Aluminum Metal Matrix Composites
+844	19	6685	38	Thrombolytic Strategies in Myocardial Infarction Management
+845	43	9721	56	Dynamic Control of Magnetic Rotor Systems
+846	45	10488	41	Trust and Security in Cloud Computing Systems
+847	43	7823	55	Pharmacokinetics and Infection Dynamics in Livestock
+848	44	7625	51	Innovative Approaches in Acetylcholinesterase Inhibition
+849	25	8841	41	Matrix Solutions for Differential Equations and Stability
+850	83	16054	60	Sustainable Transport and Green Building Integration
+851	43	9495	48	Influence of Pricing and Volunteering on Social Behavior
+852	42	7297	52	Integrating Mental Health Services in Primary Care
+853	30	7184	42	User-Centric Design in Interactive Systems
+854	14	4109	47	Neuroprotection and Myocardial Resilience in Ischemia
+855	26	6313	50	Gene Regulation and Behavioral Dynamics in Insects
+856	27	7393	49	Polarimetry and Thermal Radiation in Advanced Measurement Techniques
+857	29	6237	48	Pharmacokinetics and Drug Interaction Mechanisms
+858	40	9459	38	Genomic Insights into Intellectual Disabilities and Syndromes
+859	91	16515	35	Cellulose Innovations in Material Science Applications
+860	13	4339	47	X-Ray Techniques in Advanced Lithography Applications
+861	69	11092	41	Breast Cancer Screening and Health Disparities
+862	21	5971	57	Skin Sensitization and Occupational Health Risks
+863	36	9026	79	Biomimetics and Fish Species Adaptation Insights
+864	40	7264	36	Quantum States and Topological Effects in Materials
+865	92	19676	35	Ferroptosis and Iron Metabolism in Health
+866	25	7162	106	Biostratigraphy and Climate Change in Eocene Records
+867	48	6432	48	Lipase Enzymes in Biocatalytic Applications
+868	47	9613	56	Data Assimilation and Sea Level Dynamics
+869	52	7247	51	Protein Interactions and Spectroscopic Techniques in Biochemistry
+870	25	5185	55	Porphyrin and Phthalocyanine Complexes in Catalysis
+871	83	14167	50	Enhancing Meat Quality through Innovative Processing Techniques
+872	22	9018	145	Cultural Evolution and Resource Utilization in Prehistory
+873	54	10628	38	Gestational Diabetes and Its Long-term Impacts
+874	61	7334	53	Enhancements in Epoxy Composite Properties and Applications
+875	37	8766	52	Innovative Clustering Techniques for Data Segmentation
+876	87	15702	43	Emotional Labor and Job Satisfaction in Workplaces
+877	91	15516	59	Integration of Robotics and Computational Thinking in Education
+878	47	10745	78	Innovative Strategies for Pest Control and Management
+879	41	7520	45	Genetic Insights into Human Ancestry and Diversity
+880	65	11081	45	Gene Expression and Developmental Mechanisms in Plants
+881	95	16611	32	Chitosan Applications in Health and Food Packaging
+882	93	22831	41	Urban Green Spaces and Community Wellbeing
+883	73	14143	53	Thermal Dynamics in Geothermal Energy Systems
+884	17	4392	56	Opioid Receptor Dynamics in Pain Management
+885	46	6944	51	Heavy Metal Impact on Aquatic Ecosystems
+886	40	8362	84	Biodiversity and Water Quality in Freshwater Ecosystems
+887	29	5508	35	Estrogen Influence on Behavior and Doping Dynamics
+888	96	17738	31	Foam and Perfluoroalkyl Substances in Environmental Applications
+889	26	8858	35	Genetic Insights and Surgical Approaches in Tumor Management
+890	25	7198	40	Data Management and Processing in Cloud Systems
+891	53	7701	42	Microwave Processing and Mechanical Properties of Composites
+892	83	16658	40	Mindfulness and Its Impact on Mental Health
+893	82	13837	52	Innovative Approaches to Urban Stormwater Management
+894	48	11854	52	Interprofessional Education and Cultural Competence in Health
+895	68	13163	54	Suicide Risk and Self-Harm Dynamics
+896	18	10320	44	Graph Properties and Their Applications in Mathematics
+897	49	9146	81	Wood Properties and Treatments for Enhanced Performance
+898	86	11672	30	Hydrogen Dynamics in Fuel Cell Systems
+899	16	6413	50	Plasma Dynamics and Electric Discharge Innovations
+900	23	9477	50	Control Strategies for Wave Equation Systems
+901	68	12603	54	Human-Robot Interaction in Nuclear Power Systems
+902	38	8232	41	Fault Detection and Control in Dynamic Systems
+903	27	5038	36	Toll-like Receptors and Antimicrobial Peptides in Immunity
+904	23	6582	48	Superconducting Tapes and Fault Current Limiting
+905	31	7632	77	Open Access Resources in Scholarly Communication
+906	31	7849	58	Reproductive Efficiency in Dairy and Meat Production
+907	35	9898	95	Welfare Systems and Retirement Dynamics in Society
+908	63	12560	66	Internationalization and Quality in Higher Education Systems
+909	44	7910	43	Quantum Spin Systems and Magnetic Phase Transitions
+910	37	6663	36	Bone Remodeling and Osteoclast Regulation Mechanisms
+911	24	4606	60	Neurochemical Mechanisms in Depression and Behavior
+912	75	11077	50	Mangrove Ecosystems and Heavy Metal Pollution Dynamics
+913	59	8456	40	Disinfection Byproducts and Water Quality Management
+914	78	13959	70	Water Resource Management and Agricultural Sustainability
+915	19	6726	85	Parasite Dynamics in Freshwater Eel Populations
+916	31	8325	42	Parasite Infections and Immune Responses
+917	63	11902	51	Integrating Forestry and Technology for Sustainability
+918	74	15038	41	Nutrition, Food Security, and Family Dynamics
+919	43	10535	88	Diversity and Resistance in Plant Pathogens
+920	42	7828	37	Innovative Control Systems for Parameter Estimation
+921	48	8019	45	Integration of Energy Systems in Natural Gas Networks
+922	13	6157	56	Innovative Methods for Solving Boundary Value Problems
+923	47	9360	66	Structural Integrity of Steel in Fire Conditions
+924	48	7028	43	Silicon Innovations in Solar Cell Technology
+925	39	9006	38	Individual Differences in Multisensory Perception
+926	5	8317	83	Philosophical Perspectives on Religion and Community
+927	98	27282	33	Battery Management and Performance
+928	38	5674	54	Properties and Applications of Bulk Metallic Glass
+929	59	13489	43	Genomic Insights into Plant and Disease Variants
+930	81	8004	35	Hydrogen Storage and Catalysis Innovations
+931	13	4748	38	Yttrium Aluminum Garnet Laser Technologies
+932	53	11317	33	Patient-Reported Outcomes in Cardiovascular Health
+933	78	11053	53	Corrosion Inhibition Mechanisms in Metal Alloys
+934	48	8918	44	Mental Health Strategies for Youth Anxiety Disorders
+935	16	3739	36	Image and Video Retrieval Systems
+936	28	7806	33	Fertility Preservation Strategies in Cancer Treatment
+937	66	9602	41	Dynamic Control Systems for Flexible Manipulators
+938	28	8917	39	Cleft Lip and Palate Treatment Innovations
+939	29	4632	53	Catalytic Innovations in Asymmetric Synthesis and Characterization
+940	70	10574	52	Institutional Change in Public Sector Management Accounting
+941	35	10408	72	Technology, Society, and Public Engagement Dynamics
+942	75	12692	35	Friction Stir Welding Innovations in Material Strength
+943	56	8961	40	Asphaltene Dynamics and Surfactant Interactions in Crude Oil
+944	46	7062	50	Biosynthetic Pathways in Antibiotic Production
+945	44	7646	59	Multicomponent Reactions in Antimicrobial and Anticancer Development
+946	41	7485	57	Fluidized Bed Dynamics and Particle Interaction Models
+947	37	7922	37	Memory Dynamics Across Time and Emotion
+948	20	8667	72	Interactions of Speech Perception and Prosody
+949	74	9156	36	Magnesium Alloys: Microstructure and Mechanical Properties
+950	39	6423	53	Optical Properties and Structural Dynamics of Glasses
+951	65	12214	33	Metabolic and Hormonal Dynamics in PCOS Management
+952	78	11603	52	Enhancing Cereal Quality through Genetic Insights
+953	77	12095	35	Bioactive Peptides and Antioxidant Properties in Health
+954	78	10098	55	Lignin and Cellulose in Plant Material Applications
+955	12	5506	46	Digital Signal Processing Architectures
+956	36	5200	96	Cobalt Complexes in Catalytic Epoxidation Reactions
+957	34	6225	46	Electron Microscopy and Ion Beam Techniques
+958	28	7671	34	Fault Tolerance and Concurrency in Distributed Systems
+959	44	7535	41	Raman and Infrared Spectroscopy in Cancer Detection
+960	51	7355	32	Matrix-Assisted Techniques in Mass Spectrometry
+961	54	8227	40	Magnetorheological Materials in Structural Applications
+962	27	6341	35	Cardiac Biomarkers and Patient Management Insights
+963	27	4236	38	Conductive Polymers and Their Multifaceted Applications
+964	42	8328	68	Plant Defense Mechanisms Against Insect Herbivores
+965	60	18978	36	Diversity and Gender Dynamics in Academic Medicine
+966	37	6248	58	Laser-Based Detection of Gas Concentrations
+967	30	7097	50	Gambling Behavior and Decision-Making Dynamics
+968	67	12781	46	Innovative Approaches in Medical Education and Learning
+969	7	13753	116	Cultural and Legal Transformations in Russian Society
+970	29	9662	50	Machine Learning Applications in Music and Sound
+971	60	10019	86	Collective Bargaining and Taxation in Labor Markets
+972	27	8068	83	Evolutionary Insights from Fossil Records and Species
+973	41	6868	33	Bacillus Proteins and Enzymatic Applications in Biology
+974	40	7434	57	Urban Wind Flow and Pollutant Dispersion Dynamics
+975	93	20953	36	Sustainable Energy Transition and Community Development
+976	33	8181	36	Terahertz Applications in Spectroscopy and Imaging
+977	47	14956	31	Control Strategies for Modular Multilevel Converters
+978	44	9921	45	Enhancing Emergency Department Care Models
+979	30	7913	35	Genetic Diversity and Disease Resistance in Aquatic Species
+980	43	9561	34	Vaccine Hesitancy and Measles Immunization Challenges
+981	59	8729	39	Interdisciplinary Insights on Particle Dynamics and Life Origins
+982	56	6151	39	Luminescent Properties and DNA Interactions of Europium Complexes
+983	64	14020	38	Postpartum Depression and Maternal Mental Health Insights
+984	66	11283	49	Psychometrics and Test Anxiety Measurement Insights
+985	14	7433	35	Squamous Cell Carcinoma Management
+986	60	10508	65	Soil Erosion and Sediment Transport Dynamics
+987	83	12886	44	Creative Thinking and Gifted Education Frameworks
+988	41	6806	36	Innovative Approaches in Software Testing and Development
+989	84	12906	40	Corrosion Resistance and Magnesium Oxide in Concrete
+990	9	7900	46	Invariants and Structures in Algebraic Geometry
+991	19	5363	45	Genotoxicity and Cancer Risk Assessment Framework
+992	56	10762	38	Antibiotic Stewardship and Resistance Management
+993	56	6472	44	Supercritical Fluid Applications in Extraction Processes
+994	82	17503	60	Digital Forensics and Cybersecurity in Social Media
+995	27	4638	41	Glutathione Transferase and Ethanol Exposure Effects
+996	18	5679	53	Interplay of Behavior and Coloration in Species
+997	38	10064	74	Innovative Materials in Conservation and Analysis
+998	72	13943	47	Designing Technology for User-Centric Health Solutions
+999	14	5355	43	Imaging and Radiation Detection Technologies
+1000	78	14019	53	Motivation and Mental Health in Physical Education
+1001	9	2396	53	Ion Implantation Techniques in Silicon Materials
+1002	62	9512	38	Carotenoid Dynamics in Nutrition and Health
+1003	36	7777	40	Predictive Control Models for Complex Systems
+1004	78	13515	43	Interpersonal Relations and Mental Health in Youth
+1005	34	7593	34	Celiac Disease and Gluten Sensitivity Insights
+1006	19	7043	65	Canine and Feline Tumor Management Insights
+1007	50	10210	80	Sustainable Practices in Rice and Wheat Cultivation
+1008	31	9093	35	Lymphatic Function and Cancer Treatment Insights
+1009	15	3598	54	Thermodynamic Properties of Alloy Nanostructures
+1010	49	10074	52	Seismic Response and Stability of Reinforced Structures
+1011	42	4663	49	Nanostructured Films and Ion Transport Mechanisms
+1012	57	11015	50	Aeroelastic Innovations in Aircraft Design and Performance
+1013	16	4516	45	Silicon Plasma Dynamics and Etching Innovations
+1014	84	11513	33	Tribological Properties and Self-Healing Polymers in Materials
+1015	3	7321	111	Renaissance Influence on English Language and Culture
+1016	62	8520	44	Dynamics of Group Processes and Decision Making
+1017	16	11331	89	Intersectionality and Justice in Black Feminist Discourse
+1018	64	7344	36	Silicon Carbide Composites for High-Temperature Applications
+1019	30	5700	46	Electrodeposition Techniques for Enhanced Coating Properties
+1020	66	12443	61	Climate Change Impacts on Frozen Soil Dynamics
+1021	19	7120	79	Insect Diversity and Biological Control Mechanisms
+1022	13	6869	87	Cultural Capital and Social Dynamics in Education
+1023	9	7622	50	Elliptic Curves and Polynomial Solutions in Number Theory
+1024	12	7481	89	Health Care Dynamics in Brazilian Communities
+1025	17	6866	44	Error Estimation in Finite Element Methods
+1026	42	8847	65	Quality Child Care and Early Education Programs
+1027	65	6992	45	Catalytic Innovations in Hydrocarbon Conversion Processes
+1028	54	9576	59	Ectomycorrhizal Fungi and Soil Microbiology Dynamics
+1029	7	4444	50	Integration of Logic and Knowledge Representation
+1030	49	8882	44	Temporomandibular Joint Dynamics and Pain Management
+1031	6	5375	56	Computability and Topological Group Dynamics
+1032	16	11275	96	Cultural Memory and Historical Narratives in Conflict
+1033	87	16437	56	Sustainable Food Systems and Waste Reduction Strategies
+1034	48	10019	37	Integration of Robotics and Spacecraft Control Systems
+1035	13	4550	37	Parallel Programming and Memory Systems
+1036	32	5475	48	Vibrio Pathogenesis and Glycosylation Mechanisms
+1037	54	10306	53	Optimizing Poultry Production and Welfare Strategies
+1038	26	8207	49	Innovative Approaches in Petroleum Reservoir Management
+1039	19	5370	64	Nutrient Dynamics and Toxicity in Aquatic Ecosystems
+1040	52	10096	50	Geochemical Insights into Rare Earth Deposits
+1041	51	10772	52	Hydraulic Performance and Flow Dynamics in Pumps
+1042	20	6541	40	Radiation Exposure and Health Risk Assessment
+1043	35	8639	49	Religiosity and Spiritual Care in Health Contexts
+1044	58	8513	33	Light-Driven Mechanisms in Plant and Protein Function
+1045	37	4868	50	Ruthenium Complexes in Catalysis and Medicine
+1046	37	6850	38	Attachment Styles and Parenting Dynamics in Mental Health
+1047	15	6516	32	Genetic Insights into Neurofibromatosis and Tumor Dynamics
+1048	5	1401	45	Electron Transport and Surface Dynamics in Silicon
+1049	57	8919	57	Physiological Responses of Aquatic Species to Environmental Changes
+1050	59	8102	42	Click Chemistry Applications in Protein and Polymer Development
+1051	16	3644	66	Innovative Approaches in Asymmetric Synthesis Chemistry
+1052	24	6870	61	Steel Production and Quality Control
+1053	23	5061	40	Dynamics of Financial Markets and Power Law
+1054	33	8178	47	Data Visualization Techniques for Enhanced User Engagement
+1055	52	9290	36	Quality of Life for Children with Health Needs
+1056	36	7583	52	Saffron's Role in Plant Adaptation and Pollination
+1057	98	32029	42	Digital Twin Integration in Smart Manufacturing Systems
+1058	32	6091	35	Borderline Personality Disorder and Substance Abuse
+1059	26	6194	36	Antivenom Development and Phospholipase Interactions
+1060	24	7075	37	Cosmic Rays and Dark Matter Interactions
+1061	35	7303	38	Seismic Response and Uncertainty in Structural Analysis
+1062	84	12944	39	Sustainable Energy Systems and Rural Electrification
+1063	68	8852	47	Heavy Metal Management in Aluminum and Bauxite
+1064	23	7918	112	Diversity and Applications of Amaranth Species
+1065	52	9034	82	Integrating Community Forestry and Environmental Governance
+1066	75	9839	42	Risk Management and Optimization in Financial Markets
+1067	26	7495	39	Enhancing Childbirth Experiences through Midwifery Practices
+1068	31	7123	46	Queueing Models for Service System Optimization
+1069	22	8346	54	Consciousness and Cognitive Systems in Human Experience
+1070	24	6641	33	Infection Control Strategies in Health Care Settings
+1071	66	14423	43	Tunnel Construction and Soil Interaction
+1072	72	9080	32	Thermal Conductivity in Advanced Composite Materials
+1073	61	11958	51	Malnutrition and Growth Patterns in Children
+1074	46	8127	46	Brassinosteroids and Their Impact on Plant Growth
+1075	22	6268	37	Lattice-Boltzmann Models in Fluid Dynamics Applications
+1076	34	9023	54	Seismic Response and Ground Motion Modeling Insights
+1077	20	9029	31	Existence and Stability of Weak Solutions in Fluid Dynamics
+1078	58	9647	37	Innovative Strategies for Seismic Vibration Control
+1079	39	7406	52	Irrigation Strategies and Genetic Diversity in Fruit Cultivation
+1080	68	9419	32	Mushroom Compounds and Their Multifaceted Applications
+1081	77	12420	51	Gender Roles and Work-Family Dynamics in Society
+1082	24	7084	44	Acupuncture and Its Multifaceted Therapeutic Effects
+1083	22	6135	101	Vegetation and Plant Communities under Environmental Factors
+1084	33	9093	39	Cochlear Implants and Occupational Noise Exposure
+1085	42	5468	46	Crystal Plasticity and Microstructural Dynamics in Alloys
+1086	13	6290	62	Interplay of Economic Theories and Monetary Policy
+1087	39	6223	43	Integrating Knowledge Systems in Community Development
+1088	51	7907	61	Marine Ecosystem Dynamics and Climate Resilience
+1089	41	7691	38	Iron-Deficiency Anemia and Nutritional Interventions
+1090	17	4039	42	Calcium Signaling and Its Role in Cancer
+1091	6	2484	49	Optimizing Query Processing in Information Systems
+1092	34	5663	41	Luminescence Properties of Glass Materials
+1093	17	6158	32	Platelet Dynamics in Immune Thrombocytopenia Management
+1094	41	7810	48	Animal Welfare and Production in Livestock Systems
+1095	8	2140	30	Enhancing Device Performance with Germanium and Silicon
+1096	19	6324	58	Plasma Control and Thermal Dynamics in Hypersonic Flow
+1097	70	11032	53	Ship Emissions and Hydrodynamics
+1098	23	5123	36	Rough Set Models in Data Mining Systems
+1099	23	6453	74	Sediment Dynamics and Tectonic Influences in River Basins
+1100	20	4355	33	Interleukin-33 and Immunoglobulin E in Allergic Responses
+1101	23	4954	36	Electromagnetic Field Effects on Cellular Dynamics
+1102	30	7478	55	Acoustic Monitoring of Marine Mammal Populations
+1103	43	7663	40	Artificial Intelligence in Decision-Making and Game Theory
+1104	29	4185	37	Polyoxometalates and Vanadium in Catalytic Applications
+1105	34	7761	75	Urban Economic Networks and Regional Development
+1106	34	6041	41	Soot Formation and Reaction Mechanisms in Combustion
+1107	17	6052	29	Echinococcosis and Cystic Lesions in Humans
+1108	25	6409	34	Efficacy and Mechanisms of Antiepileptic Drugs
+1109	57	7839	31	Cholesterol Regulation and Bile Acid Interactions
+1110	24	3766	44	Controlled Radical Polymerization Techniques
+1111	9	2209	34	Fullerene Dynamics and Electronic Properties Exploration
+1112	44	6882	43	Laser and Arc Welding Techniques
+1113	50	8163	43	Catalytic Transformations in Alcohol Oxidation and Borylation
+1114	45	10824	58	Disability Rights and Health Service Accessibility
+1115	10	5789	42	Probability Models for Random Processes and Data
+1116	18	4311	45	Fuzzy Logic and Neural Systems in Decision Making
+1117	73	14268	32	Radiomics and Image Processing in Cancer Diagnosis
+1118	22	5545	66	Transformative Learning Spaces in Academic Libraries
+1119	31	7092	67	Urban Renewal and Spatial Planning Dynamics
+1120	18	6080	60	Innovative Textiles for Enhanced Comfort and Performance
+1121	12	5069	35	Optical Systems and Imaging Techniques
+1122	30	6623	36	Modeling Granular Flow Dynamics in Engineering Systems
+1123	25	4608	32	Hyaluronan and Decorin in Tumor Dynamics
+1124	14	3353	40	Nonlinear Optical Properties in Materials
+1125	43	9052	32	Canine Behavior and Zoonotic Risks
+1126	19	10034	65	Cultural Geography and Affective Urban Landscapes
+1127	51	9378	52	Enhancing Crop Yield through Nutrient Management
+1128	21	3692	39	Spin States and Magnetic Properties of Iron Compounds
+1129	59	8727	56	Conservation Strategies for Biodiversity and Resource Management
+1130	29	5369	38	Innovative Ceramic Materials for High-Performance Applications
+1131	48	7672	63	Iron and Steel Production Processes
+1132	12	6290	45	Spectral Properties and Solutions of Nonlinear Schrödinger Equations
+1133	47	6923	47	Innovative Approaches to Metal Recovery and Bioleaching
+1134	55	8409	38	Remote Sensing Applications in Marine Ecosystems
+1135	55	7334	31	Magnetic Properties and Synthesis of Ferrite Nanoparticles
+1136	44	6453	45	Creep Behavior and Microstructure of Superalloys
+1137	46	11737	73	Cultural Heritage and Climate Change Resilience
+1138	34	7216	33	Vector Control Strategies for Malaria and Filariasis
+1139	17	6530	29	Sarcoidosis and Its Multifaceted Clinical Implications
+1140	38	7983	40	Sleep Dynamics and Cognitive Performance in Athletes
+1141	47	7464	37	Mechanical Vibration Control in Structural Systems
+1142	28	5333	35	Chemical Compounds and Their Biological Activities
+1143	75	11406	42	Fire Management and Environmental Impact Assessment
+1144	29	6397	43	Patient Satisfaction in Health Care Systems
+1145	13	7663	59	Philosophical Foundations of Aesthetic Democracy
+1146	60	8852	40	Innovative Approaches in Topology Optimization Techniques
+1147	77	11702	39	Self-Efficacy and Academic Performance in Education
+1148	23	6718	43	Electrostatic Separation and Two-Phase Flow Dynamics
+1149	32	6683	40	Quantitative Structure-Activity Relationships in Chemical Modeling
+1150	15	5863	46	Polynomial Methods in Approximation and Signal Processing
+1151	42	8915	66	Impact of Sports Events on Social Dynamics
+1152	16	6282	64	Governance and Economic Transition in China
+1153	16	8775	75	Cultural Dynamics in Television and Media
+1154	11	5925	39	Stochastic Processes and Phase Transitions in Complex Systems
+1155	18	5184	44	Statistical Models for Copula and Dependence Structures
+1156	32	6620	32	Celestial Bodies and Their Dynamics
+1157	52	8200	35	Water Distribution and Energy Management Systems
+1158	5	7815	63	Philosophical Foundations of Ethics and Society
+1159	8	3052	39	Spin Glass Dynamics and Phase Transitions
+1160	8	5919	38	Algebraic Structures and Their Applications in Logic
+1161	53	10979	51	Empowering Student Success through Diverse Learning Experiences
+1162	4	7831	101	Political Dynamics and Cultural Heritage in Ancient Greece
+1163	96	16740	41	Catalytic Innovations in Organic Pollutant Degradation
+1164	31	7064	42	Wind Erosion and Sediment Transport on Mars
+1165	17	6552	31	Hearing Loss and Tinnitus Mechanisms
+1166	15	2838	46	Ruthenium and Molybdenum Catalysts in Polymerization
+1167	95	12090	50	Adaptive Learning Systems and Student Engagement
+1168	58	13446	37	Telemedicine's Role in Transforming Healthcare Access
+1169	54	7367	53	Digital Platforms and Market Dynamics in Innovation
+1170	36	7479	37	Image Enhancement Techniques for Dynamic Range Optimization
+1171	39	7105	56	Fire Dynamics and Smoke Management in Tunnels
+1172	26	6384	42	Interventions for Behavioral Disorders in Disabilities
+1173	12	3947	31	Spline and Wavelet Methods in Interpolation
+1174	21	5089	39	Genetically Modified Organisms in Pest Management
+1175	28	4502	34	Magnetic Properties and Coordination Complexes in Chemistry
+1176	35	11737	71	Cultural Dynamics in Translation and Interpretation
+1177	72	8488	36	Collaborative Learning and Self-Regulation in Education
+1178	12	2705	51	Radical Mechanisms in Alkaloid Chemistry
+1179	72	10771	46	Sustainable Development in Higher Education Practices
+1180	44	5663	33	Catalytic Innovations in Hydrogenation and Desulfurization
+1181	9	6381	71	Justice, Power, and Health in Society
+1182	21	3685	29	Genetic and Neurochemical Factors in Parkinson's Disease
+1183	24	5828	38	Hippocampal Dynamics and Anticonvulsant Strategies in Epilepsy
+1184	32	6308	51	Risk Management in Chemical Process Safety
+1185	24	5124	31	Robotic Control and Interaction
+1186	28	6474	43	Diverse Fossil Assemblages and Evolutionary Insights
+1187	24	8092	51	Democracy and Marxism in Social Transformation
+1188	74	11678	47	Formative Assessment and Student Learning Dynamics
+1189	10	9589	73	Cultural Dynamics of Chinese Philosophy and Religion
+1190	6	6380	41	Connections Between Modular Forms and Number Theory
+1191	7	2115	43	Self-Adaptive Software Architectures for Quality Systems
+1192	5	7025	65	Political Identity and Memory in Post-Conflict Contexts
+1193	39	5346	41	Corrosion Resistance in Coatings and Materials
+1194	24	7744	36	Causal Inference and Argumentation in AI Systems
+1195	30	6967	48	Dynamics of Housing Market and Labor Mobility
+1196	21	4491	56	Selenium and Sulfur Compounds in Chemical Synthesis
+1197	44	7482	38	Dynamics of Interpersonal Relationships and Parenting Styles
+1198	13	5528	34	Spatial Audio and Acoustic Measurement
+1199	61	10676	32	Vaccination Strategies Against Emerging Viral Threats
+1200	22	5269	37	Modeling Material Behavior Under Dynamic Loads
+1201	17	6363	74	Innovative Strategies for Mite and Pest Control
+1202	38	7167	46	Bioactive Compounds from Marine Fungi
+1203	40	9706	51	Music Therapy's Influence on Emotional and Cognitive Development
+1204	9	5825	40	Functional Equations in Normed Spaces
+1205	23	7805	41	Gas Hydrate Reservoirs and Tectonic Dynamics
+1206	59	6645	46	Uranium Contamination and Environmental Impacts
+1207	11	4405	45	Equine Health Insights on Laminitis and Performance
+1208	64	11352	39	Methane Dynamics and Spontaneous Combustion in Coal
+1209	33	5800	38	Dynamic Behavior and Damage Modeling in Materials
+1210	36	6889	49	Seed Dormancy and Germination Under Stress
+1211	7	1838	35	Context-Aware Systems in Ubiquitous Computing
+1212	17	2654	35	Innovative Oligonucleotides in Antisense Applications
+1213	46	6443	40	Reliability Methods in Structural Engineering Applications
+1214	77	9031	32	Digital Governance and Open Data Transformation
+1215	20	7009	47	Phytoplasma Diseases and Insect Communication Mechanisms
+1216	47	6666	44	Multimedia Learning Systems and Student Engagement
+1217	22	4716	36	Enzyme Mechanisms in Hydroxylation and Oxidation
+1218	79	12421	43	Climate Impact on Agricultural Practices and Technology
+1219	36	5216	35	Isoflavones and Their Impact on Health
+1220	47	8432	45	Spatial Dynamics in Real Estate Valuation Models
+1221	8	6153	38	Structure and Properties of Algebraic Systems
+1222	21	5512	47	Soil Fauna and Ecosystem Toxicology Insights
+1223	20	6323	34	Inertial Navigation and Sensor Calibration
+1224	64	9246	39	Corruption, Plagiarism, and Economic Dynamics
+1225	20	3580	48	Selenium and Chromium Detection in Environmental Samples
+1226	52	10446	51	Mental Health Challenges Among Refugees and Asylum Seekers
+1227	28	6583	40	Health Insurance Coverage and Cost Dynamics
+1228	12	6173	76	Cultural Dynamics and Health in Pacific Societies
+1229	62	11171	33	Autonomous Underwater Vehicle Control Systems
+1230	16	5798	31	Coding and Information Storage
+1231	66	10932	31	Smart Homes and Activity Recognition Technologies
+1232	25	9281	57	Cohesion and Lexical Patterns in Academic Writing
+1233	60	11521	34	Autonomous Control Systems for Aerial Vehicles
+1234	14	5807	32	Imaging Techniques for Infective Endocarditis Diagnosis
+1235	33	6571	33	Patient-Centered Approaches in Health Care Quality
+1236	22	8290	32	Causality and Complexity in Time Series Analysis
+1237	9	4446	45	Dynamics and Control in Hamiltonian Systems
+1238	74	12503	40	Land Use Dynamics and Urban Development Patterns
+1239	92	9326	27	Solid Electrolytes for High-Performance Lithium Batteries
+1240	14	6522	33	Generalized Inequalities and Transform Methods in Analysis
+1241	18	5564	70	Genomic Insights into Plant Species Diversity
+1242	16	4124	39	Colorimetry and Image Processing
+1243	27	5293	32	Evolutionary Dynamics of Cooperation and Individual Behavior
+1244	15	9935	82	Decolonizing Philosophy and Knowledge in Africa
+1245	22	5247	39	Nutritional Enhancements in Animal Feed Supplementation
+1246	7	5421	33	Topology and Invariants in Manifold Structures
+1247	49	8580	30	Climate Change Impacts on Ice Sheet Dynamics
+1248	4	6796	86	Intersections of Literature, Philosophy, and Visual Arts
+1249	23	4633	36	Ubiquinone Effects on Cancer and Marine Diversity
+1250	29	5854	47	Therapeutic Relationships in Psychotherapy Outcomes
+1251	28	6852	38	Hydraulic Control Systems and Energy Efficiency Innovations
+1252	68	9007	38	Emotional Intelligence and Career Adaptability Insights
+1253	2	5378	103	Cultural Narratives and Historical Dynamics in Medieval Europe
+1254	73	11304	33	Smart Urban Systems and Citizen Engagement
+1255	50	7001	39	Nuclear Reactor Safety and Efficiency
+1256	33	7582	63	Educational Policy and Intergenerational Mobility Insights
+1257	37	8439	61	Interconnected Urban Design and Architectural Evolution
+1258	20	4123	35	Radiochemical Innovations in Nuclear and Stellar Processes
+1259	48	6819	52	Innovative Approaches in Forest Management and Biomass Estimation
+1260	10	2724	42	Cadmium-Based Solar Cell Technologies
+1261	24	6694	68	Biodiversity and Aquaculture in the Mediterranean Sea
+1262	45	9624	56	Urban Policy and Livelihood Strategies in the Global South
+1263	34	4410	32	Thermal Properties and Applications of Polyimide Films
+1264	75	10103	36	Machine Learning Insights into Crystal Structures
+1265	54	6709	33	Integrated Approaches to Wastewater Treatment and Soil Enhancement
+1266	28	6337	59	Nematode Interactions in Soil and Plant Health
+1267	27	5891	40	Thermodynamic Properties of Uranium Dioxide Fuel
+1268	17	3633	33	Alcohol Consumption and Its Health Implications
+1269	11	6050	81	Gender Dynamics and Political Conflict in Ireland
+1270	15	7337	104	Cultural Interactions and Material Practices in Archaeology
+1271	52	9961	55	Precision Agriculture through Robotics and Navigation
+1272	20	5087	39	Dynamic Properties and Penetration Mechanics of Materials
+1273	3	5758	95	Intersections of Music, Film, and Cultural Identity
+1274	10	2281	62	Solvent Dynamics and Reaction Mechanisms in Chemistry
+1275	28	6944	27	Arctic Sea Ice Dynamics and Environmental Impact
+1276	1	5766	69	Romantic Literature and Political Discourse in Poetry
+1277	34	6973	50	Stable Isotope Dynamics in Groundwater Systems
+1278	36	5114	37	Microstructural Innovations in Alloy Performance
+1279	53	6546	31	Silk and Hair Follicle Innovations in Biomaterials
+1280	22	6372	48	Childhood Vulnerability and Rights in Diverse Contexts
+1281	13	4573	44	Rotorcraft Dynamics and Control in Flight Systems
+1282	6	3947	56	Interplay of Relativity and Quantum Physics
+1283	46	5979	33	Biomineralization and Structural Innovations in Materials
+1284	20	4325	38	Hydrodynamics and Mass Transfer in Reactors
+1285	31	6704	49	Masculinity, Gender Identity, and Health Dynamics
+1286	50	6991	41	Agroforestry and Biomass in Climate Resilience
+1287	38	6766	43	Nutritional Innovations in Pig and Poultry Diets
+1288	26	5076	38	Microgravity Effects on Muscle and Cellular Dynamics
+1289	33	6219	37	Urban Soundscapes and Health Impacts
+1290	28	5808	50	Antioxidant Compounds and Their Therapeutic Potential
+1291	30	6444	40	Dynamic Characteristics and Design Innovations in Gear Systems
+1292	16	3509	35	Thermoluminescence Properties of Advanced Phosphors
+1293	39	7621	31	Understanding Grief through Social and Cultural Lenses
+1294	18	7081	48	Ethical Dimensions of Animal Welfare and Research
+1295	6	1897	30	Interconnect Reliability and Residual Stress in Thin Films
+1296	65	11051	38	Climate Change Impacts on Species Distribution Models
+1297	4	6051	77	Intermedial Narratives in Contemporary Literature
+1298	23	5684	38	Psychometrics and Rasch Analysis in Education Assessment
+1299	3	5506	75	Cultural Memory and Political Dynamics in War Contexts
+1300	13	4740	37	Biomechanical Insights into Vehicle-Pedestrian Safety
+1301	34	6313	30	Integrated Approaches to Transport Scheduling Optimization
+1302	39	8064	32	Enhancing Reproducibility in Psychological Research Practices
+1303	12	3873	30	Laser Pulse Dynamics in Plasma Acceleration
+1304	45	8959	27	Evidence-Based Practice in Health Service Delivery
+1305	35	5515	36	Lubricants and Tribological Performance
+1306	5	4613	33	Structure and Properties of Finite Groups
+1307	2	5386	81	Religious and Social Transformations in Early Modern England
+1308	15	4007	32	High-Pressure Phase Behavior of Earth's Mantle Materials
+1309	5	1533	34	Optical Properties and Applications of Lithium Niobate
+1310	3	5925	94	Linguistic Roots and Onomastics
+1311	14	3865	34	Asbestos Exposure and Malignant Mesothelioma Insights
+1312	33	5236	35	Pesticide Impact on Health and Environment
+1313	17	7397	64	Indigenous Perspectives on Health and Sovereignty
+1314	28	6995	47	DNA Barcoding and Species Identification Techniques
+1315	37	5632	53	Marine Ecosystems and Plastic Waste Management
+1316	23	5303	41	Thermal Tolerance and Population Dynamics in Reptiles
+1317	50	7198	34	Pomegranate Antioxidants and Plant Disease Resistance
+1318	75	9174	37	Integrating Technology in Teacher Education Practices
+1319	32	5393	34	Geostatistical Models for Spatial Data Interpolation
+1320	14	4536	54	Geochronology and Structural Insights in Rift Zones
+1321	38	6337	40	Meat Quality and Composition in Livestock
+1322	39	5278	35	Risk Perception in Energy Transition
+1323	22	4674	40	Sediment Dynamics and Coastal Ecosystem Responses
+1324	7	5022	44	Philosophical Foundations of Scientific Realism and Truth
+1325	36	6996	77	Islamic Identity and Political Dynamics in Southeast Asia
+1326	41	6692	48	Ecosystem Dynamics and Management in Grasslands
+1327	26	6083	32	Conservation Strategies for Endangered Marine Species
+1328	31	4774	45	Fluorine Chemistry in Synthesis and Catalysis
+1329	19	4839	48	Geological Insights into Seismic and Sedimentary Dynamics
+1330	43	7440	38	Dynamic Response of Structures to Explosive Loads
+1331	84	11072	35	Integration of BIM and IoT in Construction Management
+1332	13	8303	68	Justice and Democracy in Legal Frameworks
+1333	11	3484	44	Gene Expression and Cardiac Development Insights
+1334	2	4908	67	Victorian Literature and Women's Social Dynamics
+1335	2	6118	75	Cultural Heritage and Political Dynamics in Ancient Rome
+1336	15	2740	39	Tubulin Dynamics and Drug Resistance in Cancer Therapy
+1337	51	6095	31	X-Ray Fluorescence Applications in Material Analysis
+1338	23	3497	49	Chiral Catalysts and Carbene Transformations in Synthesis
+1339	66	9360	40	Critical Thinking Skills in Student Learning Outcomes
+1340	10	3809	53	Genetic Traits and Production in Livestock
+1341	26	5960	35	Innovative Approaches to Air Traffic Management
+1342	10	2960	32	Model-Driven Approaches in Software Engineering
+1343	9	5868	46	International Justice and Human Rights Frameworks
+1344	40	6675	34	Lunar Exploration and Regolith Utilization Innovations
+1345	33	6528	37	Climate Influence on Forest Dynamics and Health
+1346	20	5387	42	Dynamic Assessment and Learning in Educational Contexts
+1347	12	6315	53	Legal Frameworks and Financial Regulation Dynamics
+1348	2	4996	73	Renaissance Perspectives on Medicine and Philosophy
+1349	13	5996	59	Social Movements and Environmental Justice Dynamics
+1350	11	2114	36	Positron and X-Ray Techniques in Material Analysis
+1351	44	7066	41	Consumer Identity and Social Marketing Dynamics
+1352	55	6831	32	Innovation and Knowledge Transfer in Industry
+1353	32	5251	35	Patents and Technological Innovation in Industry
+1354	11	1864	38	Surface Interactions and Catalytic Mechanisms in Reactions
+1355	8	2868	27	Optical Properties and Defects in Silica Materials
+1356	26	5040	36	Structural Design and Material Performance
+1357	54	8354	38	Privacy Dynamics in Social Media and Technology
+1358	13	4364	33	Quality Control Innovations in Clinical Biochemistry
+1359	22	4935	35	Mastitis Management and Milk Production in Dairy Cattle
+1360	14	4306	44	Cultural Competence in Counseling and School Psychology
+1361	10	6974	57	Cultural Dynamics and Political Identity in Turkey
+1362	2	5532	72	Interconnections of Judaism and Christianity in Theology
+1363	50	8496	31	Timber Structural Integrity and Performance Insights
+1364	17	3403	50	Tectonic Dynamics and Volcanic Activity in Italy
+1365	1	5384	82	Interpreting Biblical Texts through Cultural Contexts
+1366	7	4159	29	Fractal Dimensions and Continued Fraction Approximations
+1367	29	6110	44	Place Attachment and Mental Health in Rural Communities
+1368	25	4391	40	Innovative Materials from Waste for Sustainable Construction
+1369	12	4364	33	Enhancing Primary Health Care through Innovative Practices
+1370	5	6363	60	Cultural Dynamics of Religion and Society
+1371	4	4894	59	Philosophical Foundations of Human Understanding
+1372	15	3858	47	Geochemical Insights into Magma and Mineralization
+1373	14	4703	46	Bats and Their Ecological Interactions in Diverse Habitats
+1374	21	3637	38	Interactions of Soil, Water, and Forest Dynamics
+1375	6	2217	28	Modeling and Control of Robotic Systems
+1376	9	4890	69	Diversity and Distribution of Coleoptera Species
+1377	11	3925	27	Hearing Perception and Speech Recognition Dynamics
+1378	34	6470	42	Multimodal Literacy and Digital Storytelling in Education
+1379	19	3630	42	Eutrophication Dynamics in Baltic Sea Ecosystems
+1380	14	2940	34	Cultural Dimensions in Global Management Practices
+1381	18	4234	36	Lichen Diversity and Soil Crust Dynamics
+1382	46	10353	44	Populism and Political Dynamics in Democracy
+1383	26	7404	36	Digital Preservation and Open Data Management in Libraries
+1384	11	6460	62	Cultural Narratives of Gender and Genre in Media
+1385	20	3890	32	Rubber Material Properties and Applications
+1386	3	5779	59	Philosophical Foundations of Justice and Ethics
+1387	31	6256	33	Health Insurance and Public Policy in Medicine
+1388	6	6663	78	Interconnections of Islamic and Jewish Traditions
+1389	10	2467	35	Molecular Dynamics and Rheology of Polymer Solutions
+1390	4	4613	60	Dynamics of European Foreign Policy and Democracy
+1391	5	1298	43	Complexation Mechanisms in Macrocyclic Chemistry
+1392	9	5844	49	Islamic Perspectives on Gender and Political Dynamics
+1393	33	5211	38	Molten Salt Applications in Energy and Material Recovery
+1394	27	4895	37	Gravity-Based Insights into Water Storage Dynamics
+1395	7	6277	55	Cultural Dynamics of Music and Identity
+1396	4	5448	60	Cultural Intersections in Comparative Literature and Colonialism
+1397	37	5879	28	Erosion and Corrosion Dynamics in Material Performance
+1398	38	5558	43	Sustainable Pavement Design and Lifecycle Management
+1399	6	4717	56	National Identity and Minority Rights in Europe
+1400	4	1608	27	Distributed Simulation Framework for Virtual Environments
+1401	53	7597	31	Social Innovation in Cooperative and Nonprofit Sectors
+1402	35	7372	35	Financialization and Land Rights in Urban Development
+1403	10	7079	48	International Investment Law and Arbitration Dynamics
+1404	65	7999	32	Optimizing Greenhouse Systems for Enhanced Crop Yield
+1405	14	8309	52	New Materialism in Education and Literature
+1406	42	6953	37	Ethnopharmacology and Biodiversity in Traditional Medicine
+1407	26	4807	32	Aquatic Vegetation Dynamics and Nutrient Management
+1408	32	6264	44	Holocene Climate Variability and Geodiversity Insights
+1409	21	6058	34	Terrorism, Extremism, and Social Media Dynamics
+1410	8	3004	47	Plant Interactions and Insect Dynamics in Ecosystems
+1411	1	3759	71	Political Dynamics and Economic Transformations in Revolutionary Contexts
+1412	12	3282	29	Schistosomiasis Control and Transmission Dynamics
+1413	19	5673	45	Police Legitimacy and Community Engagement Dynamics
+1414	8	5670	53	Cultural Identity and Racial Dynamics in Brazil
+1415	17	5056	44	Entomopathogenic Fungi in Biological Control Strategies
+1416	28	4936	41	Irrigation and Anthocyanin Effects on Potato Yield
+1417	21	5529	34	Cultural Dynamics in Urban Development and Creativity
+1418	2	5305	70	Intersections of Philosophy and Early Christianity
+1419	11	2999	35	Spermatozoa Characteristics and Reproductive Dynamics in Fish
+1420	3	4274	44	Philosophical Perspectives on Language and Existence
+1421	19	3884	32	Hypersonic Vehicle Design and Performance
+1422	8	3333	39	Ethics and Human Rights in Medical Consultation
+1423	11	3091	37	Paleomagnetism and Geochronology in Geological Research
+1424	7	3831	52	Cultural Dynamics of Religion and Immigration
+1425	22	5683	37	Global Governance and Human Rights Responsibilities
+1426	28	4977	38	Berberine and Alkaloids in Disease Treatment
+1427	27	7379	34	Humor and Anxiety Management in Pediatric Care
+1428	8	3665	35	Cosmopolitanism and Civil Society in Development
+1429	21	5406	30	Indigenous Health and Alcohol Consumption Challenges
+1430	10	3148	42	Rodent Behavior and Ecosystem Dynamics
+1431	13	3699	53	Holocene Vegetation Dynamics and Human Influence
+1432	1	4364	73	Medieval Canon Law and Social Dynamics
+1433	17	3896	30	Integrating Decision Models for Resource Management
+1434	24	8169	39	Anthropocene Perspectives on Religion and Climate Change
+1435	12	3858	44	Empowering Social Work through Consumer Involvement
+1436	4	1786	34	Enhancing Learning through Digital Resource Management
+1437	8	2236	43	Biodiversity and Growth Dynamics in Forest Ecosystems
+1438	16	3305	28	Creep Behavior and Mechanical Properties of Steel Alloys
+1439	47	7153	28	Diversity and Impact of Bees in Ecosystems
+1440	11	5501	39	Economic and Environmental Dynamics in Arctic Regions
+1441	8	2937	45	Diversity and Ecology of Decapod Crustaceans
+1442	26	3972	36	Occupational Dust Exposure and Health Risks
+1443	9	3616	33	Rhetoric and Genre Analysis in Academic Writing
+1444	12	2558	31	Ciliates and Their Role in Animal Disease Dynamics
+1445	16	4201	35	Educational Policy and Its Impact on Achievement
+1446	9	1632	29	Innovative Coordination Complexes in Photoluminescence
+1447	7	2485	44	Diversity and Evolution of Marine Meiofauna
+1448	7	4087	54	Dialect Variation and Sociolinguistic Dynamics in English
+1449	7	2974	53	Fossil Flora and Climate Insights from Eocene
+1450	24	4700	33	Compassionate Care and Ethical Practice in Nursing
+1451	19	4031	36	Sustainable Resource Management in Ethiopian Forests
+1452	4	4040	40	Cultural Dynamics in Performance and Anthropology
+1453	15	3674	39	Intellectual Property Rights and Digital Piracy Dynamics
+1454	10	4481	41	Palestinian Identity and Urban Conflict Dynamics
+1455	4	2993	43	Evolutionary Theory and Geological Insights in Science
+1456	5	4874	77	Cultural Dynamics and Social Integration in Latin America
+1457	10	3457	30	EU Foreign Policy and Security Dynamics
+1458	31	4985	34	Taxation Dynamics and Economic Development Strategies
+1459	16	4159	33	Conservation and Diversity of Orchid Species
+1460	1	2991	49	Modernist Aesthetics and Cultural Intersections
+1461	18	4240	36	Empowerment and Rights in Land Management
+1462	3	3403	42	Cultural Identities and Historical Narratives in America
+1463	6	1830	32	Social Prescribing and Quality in Health Services
+1464	16	4206	32	Morphometric Insights into Himalayan Landscape Evolution
+1465	9	2654	41	Conservation Strategies for Endangered Australian Species
+1466	7	3780	33	Visual Methods in Community Health and Engagement
+1467	4	4177	49	The Interplay of Divine Logic and Human Philosophy
+1468	4	3312	46	Cultural Landscapes and Political Dynamics in Mesoamerica
+1469	5	2349	27	Therapeutic Approaches in Family Mental Health
+1470	6	3262	30	Diversity and Evolution of Arachnid Species
+1471	6	4519	63	Cultural Connections through Archaeological Metalwork
+1472	9	4487	42	Constitutional Dynamics in Democracy and Federalism
+1473	1	2689	52	Renaissance Art and Anatomy in Cultural Contexts
+1474	2	2812	54	Colonial Legacies and Land Reform in South Africa
+1475	5	2791	42	Diversity and Ecology of Ground Beetles in Forests
+1476	7	1787	34	Water Quality Management and Wastewater Reclamation
+1477	6	3313	37	Islam, Democracy, and Political Dynamics in the Arab World
+1478	8	2301	28	Genomic Insights into Freshwater Fish Diversity
+1479	9	2687	32	Conservation Strategies for Butterfly Biodiversity
+1480	10	2931	30	Occupational Therapy and Quality of Life Enhancement
+1481	6	3841	45	Cultural Heritage and Archaeology in Amazonia and beyond
+1482	10	4173	41	Indigenous Rights, Autonomy, and Resource Management
+1483	3	3564	37	Phenomenology and Human Experience in Philosophy
+1484	5	3747	43	Cultural Dynamics in Language and Code-Switching
+1485	9	2453	28	Hypnosis and Dissociative Disorders
+1486	15	3178	38	Economic Implications of Natural Resource Management
+1487	4	4957	40	Cultural Interactions and Architectural Patterns in Islamic Contexts
+1488	4	3837	55	Interconnections of Ancient Landscapes and Societies
+1489	2	2968	40	Fascism and Colonialism in Italian Urban Identity
+1490	14	2938	30	Decentralization and Local Governance Dynamics
+1491	4	3872	52	Democracy and Justice in Latin American Politics
+1492	5	2950	44	Economic Transformations and Social Dynamics in History
+1493	1	2528	44	Intersections of Philosophy, Literature, and Gender
+1494	3	3023	38	The Interplay of Theology and Ethics in Christianity
+1495	1	2633	48	Jewish Identity and Political Dynamics in Germany
+1496	3	3636	42	Buddhist Philosophy and Medical Traditions in Context
+1497	3	799	30	Crystal Structures and Phase Transitions in Doped Materials
+1498	6	2204	32	Biological Control and Host-Parasitoid Dynamics
+1499	0	2107	38	Intersections of Literature, Modernism, and Aesthetics
+1500	3	2843	42	Islam, Colonialism, and Archaeological Narratives in Africa
+1501	6	3112	33	Eurasian Integration and Political Dynamics in Central Asia
+1502	7	4410	35	Cultural Dynamics and Resource Management in Mongolia
+1503	2	2779	35	Political Dynamics and Identity in the Balkans
+1504	0	1835	36	Cultural and Linguistic Evolution in Medieval England
+1505	1	2348	28	Intersections of Science, Travel, and Medicine
+1506	1	2685	39	Intersections of Judaism and Christianity in Historical Contexts
+1507	10	2378	33	Indigenous Knowledge and Climate Resilience in Arctic Communities
+1508	2	2912	46	Linguistic Variations and Pronoun Usage in Spanish
+1509	8	3391	26	Cultural Dynamics and Political Borders in South Asia
+1510	1	1957	36	Mathematics and Philosophy in Historical Contexts
+1511	0	2240	37	Renaissance Philosophy and Political Dynamics
+1512	5	2303	37	Cultural Dynamics and Environmental Changes in the Andes
+1513	5	2817	30	Language Evolution and Symbolism
+1514	3	2423	34	Colonialism, Democracy, and Religious Dynamics in Asia
+1515	1	2422	36	Christianity and Imperial Dynamics in Late Rome
+1516	2	2658	40	Francoism, Memory, and Spanish Cultural Identity
+1517	0	2321	40	Cervantes and the Interplay of Baroque Literature
+1518	0	2367	34	Cultural and Linguistic Heritage of Croatia
+1519	2	1544	30	Cultural Landscapes and Indigenous Heritage in Australia
+1520	1	1792	31	Colonial Legacies and Cultural Identities in France
+1521	2	1970	32	Cultural Transformations in Neolithic and Bronze Age Societies
+1522	1	1972	35	Ancient Egyptian Archaeology and Culture
+1523	0	1722	32	Cultural Intersections in Spanish Literature and Art
+1524	2	2982	36	Cultural Insights from Archaeological Burial Practices
+1525	1	1983	29	Cultural Insights from Roman and Byzantine Artifacts
+1526	3	1746	28	Archaeological Insights into Medieval Material Culture
+1527	2	1703	29	Soil Dynamics and Agricultural Innovations in Russia
+1528	0	1485	27	Roman Archaeology and Military Influence in Territories

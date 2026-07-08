@@ -76,7 +76,7 @@ export default function App() {
         {page === "whatwedo" && (
           <WhatWeDo
             universities={contentConfig.universities}
-            visibleClusters={displayConfig.visibleClusters}
+            visibleAreas={displayConfig.visibleAreas}
           />
         )}
         {page === "inthenews" && (

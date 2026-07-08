@@ -1,17 +1,16 @@
 import { useState, useEffect } from "react";
 import { UNIVERSITIES } from "./data.js";
 
-// Deterministic accent colour from cluster ID
+// Deterministic accent colour by position in the area list
 const PALETTE = [
-  "#5b9bd5","#3ab5c6","#a8d4f0","#5caa72","#e8a44a",
-  "#c97fd4","#d4a843","#e07060","#7eb8d4","#87c98e",
-  "#d4876a","#9ab5d4","#c4d46a","#a87ec9","#6ac4d4",
+  "#5b9bd5","#3ab5c6","#5caa72","#e8a44a","#c97fd4",
+  "#d4a843","#e07060","#7eb8d4","#87c98e","#a87ec9",
 ];
-function clusterColour(id) { return PALETTE[Number(id) % PALETTE.length]; }
+function areaColour(i) { return PALETTE[i % PALETTE.length]; }
 
-// ─── ClusterPanel ─────────────────────────────────────────────────────────────
-function ClusterPanel({ cluster, isOpen, onToggle }) {
-  const colour = clusterColour(cluster.id);
+// ─── AreaPanel ────────────────────────────────────────────────────────────────
+function AreaPanel({ cluster, colourIndex, isOpen, onToggle }) {
+  const colour = areaColour(colourIndex);
   const bg     = `${colour}12`;
 
   return (
@@ -35,8 +34,13 @@ function ClusterPanel({ cluster, isOpen, onToggle }) {
           <div style={{ color: "rgba(255,255,255,0.92)", fontWeight: 600, fontSize: "1rem", fontFamily: "'Fraunces', serif", letterSpacing: "-0.01em" }}>
             {cluster.name}
           </div>
-          <div style={{ color: "rgba(255,255,255,0.35)", fontSize: "0.72rem", marginTop: "0.2rem" }}>
-            {cluster.uniCount} member {cluster.uniCount === 1 ? "university" : "universities"} · {cluster.papers.length} papers
+          {cluster.blurb && (
+            <div style={{ color: "rgba(255,255,255,0.4)", fontSize: "0.78rem", marginTop: "0.3rem", lineHeight: 1.5 }}>
+              {cluster.blurb}
+            </div>
+          )}
+          <div style={{ color: "rgba(255,255,255,0.3)", fontSize: "0.7rem", marginTop: "0.35rem" }}>
+            {cluster.uniCount} member {cluster.uniCount === 1 ? "university" : "universities"} · {cluster.paperCount ?? cluster.papers.length} papers
           </div>
         </div>
         <div style={{
@@ -103,9 +107,11 @@ function ClusterPanel({ cluster, isOpen, onToggle }) {
                   {paper.title} ↗
                 </a>
 
-                {paper.journal && (
+                {(paper.journal || paper.topicCluster) && (
                   <div style={{ fontSize: "0.65rem", color: "rgba(255,255,255,0.2)", marginTop: "0.15rem" }}>
                     {paper.journal}
+                    {paper.journal && paper.topicCluster && " · "}
+                    {paper.topicCluster && <span style={{ fontStyle: "italic" }}>{paper.topicCluster}</span>}
                   </div>
                 )}
               </div>
@@ -118,38 +124,27 @@ function ClusterPanel({ cluster, isOpen, onToggle }) {
 }
 
 // ─── Page ─────────────────────────────────────────────────────────────────────
-export default function WhatWeDo({ universities = UNIVERSITIES, visibleClusters }) {
-  const [status,      setStatus]      = useState("loading");
-  const [clusters,    setClusters]    = useState([]);
-  const [openCluster, setOpenCluster] = useState(null);
+export default function WhatWeDo({ universities = UNIVERSITIES, visibleAreas }) {
+  const [status,   setStatus]   = useState("loading");
+  const [areas,    setAreas]    = useState([]);
+  const [openArea, setOpenArea] = useState(null);
 
   useEffect(() => {
-    const scopusIds = universities.map(u => u.scopusId).join(",");
     setStatus("loading");
-    fetch(`/api/topics?scopusIds=${scopusIds}&v=2`)
+    fetch(`/api/topics?v=3`)
       .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
       .then(data => {
-        setClusters(data.clusters || []);
+        setAreas(data.areas || []);
         setStatus("done");
       })
       .catch(() => setStatus("error"));
-  }, [universities]);
+  }, []);
 
-  // Apply visible-cluster filter and cross-cluster DOI deduplication
-  const filtered = (() => {
-    const seenDois = new Set();
-    return clusters
-      .filter(c => !visibleClusters || visibleClusters.length === 0 || visibleClusters.includes(String(c.id)))
-      .map(c => ({
-        ...c,
-        papers: c.papers.filter(p => {
-          if (p.doi && seenDois.has(p.doi)) return false;
-          if (p.doi) seenDois.add(p.doi);
-          return true;
-        }),
-      }))
-      .filter(c => c.papers.length > 0);
-  })();
+  // Apply the area-level visibility filter chosen in Settings.
+  // null/empty = show all areas.
+  const filtered = areas.filter(a =>
+    !visibleAreas || visibleAreas.length === 0 || visibleAreas.includes(a.id)
+  );
 
   return (
     <div style={{
@@ -209,12 +204,13 @@ export default function WhatWeDo({ universities = UNIVERSITIES, visibleClusters 
           </div>
         )}
 
-        {status === "done" && filtered.map(cluster => (
-          <ClusterPanel
-            key={cluster.id}
-            cluster={cluster}
-            isOpen={openCluster === cluster.id}
-            onToggle={() => setOpenCluster(prev => prev === cluster.id ? null : cluster.id)}
+        {status === "done" && filtered.map((area, i) => (
+          <AreaPanel
+            key={area.id}
+            cluster={area}
+            colourIndex={i}
+            isOpen={openArea === area.id}
+            onToggle={() => setOpenArea(prev => prev === area.id ? null : area.id)}
           />
         ))}
       </div>

@@ -1,4 +1,5 @@
 import { useState, useEffect } from "react";
+import { CLIMATE_AREAS } from "./climate-areas.js";
 
 const PASSWORD = "iuca2024";
 
@@ -12,9 +13,9 @@ const TIMEFRAME_OPTIONS = [
 ];
 
 export const DEFAULT_DISPLAY = {
-  timeframe:       "6m",
-  paperCount:      10,
-  visibleClusters: null, // null = all visible
+  timeframe:    "6m",
+  paperCount:   10,
+  visibleAreas: null, // null = all areas visible
 };
 
 export function useConfig() {
@@ -221,97 +222,76 @@ function MembersTab({ universities, onUpdate }) {
 }
 
 // ─── Tab: Topics ──────────────────────────────────────────────────────────────
-function TopicsTab({ visibleClusters, onUpdate }) {
-  const [clusters,  setClusters]  = useState(null);
-  const [loading,   setLoading]   = useState(false);
-  const [selected,  setSelected]  = useState(() => visibleClusters ? new Set(visibleClusters.map(String)) : null);
+// Area-level visibility. The area→cluster mapping is hardwired in
+// src/climate-areas.js; this just toggles which areas appear on What We Do.
+function TopicsTab({ visibleAreas, onUpdate }) {
+  // null in config = all areas visible
+  const [selected, setSelected] = useState(() =>
+    visibleAreas ? new Set(visibleAreas) : new Set(CLIMATE_AREAS.map(a => a.id))
+  );
 
-  const load = () => {
-    setLoading(true);
-    fetch("/api/topics")
-      .then(r => r.json())
-      .then(d => {
-        setClusters(d.clusters || []);
-        if (!selected) setSelected(new Set((d.clusters || []).map(c => String(c.id))));
-        setLoading(false);
-      })
-      .catch(() => setLoading(false));
-  };
+  useEffect(() => {
+    setSelected(visibleAreas ? new Set(visibleAreas) : new Set(CLIMATE_AREAS.map(a => a.id)));
+  }, [visibleAreas]);
 
   const toggle = (id) => {
     setSelected(prev => {
-      const next = new Set(prev || []);
-      if (next.has(id)) { if (next.size > 1) next.delete(id); }
+      const next = new Set(prev);
+      if (next.has(id)) { if (next.size > 1) next.delete(id); } // keep at least one
       else next.add(id);
       return next;
     });
   };
 
-  const selectAll   = () => clusters && setSelected(new Set(clusters.map(c => String(c.id))));
-  const selectNone  = () => clusters && setSelected(new Set([String(clusters[0]?.id)]));
+  const selectAll  = () => setSelected(new Set(CLIMATE_AREAS.map(a => a.id)));
+  const selectNone = () => setSelected(new Set([CLIMATE_AREAS[0].id]));
+
+  const allSelected = selected.size === CLIMATE_AREAS.length;
 
   return (
     <div>
-      <div style={sectionHead}>What We Do — visible topic clusters</div>
+      <div style={sectionHead}>What We Do — visible research areas</div>
       <p style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.35)", marginBottom: "0.85rem", lineHeight: 1.6 }}>
-        Topics are discovered automatically from SciVal by analysing recent papers across all member
-        universities. Tick the clusters you want to show in the accordion.
+        The nine research areas and the SciVal topic clusters behind them are curated in the code.
+        Tick the areas to show in the accordion — IUCA papers are matched into them automatically.
       </p>
 
-      {!clusters && !loading && (
-        <button onClick={load} style={{
-          width: "100%", padding: "0.6rem",
-          background: "rgba(91,155,213,0.15)", border: "1px solid rgba(91,155,213,0.3)",
-          borderRadius: 8, color: "#5b9bd5", fontSize: "0.82rem",
-          cursor: "pointer", fontFamily: "inherit",
-        }}>
-          Load available topics
-        </button>
-      )}
+      <div style={{ display: "flex", gap: "0.5rem", marginBottom: "0.75rem" }}>
+        <button onClick={selectAll}  style={{ ...pill(false), fontSize: "0.7rem" }}>Select all</button>
+        <button onClick={selectNone} style={{ ...pill(false), fontSize: "0.7rem" }}>Clear</button>
+        <span style={{ fontSize: "0.7rem", color: "rgba(255,255,255,0.25)", marginLeft: "auto", alignSelf: "center" }}>
+          {selected.size} of {CLIMATE_AREAS.length} selected
+        </span>
+      </div>
 
-      {loading && (
-        <div style={{ textAlign: "center", padding: "2rem", color: "rgba(255,255,255,0.25)", fontSize: "0.8rem" }}>
-          Discovering topics…
-        </div>
-      )}
+      <div style={{ maxHeight: 340, overflowY: "auto", paddingRight: "0.25rem" }}>
+        {CLIMATE_AREAS.map(a => {
+          const active = selected.has(a.id);
+          return (
+            <label key={a.id} style={{ display: "flex", alignItems: "flex-start", gap: "0.6rem", cursor: "pointer", padding: "0.45rem 0" }}>
+              <input type="checkbox" checked={active} onChange={() => toggle(a.id)}
+                style={{ accentColor: "#5b9bd5", width: 14, height: 14, flexShrink: 0, marginTop: 3 }} />
+              <span style={{ flex: 1, minWidth: 0 }}>
+                <span style={{ display: "block", fontSize: "0.8rem", fontWeight: 600, color: active ? "rgba(255,255,255,0.85)" : "rgba(255,255,255,0.3)" }}>
+                  {a.name}
+                </span>
+                <span style={{ display: "block", fontSize: "0.68rem", color: "rgba(255,255,255,0.28)", marginTop: "0.1rem" }}>
+                  {a.clusters.length} clusters
+                </span>
+              </span>
+            </label>
+          );
+        })}
+      </div>
 
-      {clusters && (
-        <>
-          <div style={{ display: "flex", gap: "0.5rem", marginBottom: "0.75rem" }}>
-            <button onClick={selectAll}  style={{ ...pill(false), fontSize: "0.7rem" }}>Select all</button>
-            <button onClick={selectNone} style={{ ...pill(false), fontSize: "0.7rem" }}>Clear</button>
-            <span style={{ fontSize: "0.7rem", color: "rgba(255,255,255,0.25)", marginLeft: "auto", alignSelf: "center" }}>
-              {selected?.size || 0} of {clusters.length} selected
-            </span>
-          </div>
-          <div style={{ maxHeight: 320, overflowY: "auto", paddingRight: "0.25rem" }}>
-            {clusters.map(c => {
-              const id     = String(c.id);
-              const active = selected?.has(id) ?? true;
-              return (
-                <label key={id} style={{ display: "flex", alignItems: "center", gap: "0.6rem", cursor: "pointer", padding: "0.3rem 0" }}>
-                  <input type="checkbox" checked={active} onChange={() => toggle(id)}
-                    style={{ accentColor: "#5b9bd5", width: 14, height: 14, flexShrink: 0 }} />
-                  <span style={{ flex: 1, fontSize: "0.78rem", color: active ? "rgba(255,255,255,0.8)" : "rgba(255,255,255,0.3)" }}>
-                    {c.name}
-                  </span>
-                  <span style={{ fontSize: "0.65rem", color: "rgba(255,255,255,0.2)", flexShrink: 0 }}>
-                    {c.uniCount} unis
-                  </span>
-                </label>
-              );
-            })}
-          </div>
-          <button onClick={() => onUpdate(selected ? [...selected] : null)} style={{
-            marginTop: "0.85rem", width: "100%", padding: "0.6rem",
-            background: "#5b9bd5", border: "none", borderRadius: 8,
-            color: "#fff", fontWeight: 600, fontSize: "0.85rem",
-            cursor: "pointer", fontFamily: "inherit",
-          }}>
-            Apply topic filter
-          </button>
-        </>
-      )}
+      <button onClick={() => onUpdate(allSelected ? null : [...selected])} style={{
+        marginTop: "0.85rem", width: "100%", padding: "0.6rem",
+        background: "#5b9bd5", border: "none", borderRadius: 8,
+        color: "#fff", fontWeight: 600, fontSize: "0.85rem",
+        cursor: "pointer", fontFamily: "inherit",
+      }}>
+        Apply area filter
+      </button>
     </div>
   );
 }
@@ -463,12 +443,12 @@ export default function Settings({ displayConfig, onDisplayUpdate, contentConfig
 
   const handleMembersUpdate      = (universities)  => saveContent(universities, contentConfig.subjectCodes);
   const handleSubjectCodesUpdate = (subjectCodes)  => saveContent(contentConfig.universities, subjectCodes);
-  const handleTopicsUpdate       = (visibleClusters) => onDisplayUpdate({ ...displayConfig, visibleClusters });
+  const handleTopicsUpdate       = (visibleAreas)  => onDisplayUpdate({ ...displayConfig, visibleAreas });
 
   const TABS = [
     { id: "embed",   label: "Embed links" },
     { id: "members", label: "Members" },
-    { id: "topics",  label: "Topics" },
+    { id: "topics",  label: "Areas" },
     { id: "filters", label: "Filters" },
     { id: "display", label: "Display" },
   ];
@@ -567,7 +547,7 @@ export default function Settings({ displayConfig, onDisplayUpdate, contentConfig
                 <div style={{ overflowY: "auto", flex: 1 }}>
                   {tab === "embed"    && <EmbedTab />}
                   {tab === "members"  && <MembersTab universities={contentConfig.universities} onUpdate={handleMembersUpdate} />}
-                  {tab === "topics"   && <TopicsTab  visibleClusters={displayConfig.visibleClusters} onUpdate={handleTopicsUpdate} />}
+                  {tab === "topics"   && <TopicsTab  visibleAreas={displayConfig.visibleAreas} onUpdate={handleTopicsUpdate} />}
                   {tab === "filters"  && <FiltersTab subjectCodes={contentConfig.subjectCodes} onUpdate={handleSubjectCodesUpdate} />}
                   {tab === "display"  && <DisplayTab config={displayConfig} onUpdate={onDisplayUpdate} />}
                 </div>
