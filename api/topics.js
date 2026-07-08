@@ -12,6 +12,7 @@
 
 import { UNIVERSITIES } from '../src/data.js';
 import { kv as _kv } from '@vercel/kv';
+import { TOPICS_SNAPSHOT } from '../src/topics-snapshot.js';
 
 // kv is null if KV_REST_API_URL is not configured — compute and return without caching
 let kv = null;
@@ -92,7 +93,7 @@ export async function computeTopics(universities, apiKey, debug) {
   // not Scopus affiliation IDs, so AF-ID() would return wrong results.
   const papersByUni = {};
   await pool(universities, 3, async (uni) => {
-    const q = `AFFILORG("${uni.name}") AND SUBJAREA(EART OR ENVI OR AGRI OR ENER OR SOCI) AND PUBYEAR > 2019`;
+    const q = `AFFILORG("${uni.name}") AND TITLE-ABS-KEY(climat* OR "global warming" OR "carbon emission" OR "net zero" OR decarboni*) AND SUBJAREA(EART OR ENVI OR AGRI OR ENER OR SOCI) AND PUBYEAR > 2019`;
     const url = `https://api.elsevier.com/content/search/scopus?` +
       `query=${encodeURIComponent(q)}&count=25&sort=citedby-count`;
     try {
@@ -207,7 +208,9 @@ export default async function handler(req, res) {
   const force = req.query.force === '1';
 
   // ── 1. Try KV cache first ──────────────────────────────────────────────────
-  let stale = null;
+  // Committed snapshot (from scripts/refresh-topics.mjs) is the fallback of
+  // last resort — SciVal is IP-entitled and usually 403s from Vercel.
+  let stale = TOPICS_SNAPSHOT?.clusters?.length ? TOPICS_SNAPSHOT : null;
   try {
     const cached = kv ? await kv.get(KV_KEY) : null;
     if (cached?.clusters?.length && cached?.cachedAt) {
