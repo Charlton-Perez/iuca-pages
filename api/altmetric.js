@@ -337,31 +337,32 @@ export default async function handler(req, res) {
   const limit  = Math.min(parseInt(req.query.limit) || 10, 20);
   const force  = req.query.force === "1";
 
-  // Live Altmetric enrichment is slow (~10s) and Scopus/SciVal 403 from Vercel,
-  // so the impact list is precomputed weekly (cron → scripts) and served from a
-  // committed snapshot / KV. Live compute is only a fallback (e.g. local dev).
+  // The impact list is precomputed weekly on a SciVal-entitled network (cron →
+  // scripts) and served from KV / a committed snapshot. This is PREFERRED over a
+  // live compute: Altmetric works from Vercel, but Scopus/SciVal 403 there, so a
+  // live compute would silently drop FWCI + area tags. Live compute is only a
+  // last resort (local dev, or no snapshot yet). ?force=1 forces a live compute.
   let stale = IMPACT_SNAPSHOT?.papers?.length ? IMPACT_SNAPSHOT : null;
   try {
     const cached = kv ? await kv.get(KV_KEY) : null;
     if (cached?.papers?.length && cached?.fetchedAt) {
       const ageMs = Date.now() - new Date(cached.fetchedAt).getTime();
-      if (ageMs < KV_TTL_S * 1000 && !force) {
-        return res.status(200).json({ ...cached, fromCache: true });
-      }
-      stale = cached;
+      if (ageMs < KV_TTL_S * 1000) stale = cached; // fresher than the committed snapshot
     }
   } catch (err) { console.error("KV read error:", err.message); }
 
+  if (stale && !force) return res.status(200).json({ ...stale, fromCache: true });
+
   try {
     const papers = await computeImpact({ months, limit });
+    if (papers.length === 0 && stale) return res.status(200).json({ ...stale, fromCache: true });
     const result = { papers, total: papers.length, fetchedAt: new Date().toISOString() };
     if (kv && papers.length > 0) {
       try { await kv.set(KV_KEY, result); } catch (err) { console.error("KV write error:", err.message); }
     }
-    if (papers.length === 0 && stale) return res.status(200).json({ ...stale, fromCache: true, staleFallback: true });
     return res.status(200).json(result);
   } catch (err) {
-    if (stale) return res.status(200).json({ ...stale, fromCache: true, staleFallback: true });
+    if (stale) return res.status(200).json({ ...stale, fromCache: true });
     return res.status(500).json({ error: err.message });
   }
 }
