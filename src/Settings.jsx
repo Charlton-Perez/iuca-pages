@@ -12,9 +12,9 @@ const TIMEFRAME_OPTIONS = [
 ];
 
 export const DEFAULT_DISPLAY = {
-  timeframe:     "1y",
-  paperCount:    35,
-  visibleThemes: null, // null = all visible
+  timeframe:       "1y",
+  paperCount:      10,
+  visibleClusters: null, // null = all visible
 };
 
 export function useConfig() {
@@ -220,92 +220,98 @@ function MembersTab({ universities, onUpdate }) {
   );
 }
 
-// Scopus SUBJAREA abbreviations — the valid query field is SUBJAREA(EART OR ENVI ...)
-const SUBJAREA_LABELS = {
-  EART: "Earth and Planetary Sciences",
-  ENVI: "Environmental Science",
-  AGRI: "Agricultural and Biological Sciences",
-  ENER: "Energy",
-  SOCI: "Social Sciences",
-  MULT: "Multidisciplinary (Nature, Science, etc.)",
-  MEDI: "Medicine",
-  PHYS: "Physics and Astronomy",
-  ENGI: "Engineering",
-};
+// ─── Tab: Topics ──────────────────────────────────────────────────────────────
+function TopicsTab({ visibleClusters, onUpdate }) {
+  const [clusters,  setClusters]  = useState(null);
+  const [loading,   setLoading]   = useState(false);
+  const [selected,  setSelected]  = useState(() => visibleClusters ? new Set(visibleClusters.map(String)) : null);
 
-// ─── Tab: Themes ──────────────────────────────────────────────────────────────
-function ThemesTab({ themes, onUpdate }) {
-  const [local, setLocal] = useState(themes);
-
-  useEffect(() => { setLocal(themes); }, [themes]);
-
-  const update = (idx, field, value) => {
-    setLocal(prev => prev.map((t, i) => i === idx ? { ...t, [field]: value } : t));
+  const load = () => {
+    setLoading(true);
+    fetch("/api/topics")
+      .then(r => r.json())
+      .then(d => {
+        setClusters(d.clusters || []);
+        if (!selected) setSelected(new Set((d.clusters || []).map(c => String(c.id))));
+        setLoading(false);
+      })
+      .catch(() => setLoading(false));
   };
 
-  const updateAreas = (idx, raw) => {
-    const areas = raw.split(",").map(s => s.trim().toUpperCase()).filter(Boolean);
-    update(idx, "subjectAreas", areas);
+  const toggle = (id) => {
+    setSelected(prev => {
+      const next = new Set(prev || []);
+      if (next.has(id)) { if (next.size > 1) next.delete(id); }
+      else next.add(id);
+      return next;
+    });
   };
+
+  const selectAll   = () => clusters && setSelected(new Set(clusters.map(c => String(c.id))));
+  const selectNone  = () => clusters && setSelected(new Set([String(clusters[0]?.id)]));
 
   return (
     <div>
-      <div style={sectionHead}>Research themes — {local.length} themes</div>
-      <p style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.35)", marginBottom: "0.5rem", lineHeight: 1.6 }}>
-        Subject areas are Scopus's journal-level classifications (SUBJAREA) — the sole filter for
-        finding papers. Papers are ranked by Field-Weighted Citation Impact (FWCI).
+      <div style={sectionHead}>What We Do — visible topic clusters</div>
+      <p style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.35)", marginBottom: "0.85rem", lineHeight: 1.6 }}>
+        Topics are discovered automatically from SciVal by analysing recent papers across all member
+        universities. Tick the clusters you want to show in the accordion.
       </p>
-      <div style={{
-        marginBottom: "1rem", padding: "0.6rem 0.85rem", borderRadius: 7,
-        background: "rgba(255,255,255,0.04)", border: "1px solid rgba(255,255,255,0.08)",
-        fontSize: "0.68rem", color: "rgba(255,255,255,0.3)", lineHeight: 1.8, fontFamily: "monospace",
-      }}>
-        {Object.entries(SUBJAREA_LABELS).map(([code, name]) => (
-          <span key={code} style={{ marginRight: "1rem", whiteSpace: "nowrap" }}>
-            <span style={{ color: "rgba(255,255,255,0.55)" }}>{code}</span> {name}
-          </span>
-        ))}
-      </div>
-      <div style={{ maxHeight: 360, overflowY: "auto", paddingRight: "0.25rem" }}>
-        {local.map((theme, i) => (
-          <div key={theme.id} style={{
-            marginBottom: "0.85rem", padding: "0.85rem",
-            background: "rgba(255,255,255,0.04)", borderRadius: 8,
-            borderLeft: `3px solid ${theme.colour}`,
-          }}>
-            <div style={{ display: "flex", gap: "0.5rem", marginBottom: "0.5rem" }}>
-              <input value={theme.icon} onChange={e => update(i, "icon", e.target.value)}
-                style={{ ...input, width: 48, textAlign: "center", fontSize: "1.1rem", flexShrink: 0 }} />
-              <input value={theme.label} onChange={e => update(i, "label", e.target.value)}
-                style={{ ...input, flex: 1, fontWeight: 600 }} placeholder="Theme name" />
-            </div>
-            <textarea value={theme.description} onChange={e => update(i, "description", e.target.value)}
-              style={{ ...textarea, minHeight: 52, fontSize: "0.75rem", marginBottom: "0.5rem" }}
-              placeholder="Public description" />
-            <div style={{ display: "flex", gap: "0.4rem", marginBottom: "0.4rem", alignItems: "center" }}>
-              <span style={{ fontSize: "0.65rem", color: "rgba(255,255,255,0.3)", whiteSpace: "nowrap", width: 90, flexShrink: 0 }}>Subject areas</span>
-              <input
-                value={(theme.subjectAreas || theme.asjcCodes || []).join(", ")}
-                onChange={e => updateAreas(i, e.target.value)}
-                style={{ ...input, fontSize: "0.72rem", fontFamily: "monospace" }}
-                placeholder="e.g. EART, ENVI" />
-            </div>
-            {(theme.subjectAreas || []).length > 0 && (
-              <div style={{ fontSize: "0.63rem", color: "rgba(255,255,255,0.25)", paddingLeft: 94, lineHeight: 1.6 }}>
-                {(theme.subjectAreas || []).map(c => SUBJAREA_LABELS[c] ? `${c} — ${SUBJAREA_LABELS[c]}` : c).join(" · ")}
-              </div>
-            )}
+
+      {!clusters && !loading && (
+        <button onClick={load} style={{
+          width: "100%", padding: "0.6rem",
+          background: "rgba(91,155,213,0.15)", border: "1px solid rgba(91,155,213,0.3)",
+          borderRadius: 8, color: "#5b9bd5", fontSize: "0.82rem",
+          cursor: "pointer", fontFamily: "inherit",
+        }}>
+          Load available topics
+        </button>
+      )}
+
+      {loading && (
+        <div style={{ textAlign: "center", padding: "2rem", color: "rgba(255,255,255,0.25)", fontSize: "0.8rem" }}>
+          Discovering topics…
+        </div>
+      )}
+
+      {clusters && (
+        <>
+          <div style={{ display: "flex", gap: "0.5rem", marginBottom: "0.75rem" }}>
+            <button onClick={selectAll}  style={{ ...pill(false), fontSize: "0.7rem" }}>Select all</button>
+            <button onClick={selectNone} style={{ ...pill(false), fontSize: "0.7rem" }}>Clear</button>
+            <span style={{ fontSize: "0.7rem", color: "rgba(255,255,255,0.25)", marginLeft: "auto", alignSelf: "center" }}>
+              {selected?.size || 0} of {clusters.length} selected
+            </span>
           </div>
-        ))}
-      </div>
-      <button onClick={() => onUpdate(local)} style={{
-        marginTop: "0.75rem", width: "100%", padding: "0.6rem",
-        background: "#5b9bd5", border: "none", borderRadius: 8,
-        color: "#fff", fontWeight: 600, fontSize: "0.85rem",
-        cursor: "pointer", fontFamily: "inherit",
-      }}>
-        Apply theme changes
-      </button>
+          <div style={{ maxHeight: 320, overflowY: "auto", paddingRight: "0.25rem" }}>
+            {clusters.map(c => {
+              const id     = String(c.id);
+              const active = selected?.has(id) ?? true;
+              return (
+                <label key={id} style={{ display: "flex", alignItems: "center", gap: "0.6rem", cursor: "pointer", padding: "0.3rem 0" }}>
+                  <input type="checkbox" checked={active} onChange={() => toggle(id)}
+                    style={{ accentColor: "#5b9bd5", width: 14, height: 14, flexShrink: 0 }} />
+                  <span style={{ flex: 1, fontSize: "0.78rem", color: active ? "rgba(255,255,255,0.8)" : "rgba(255,255,255,0.3)" }}>
+                    {c.name}
+                  </span>
+                  <span style={{ fontSize: "0.65rem", color: "rgba(255,255,255,0.2)", flexShrink: 0 }}>
+                    {c.uniCount} unis
+                  </span>
+                </label>
+              );
+            })}
+          </div>
+          <button onClick={() => onUpdate(selected ? [...selected] : null)} style={{
+            marginTop: "0.85rem", width: "100%", padding: "0.6rem",
+            background: "#5b9bd5", border: "none", borderRadius: 8,
+            color: "#fff", fontWeight: 600, fontSize: "0.85rem",
+            cursor: "pointer", fontFamily: "inherit",
+          }}>
+            Apply topic filter
+          </button>
+        </>
+      )}
     </div>
   );
 }
@@ -386,54 +392,19 @@ function FiltersTab({ subjectCodes, onUpdate }) {
 }
 
 // ─── Tab: Display ─────────────────────────────────────────────────────────────
-function DisplayTab({ config, onUpdate, themes }) {
+function DisplayTab({ config, onUpdate }) {
   const [local, setLocal] = useState(config);
-  const allThemeIds = themes.map(t => t.id);
-  const visibleThemes = local.visibleThemes || allThemeIds;
-
   useEffect(() => { setLocal(config); }, [config]);
-
-  const toggleTheme = (id) => {
-    const next = visibleThemes.includes(id)
-      ? visibleThemes.filter(t => t !== id)
-      : [...visibleThemes, id];
-    if (next.length === 0) return;
-    setLocal(l => ({ ...l, visibleThemes: next }));
-  };
 
   return (
     <div>
-      <div style={sectionHead}>In the News</div>
-      <div style={{ marginBottom: "0.4rem" }}><span style={label}>Attention window</span></div>
-      <div style={{ display: "flex", gap: "0.4rem", flexWrap: "wrap", marginBottom: "1rem" }}>
+      <div style={sectionHead}>Our Impact — attention window</div>
+      <div style={{ display: "flex", gap: "0.4rem", flexWrap: "wrap", marginBottom: "1.5rem" }}>
         {TIMEFRAME_OPTIONS.map(opt => (
           <button key={opt.value} onClick={() => setLocal(l => ({ ...l, timeframe: opt.value }))}
             style={pill(local.timeframe === opt.value)}>
             {opt.label}
           </button>
-        ))}
-      </div>
-      <div style={{ marginBottom: "0.4rem" }}><span style={label}>Papers shown</span></div>
-      <div style={{ display: "flex", gap: "0.4rem", marginBottom: "1.5rem" }}>
-        {[15, 25, 35, 50].map(n => (
-          <button key={n} onClick={() => setLocal(l => ({ ...l, paperCount: n }))}
-            style={pill(local.paperCount === n)}>
-            {n}
-          </button>
-        ))}
-      </div>
-
-      <div style={sectionHead}>What We Do — visible themes</div>
-      <div style={{ display: "flex", flexDirection: "column", gap: "0.4rem", marginBottom: "1rem" }}>
-        {themes.map(t => (
-          <label key={t.id} style={{ display: "flex", alignItems: "center", gap: "0.6rem", cursor: "pointer" }}>
-            <input type="checkbox" checked={visibleThemes.includes(t.id)}
-              onChange={() => toggleTheme(t.id)}
-              style={{ accentColor: "#5b9bd5", width: 14, height: 14 }} />
-            <span style={{ fontSize: "0.8rem", color: "rgba(255,255,255,0.7)" }}>
-              {t.icon} {t.label}
-            </span>
-          </label>
         ))}
       </div>
 
@@ -469,19 +440,19 @@ export default function Settings({ displayConfig, onDisplayUpdate, contentConfig
     else { setPwError(true); setPwInput(""); }
   };
 
-  // Save content (members / themes / subjectCodes) to server via /api/save-config
-  const saveContent = async (universities, themes, subjectCodes) => {
+  // Save content (members / subjectCodes) to server via /api/save-config
+  const saveContent = async (universities, subjectCodes) => {
     setSaving(true);
     setSaveMsg(null);
     try {
       const r = await fetch("/api/save-config", {
         method: "POST",
         headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ password: pwInput || PASSWORD, universities, themes, subjectCodes }),
+        body: JSON.stringify({ password: pwInput || PASSWORD, universities, subjectCodes }),
       });
       const data = await r.json();
       if (!r.ok) throw new Error(data.error || "Save failed");
-      onContentSave({ universities, themes, subjectCodes });
+      onContentSave({ universities, subjectCodes });
       setSaveMsg({ ok: true, text: "Saved — changes are now live for all users." });
     } catch (err) {
       setSaveMsg({ ok: false, text: err.message });
@@ -490,14 +461,14 @@ export default function Settings({ displayConfig, onDisplayUpdate, contentConfig
     }
   };
 
-  const handleMembersUpdate      = (universities)  => saveContent(universities, contentConfig.themes, contentConfig.subjectCodes);
-  const handleThemesUpdate       = (themes)        => saveContent(contentConfig.universities, themes, contentConfig.subjectCodes);
-  const handleSubjectCodesUpdate = (subjectCodes)  => saveContent(contentConfig.universities, contentConfig.themes, subjectCodes);
+  const handleMembersUpdate      = (universities)  => saveContent(universities, contentConfig.subjectCodes);
+  const handleSubjectCodesUpdate = (subjectCodes)  => saveContent(contentConfig.universities, subjectCodes);
+  const handleTopicsUpdate       = (visibleClusters) => onDisplayUpdate({ ...displayConfig, visibleClusters });
 
   const TABS = [
     { id: "embed",   label: "Embed links" },
     { id: "members", label: "Members" },
-    { id: "themes",  label: "Themes" },
+    { id: "topics",  label: "Topics" },
     { id: "filters", label: "Filters" },
     { id: "display", label: "Display" },
   ];
@@ -596,12 +567,12 @@ export default function Settings({ displayConfig, onDisplayUpdate, contentConfig
                 <div style={{ overflowY: "auto", flex: 1 }}>
                   {tab === "embed"    && <EmbedTab />}
                   {tab === "members"  && <MembersTab universities={contentConfig.universities} onUpdate={handleMembersUpdate} />}
-                  {tab === "themes"   && <ThemesTab  themes={contentConfig.themes}             onUpdate={handleThemesUpdate} />}
+                  {tab === "topics"   && <TopicsTab  visibleClusters={displayConfig.visibleClusters} onUpdate={handleTopicsUpdate} />}
                   {tab === "filters"  && <FiltersTab subjectCodes={contentConfig.subjectCodes} onUpdate={handleSubjectCodesUpdate} />}
-                  {tab === "display"  && <DisplayTab config={displayConfig} onUpdate={onDisplayUpdate} themes={contentConfig.themes} />}
+                  {tab === "display"  && <DisplayTab config={displayConfig} onUpdate={onDisplayUpdate} />}
                 </div>
 
-                {(tab === "members" || tab === "themes" || tab === "filters") && (
+                {(tab === "members" || tab === "filters") && (
                   <p style={{ fontSize: "0.67rem", color: "rgba(255,255,255,0.18)", marginTop: "0.75rem", textAlign: "center" }}>
                     Changes are saved to the server and immediately visible to all users.{" "}
                     Requires Vercel KV to be connected in your project.

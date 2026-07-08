@@ -2,7 +2,7 @@ import { useState, useEffect } from "react";
 import WhatWeDo from "./WhatWeDo.jsx";
 import InTheNews from "./InTheNews.jsx";
 import Settings, { useConfig } from "./Settings.jsx";
-import { UNIVERSITIES, THEMES } from "./data.js";
+import { UNIVERSITIES } from "./data.js";
 
 const isEmbed = new URLSearchParams(window.location.search).get("embed") === "1";
 
@@ -14,14 +14,14 @@ export default function App() {
   const [displayConfig, updateDisplayConfig] = useConfig();
 
   // Live content config (universities + themes + subjectCodes) — fetched from server, falls back to defaults
-  const [contentConfig, setContentConfig] = useState({ universities: UNIVERSITIES, themes: THEMES, subjectCodes: null });
+  const [contentConfig, setContentConfig] = useState({ universities: UNIVERSITIES, subjectCodes: null });
   const [configLoaded, setConfigLoaded]   = useState(false);
 
   useEffect(() => {
     fetch("/api/config")
       .then(r => r.ok ? r.json() : null)
       .then(data => {
-        if (data?.universities && data?.themes) setContentConfig(data);
+        if (data?.universities) setContentConfig(data);
       })
       .catch(() => {})
       .finally(() => setConfigLoaded(true));
@@ -76,15 +76,13 @@ export default function App() {
         {page === "whatwedo" && (
           <WhatWeDo
             universities={contentConfig.universities}
-            themes={contentConfig.themes}
-            visibleThemes={displayConfig.visibleThemes}
+            visibleClusters={displayConfig.visibleClusters}
           />
         )}
         {page === "inthenews" && (
           <InTheNews
             timeframe={displayConfig.timeframe}
             paperCount={displayConfig.paperCount}
-            subjectCodes={contentConfig.subjectCodes}
           />
         )}
       </div>

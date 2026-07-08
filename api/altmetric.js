@@ -1,110 +1,20 @@
 // api/altmetric.js — Vercel serverless function
-// Returns top N papers by Altmetric score from IUCA member universities.
-// Uses Altmetric Explorer API (HMAC-SHA1 signed).
-// Falls back to Scopus + free Altmetric API if Explorer credentials are missing.
+// Returns top 10 climate papers by Altmetric attention score from IUCA members.
+// Enriches each paper with:
+//   - All IUCA co-authors (from Altmetric affiliations)
+//   - Abstract snippet (Scopus Abstract Retrieval API)
+//   - FWCI + topic cluster name (SciVal)
 
 import crypto from "crypto";
+import { UNIVERSITIES } from "../src/data.js";
 
-const IUCA_GRID_IDS = [
-  "grid.9025.f",    // University of Reading
-  "grid.4991.5",    // University of Oxford
-  "grid.5335.0",    // University of Cambridge
-  "grid.4305.2",    // University of Edinburgh
-  "grid.8391.3",    // University of Exeter
-  "grid.9909.9",    // University of Leeds
-  "grid.13097.3c",  // King's College London
-  "grid.12082.39",  // University of Sussex
-  "grid.462410.5",  // Sorbonne Université
-  "grid.5801.c",    // ETH Zurich
-  "grid.7400.3",    // University of Zurich
-  "grid.7737.4",    // University of Helsinki
-  "grid.7704.4",    // University of Bremen
-  "grid.1005.4",    // UNSW Sydney
-  "grid.1008.9",    // University of Melbourne
-  "grid.1002.3",    // Monash University
-  "grid.1009.8",    // University of Tasmania
-  "grid.4280.e",    // National University of Singapore
-  "grid.10784.3a",  // Chinese University of Hong Kong
-  "grid.194645.b",  // University of Hong Kong
-  "grid.39158.36",  // Hokkaido University
-  "grid.41156.37",  // Nanjing University
-  "grid.443626.0",  // China University of Geosciences
-  "grid.20861.3d",  // California Institute of Technology
-  "grid.5386.8",    // Cornell University
-  "grid.47100.32",  // Yale University
-  "grid.137628.9",  // New York University
-  "grid.266190.a",  // University of Colorado Boulder
-  "grid.14709.3b",  // McGill University
-  "grid.11899.38",  // University of São Paulo
-  "grid.10604.33",  // University of Nairobi
-  "grid.10818.34",  // University of Ghana
-  "grid.7836.a",    // University of Cape Town
-  "grid.444501.3",  // TERI School of Advanced Studies
-  "grid.449398.e",  // University of the South Pacific
-];
+// Build lookup maps from the authoritative UNIVERSITIES list in data.js
+const GRID_TO_UNI  = Object.fromEntries(UNIVERSITIES.map(u => [u.gridId,   { name: u.name, flag: u.flag }]));
+const SCOPUS_TO_UNI = Object.fromEntries(UNIVERSITIES.map(u => [u.scopusId, { name: u.name, flag: u.flag }]));
 
-const GRID_TO_NAME = {
-  "grid.9025.f":   "University of Reading",
-  "grid.4991.5":   "University of Oxford",
-  "grid.5335.0":   "University of Cambridge",
-  "grid.4305.2":   "University of Edinburgh",
-  "grid.8391.3":   "University of Exeter",
-  "grid.9909.9":   "University of Leeds",
-  "grid.13097.3c": "King's College London",
-  "grid.12082.39": "University of Sussex",
-  "grid.462410.5": "Sorbonne Université",
-  "grid.5801.c":   "ETH Zurich",
-  "grid.7400.3":   "University of Zurich",
-  "grid.7737.4":   "University of Helsinki",
-  "grid.7704.4":   "University of Bremen",
-  "grid.1005.4":   "UNSW Sydney",
-  "grid.1008.9":   "University of Melbourne",
-  "grid.1002.3":   "Monash University",
-  "grid.1009.8":   "University of Tasmania",
-  "grid.4280.e":   "National University of Singapore",
-  "grid.10784.3a": "Chinese University of Hong Kong",
-  "grid.194645.b": "University of Hong Kong",
-  "grid.39158.36": "Hokkaido University",
-  "grid.41156.37": "Nanjing University",
-  "grid.443626.0": "China University of Geosciences",
-  "grid.20861.3d": "California Inst. of Technology",
-  "grid.5386.8":   "Cornell University",
-  "grid.47100.32": "Yale University",
-  "grid.137628.9": "New York University",
-  "grid.266190.a": "University of Colorado Boulder",
-  "grid.14709.3b": "McGill University",
-  "grid.11899.38": "University of São Paulo",
-  "grid.10604.33": "University of Nairobi",
-  "grid.10818.34": "University of Ghana",
-  "grid.7836.a":   "University of Cape Town",
-  "grid.444501.3": "TERI School of Advanced Studies",
-  "grid.449398.e": "University of the South Pacific",
-};
+const IUCA_GRID_IDS = UNIVERSITIES.map(u => u.gridId);
 
-const IUCA_SCOPUS_IDS = [
-  "60006462","60023256","60025259","60003093","60001809","60022452","60003596","60020422",
-  "60071311","60028186","60028717","60002026","60007882","60031004","60031226","60031229",
-  "60031244","60071417","60074798","60008712","60025272","60015498","60017001","60006951",
-  "60007776","60021773","60075336","60018043","60014099","60003066","60003984","60003978",
-  "60003980","60070377","60004028",
-];
-
-const SCOPUS_ID_TO_NAME = {
-  "60006462":"University of Reading","60023256":"University of Oxford","60025259":"University of Cambridge",
-  "60003093":"University of Edinburgh","60001809":"University of Exeter","60022452":"University of Leeds",
-  "60003596":"King's College London","60020422":"University of Sussex","60071311":"Sorbonne Université",
-  "60028186":"ETH Zurich","60028717":"University of Zurich","60002026":"University of Helsinki",
-  "60007882":"University of Bremen","60031004":"UNSW Sydney","60031226":"University of Melbourne",
-  "60031229":"Monash University","60031244":"University of Tasmania","60071417":"National University of Singapore",
-  "60074798":"Chinese University of Hong Kong","60008712":"University of Hong Kong",
-  "60025272":"Hokkaido University","60015498":"Nanjing University","60017001":"China University of Geosciences",
-  "60006951":"California Inst. of Technology","60007776":"Cornell University","60021773":"Yale University",
-  "60075336":"New York University","60018043":"University of Colorado Boulder","60014099":"McGill University",
-  "60003066":"University of São Paulo","60003984":"University of Nairobi","60003978":"University of Ghana",
-  "60003980":"University of Cape Town","60070377":"TERI School of Advanced Studies","60004028":"University of the South Pacific",
-};
-
-// Canonical HMAC string: filter param names + values, sorted alphabetically, pipe-separated.
+// HMAC digest for Altmetric Explorer signed requests
 function buildDigest(secret, filters) {
   const parts = [];
   for (const name of Object.keys(filters).sort()) {
@@ -117,15 +27,8 @@ function buildDigest(secret, filters) {
 }
 
 async function fetchFromExplorer(key, secret, timeframe, limit) {
-  // filter[q]=climate restricts to climate papers without needing ANZSRC subject codes
-  // (filter[subject][] causes invalid digest errors — the canonical string format is undocumented).
-  const filters = {
-    affiliations: IUCA_GRID_IDS,
-    q: "climate",
-    scope: "all",
-    timeframe,
-  };
-  const digest = buildDigest(secret, filters);
+  const filters = { affiliations: IUCA_GRID_IDS, q: "climate", scope: "all", timeframe };
+  const digest  = buildDigest(secret, filters);
 
   const affiliationQs = IUCA_GRID_IDS.map(id => `filter[affiliations][]=${id}`).join("&");
   const qs = [
@@ -152,26 +55,31 @@ async function fetchFromExplorer(key, secret, timeframe, limit) {
   const outputs  = data?.data     || [];
   const included = data?.included || [];
 
-  const papers = outputs.map(item => {
+  return outputs.map(item => {
     const attr     = item.attributes || {};
     const mentions = attr.mentions   || {};
-
-    const score     = Math.round(Number(attr["altmetric-score"] || 0));
-    const doi       = attr.identifiers?.dois?.[0] || null;
-    const paperUrl  = doi ? `https://doi.org/${doi}` : "#";
-    const detailsUrl = item.id ? `https://www.altmetric.com/details/${item.id}` : null;
-    const pubStr    = attr["publication-date"] || null;
+    const score    = Math.round(Number(attr["altmetric-score"] || 0));
+    const doi      = attr.identifiers?.dois?.[0] || null;
+    const pubStr   = attr["publication-date"] || null;
     const publishedOn = pubStr ? new Date(pubStr).getTime() / 1000 : null;
 
+    // Collect ALL IUCA co-authors from affiliation relationships
     const affiliationIds = item.relationships?.affiliations?.data?.map(a => a.id) || [];
-    const uniName = (() => {
-      for (const affId of affiliationIds) {
-        if (GRID_TO_NAME[affId]) return GRID_TO_NAME[affId];
+    const iucaMembers = affiliationIds
+      .map(affId => {
+        if (GRID_TO_UNI[affId]) return GRID_TO_UNI[affId];
         const match = included.find(i => i.type === "affiliation" && i.id === affId);
-        if (match?.attributes?.name) return match.attributes.name;
-      }
-      return null;
-    })();
+        if (match?.attributes?.name) {
+          // Try to match by name to get flag
+          const found = UNIVERSITIES.find(u =>
+            u.name.toLowerCase() === match.attributes.name.toLowerCase()
+          );
+          return found ? { name: found.name, flag: found.flag } : null;
+        }
+        return null;
+      })
+      .filter(Boolean)
+      .filter((u, i, arr) => arr.findIndex(x => x.name === u.name) === i); // dedupe
 
     const journalId  = item.relationships?.journal?.data?.id;
     const journalObj = journalId ? included.find(i => i.type === "journal" && i.id === journalId) : null;
@@ -183,115 +91,137 @@ async function fetchFromExplorer(key, secret, timeframe, limit) {
       journal,
       score,
       publishedOn,
-      university:     uniName || "IUCA Member",
+      iucaMembers:    iucaMembers.length ? iucaMembers : [{ name: "IUCA Member", flag: "🌍" }],
       newsOutlets:    mentions.msm    || 0,
       policyMentions: mentions.policy || 0,
       blogMentions:   mentions.blog   || 0,
       socialMentions: (mentions.tweet || 0) + (mentions.bluesky || 0) + (mentions.rdt || 0),
-      detailsUrl,
-      paperUrl,
+      paperUrl:       doi ? `https://doi.org/${doi}` : "#",
+      detailsUrl:     item.id ? `https://www.altmetric.com/details/${item.id}` : null,
     };
   })
   .filter(p => p.title && p.score > 0)
   .sort((a, b) => b.score - a.score)
   .slice(0, limit);
-
-  return { papers, source: "altmetric-explorer" };
 }
 
-async function fetchFromScopusFallback(scopusKey, limit) {
-  const affFilter = IUCA_SCOPUS_IDS.map(id => `AF-ID(${id})`).join(" OR ");
-  const query = `(${affFilter}) AND SUBJAREA(EART OR ENVI OR MULT) AND PUBYEAR > 2022`;
-  const scopusUrl = `https://api.elsevier.com/content/search/scopus?` +
-    `query=${encodeURIComponent(query)}&count=40&sort=citedby-count`;
-
-  const scopusResp = await fetch(scopusUrl, {
-    headers: { "X-ELS-APIKey": scopusKey, Accept: "application/json" },
-  });
-  if (!scopusResp.ok) throw new Error(`Scopus ${scopusResp.status}`);
-
-  const scopusData = await scopusResp.json();
-  const entries = (scopusData?.["search-results"]?.entry || [])
-    .filter(e => e["prism:doi"])
-    .slice(0, 30)
-    .map(e => {
-      const affiliations = Array.isArray(e.affiliation) ? e.affiliation : [e.affiliation].filter(Boolean);
-      const matchedId = affiliations.map(a => a?.["afid"]).find(id => SCOPUS_ID_TO_NAME[id]);
-      return {
-        doi:       e["prism:doi"],
-        title:     e["dc:title"] || "Untitled",
-        journal:   e["prism:publicationName"] || "",
-        published: e["prism:coverDate"] || null,
-        university: SCOPUS_ID_TO_NAME[matchedId] || "IUCA Member",
-      };
+// Fetch abstract + EID from Scopus Abstract Retrieval API for a single DOI
+async function fetchAbstract(doi, apiKey) {
+  const url = `https://api.elsevier.com/content/abstract/doi/${encodeURIComponent(doi)}` +
+    `?field=dc:description,eid,affiliation`;
+  try {
+    const r = await fetch(url, {
+      headers: { "X-ELS-APIKey": apiKey, Accept: "application/json" },
     });
+    if (!r.ok) return null;
+    const data  = await r.json();
+    const core  = data?.["abstracts-retrieval-response"]?.coredata || {};
+    const eid   = (core.eid || "").replace("2-s2.0-", "");
+    const abstractText = core["dc:description"] || "";
 
-  const altResults = await Promise.allSettled(
-    entries.map(p =>
-      fetch(`https://api.altmetric.com/v1/doi/${encodeURIComponent(p.doi)}`)
-        .then(r => r.ok ? r.json() : null)
-        .catch(() => null)
-    )
-  );
+    // Full affiliation list for IUCA member detection
+    const rawAffs = data?.["abstracts-retrieval-response"]?.affiliation || [];
+    const affsArr = Array.isArray(rawAffs) ? rawAffs : [rawAffs];
+    const iucaFromScopus = affsArr
+      .map(a => {
+        const sid = a?.["@id"];
+        if (sid && SCOPUS_TO_UNI[sid]) return SCOPUS_TO_UNI[sid];
+        const name = (a?.affilname || a?.["affiliation-city"] || "").toLowerCase();
+        const found = UNIVERSITIES.find(u => u.name.toLowerCase().includes(name) || name.includes(u.name.toLowerCase().split(" ")[0]));
+        return found ? { name: found.name, flag: found.flag } : null;
+      })
+      .filter(Boolean)
+      .filter((u, i, arr) => arr.findIndex(x => x.name === u.name) === i);
 
-  const papers = entries
-    .map((p, i) => {
-      const alt = altResults[i].status === "fulfilled" ? altResults[i].value : null;
-      if (!alt) return null;
-      return {
-        doi:            p.doi,
-        title:          alt.title || p.title,
-        journal:        alt.journal || p.journal,
-        score:          Math.round(alt.score || 0),
-        publishedOn:    alt.published_on || (p.published ? new Date(p.published).getTime() / 1000 : null),
-        university:     p.university,
-        newsOutlets:    alt.cited_by_msm_count      || 0,
-        policyMentions: alt.cited_by_policies_count || 0,
-        blogMentions:   alt.cited_by_posts_count    || 0,
-        socialMentions: (alt.cited_by_tweeters_count || 0) + (alt.cited_by_bluesky_count || 0),
-        detailsUrl:     alt.details_url             || null,
-        paperUrl:       alt.url || `https://doi.org/${p.doi}`,
+    return { eid, abstract: abstractText.slice(0, 280), iucaFromScopus };
+  } catch {
+    return null;
+  }
+}
+
+// Fetch FWCI + topic cluster for a list of SciVal/Scopus numeric IDs
+async function fetchSciVal(ids, apiKey) {
+  if (!ids.length) return {};
+  const url = `https://api.elsevier.com/analytics/scival/publication/metrics` +
+    `?metricTypes=FieldWeightedCitationImpact&publicationIds=${ids.join(",")}`;
+  try {
+    const r = await fetch(url, { headers: { "X-ELS-APIKey": apiKey, Accept: "application/json" } });
+    if (!r.ok) return {};
+    const data = await r.json();
+    const out  = {};
+    for (const item of data.results || []) {
+      const pub = item.publication || {};
+      const id  = String(pub.id || "");
+      if (!id) continue;
+      const byYear = item.metrics?.[0]?.valueByYear || {};
+      const fwci   = Object.keys(byYear).sort((a, b) => b - a)
+        .map(y => byYear[y]).find(v => v !== null) ?? null;
+      out[id] = {
+        fwci:        fwci !== null ? Math.round(fwci * 100) / 100 : null,
+        topicCluster: pub.topicClusterName || "",
       };
-    })
-    .filter(p => p && p.score > 0)
-    .sort((a, b) => b.score - a.score)
-    .slice(0, limit);
-
-  return { papers, source: "scopus+altmetric-free" };
+    }
+    return out;
+  } catch {
+    return {};
+  }
 }
 
 export default async function handler(req, res) {
   if (req.method !== "GET") return res.status(405).json({ error: "Method not allowed" });
 
   res.setHeader("Access-Control-Allow-Origin", "*");
-  res.setHeader("Cache-Control", "s-maxage=86400");
+  res.setHeader("Cache-Control", "s-maxage=3600"); // 1h cache for rich data
 
-  const timeframe = ["1m","3m","6m","1y","3y","5y"].includes(req.query.timeframe)
+  const timeframe      = ["1m","3m","6m","1y","3y","5y"].includes(req.query.timeframe)
     ? req.query.timeframe : "1y";
-  const limit    = Math.min(parseInt(req.query.limit) || 30, 50);
-  const subjects = req.query.subjects
-    ? req.query.subjects.split(",").map(s => s.trim()).filter(Boolean)
-    : ["0401","0405","0406","0501","0502","0503","0504"];
-
+  const limit          = Math.min(parseInt(req.query.limit) || 10, 20);
   const explorerKey    = process.env.ALTMETRIC_EXPLORER_KEY;
   const explorerSecret = process.env.ALTMETRIC_EXPLORER_SECRET;
   const scopusKey      = process.env.SCOPUS_API_KEY;
 
+  if (!explorerKey || !explorerSecret) {
+    return res.status(500).json({ error: "Altmetric Explorer credentials not configured" });
+  }
+
   try {
-    let result;
-    if (explorerKey && explorerSecret) {
-      result = await fetchFromExplorer(explorerKey, explorerSecret, timeframe, limit);
-    } else if (scopusKey) {
-      result = await fetchFromScopusFallback(scopusKey, limit);
-    } else {
-      return res.status(500).json({ error: "No API credentials configured" });
-    }
+    // Step 1: Altmetric — top papers by attention score
+    const papers = await fetchFromExplorer(explorerKey, explorerSecret, timeframe, limit);
+
+    // Step 2: Parallel Scopus Abstract enrichment (abstract + EID + extra IUCA members)
+    const abstractResults = await Promise.all(
+      papers.map(p => p.doi && scopusKey ? fetchAbstract(p.doi, scopusKey) : Promise.resolve(null))
+    );
+
+    // Step 3: Batch SciVal — FWCI + topic cluster
+    const eids = abstractResults.map(r => r?.eid).filter(Boolean);
+    const svData = scopusKey ? await fetchSciVal(eids, scopusKey) : {};
+
+    // Step 4: Merge everything
+    const enriched = papers.map((p, i) => {
+      const abs = abstractResults[i];
+      const sv  = abs?.eid ? svData[abs.eid] : null;
+
+      // Merge IUCA members from Altmetric + Scopus affiliation (deduplicated)
+      const scopusMembers = abs?.iucaFromScopus || [];
+      const combined = [...p.iucaMembers];
+      for (const u of scopusMembers) {
+        if (!combined.some(x => x.name === u.name)) combined.push(u);
+      }
+
+      return {
+        ...p,
+        iucaMembers:  combined,
+        abstract:     abs?.abstract || null,
+        fwci:         sv?.fwci ?? null,
+        topicCluster: sv?.topicCluster || null,
+      };
+    });
 
     return res.status(200).json({
-      papers:    result.papers,
-      total:     result.papers.length,
+      papers:    enriched,
+      total:     enriched.length,
       fetchedAt: new Date().toISOString(),
-      source:    result.source,
     });
   } catch (err) {
     return res.status(500).json({ error: err.message });

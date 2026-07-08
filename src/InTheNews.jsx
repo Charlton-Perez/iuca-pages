@@ -12,22 +12,134 @@ function scoreColour(score) {
   return "#9b8dd5";
 }
 
-export default function InTheNews({ timeframe = "1y", paperCount = 30, subjectCodes = null }) {
-  const [papers, setPapers] = useState(null);
+// ─── Paper card ───────────────────────────────────────────────────────────────
+function PaperCard({ paper, rank }) {
+  const colour = scoreColour(paper.score);
+
+  return (
+    <div style={{
+      padding: "1.75rem",
+      background: "rgba(255,255,255,0.025)",
+      border: "1px solid rgba(255,255,255,0.07)",
+      borderRadius: 14,
+      marginBottom: "1.25rem",
+    }}>
+      {/* Top row: rank + score + topic cluster */}
+      <div style={{ display: "flex", alignItems: "flex-start", gap: "1.1rem", marginBottom: "1rem" }}>
+        {/* Altmetric score ring */}
+        <div style={{ flexShrink: 0, textAlign: "center" }}>
+          <div style={{ fontSize: "0.55rem", color: "rgba(255,255,255,0.18)", marginBottom: "0.2rem" }}>#{rank}</div>
+          <div style={{
+            width: 58, height: 58, borderRadius: "50%",
+            border: `2.5px solid ${colour}`, background: `${colour}12`,
+            display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
+          }}>
+            <span style={{ fontSize: "0.95rem", fontWeight: 700, color: colour, lineHeight: 1 }}>
+              {paper.score >= 1000 ? `${(paper.score / 1000).toFixed(1)}k` : paper.score}
+            </span>
+            <span style={{ fontSize: "0.38rem", color: colour, opacity: 0.7, textTransform: "uppercase", letterSpacing: "0.04em" }}>altmetric</span>
+          </div>
+        </div>
+
+        {/* Title + meta */}
+        <div style={{ flex: 1, minWidth: 0 }}>
+          <a
+            href={paper.paperUrl}
+            target="_blank"
+            rel="noopener noreferrer"
+            style={{ textDecoration: "none" }}
+          >
+            <div style={{
+              fontFamily: "'Fraunces', serif", fontWeight: 300,
+              fontSize: "1.05rem", lineHeight: 1.45, color: "rgba(255,255,255,0.92)",
+              marginBottom: "0.4rem", transition: "color 0.15s",
+            }}
+              onMouseEnter={e => e.currentTarget.style.color = colour}
+              onMouseLeave={e => e.currentTarget.style.color = "rgba(255,255,255,0.92)"}
+            >
+              {paper.title} ↗
+            </div>
+          </a>
+
+          {/* Journal · Year · Topic cluster */}
+          <div style={{ fontSize: "0.72rem", color: "rgba(255,255,255,0.32)", lineHeight: 1.6 }}>
+            {[
+              paper.journal,
+              paper.publishedOn ? formatDate(paper.publishedOn) : null,
+              paper.topicCluster,
+            ].filter(Boolean).join(" · ")}
+          </div>
+        </div>
+
+        {/* FWCI badge */}
+        {paper.fwci !== null && paper.fwci !== undefined && (
+          <div style={{ flexShrink: 0, textAlign: "center" }} title="Field-Weighted Citation Impact">
+            <div style={{ fontSize: "0.52rem", color: "rgba(255,255,255,0.2)", marginBottom: "0.15rem", textTransform: "uppercase", letterSpacing: "0.05em" }}>FWCI</div>
+            <div style={{
+              fontSize: "1rem", fontWeight: 700, color: "rgba(255,255,255,0.7)", lineHeight: 1,
+            }}>
+              {paper.fwci >= 10 ? Math.round(paper.fwci) : paper.fwci}
+            </div>
+            <div style={{ fontSize: "0.48rem", color: "rgba(255,255,255,0.18)", marginTop: "0.1rem" }}>× field avg</div>
+          </div>
+        )}
+      </div>
+
+      {/* Abstract snippet */}
+      {paper.abstract && (
+        <p style={{
+          fontSize: "0.78rem", color: "rgba(255,255,255,0.42)", lineHeight: 1.7,
+          marginBottom: "1rem",
+          display: "-webkit-box", WebkitLineClamp: 3, WebkitBoxOrient: "vertical", overflow: "hidden",
+        }}>
+          {paper.abstract}
+        </p>
+      )}
+
+      {/* IUCA members */}
+      <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", flexWrap: "wrap" }}>
+        <span style={{ fontSize: "0.62rem", color: "rgba(255,255,255,0.25)", textTransform: "uppercase", letterSpacing: "0.06em", flexShrink: 0 }}>
+          IUCA
+        </span>
+        {paper.iucaMembers.map(u => (
+          <span key={u.name} style={{ display: "inline-flex", alignItems: "center", gap: "0.25rem" }}>
+            <span style={{ fontSize: "0.85rem" }}>{u.flag}</span>
+            <span style={{ fontSize: "0.72rem", color: "rgba(255,255,255,0.6)", fontWeight: 500 }}>{u.name}</span>
+          </span>
+        ))}
+      </div>
+
+      {/* Attention breakdown */}
+      <div style={{ marginTop: "0.85rem", display: "flex", gap: "1.1rem", flexWrap: "wrap", alignItems: "center", borderTop: "1px solid rgba(255,255,255,0.05)", paddingTop: "0.75rem" }}>
+        {paper.newsOutlets    > 0 && <span style={{ fontSize: "0.68rem", color: "rgba(255,255,255,0.25)" }}>{paper.newsOutlets.toLocaleString()} news outlets</span>}
+        {paper.policyMentions > 0 && <span style={{ fontSize: "0.68rem", color: "rgba(255,255,255,0.25)" }}>{paper.policyMentions.toLocaleString()} policy docs</span>}
+        {paper.socialMentions > 0 && <span style={{ fontSize: "0.68rem", color: "rgba(255,255,255,0.25)" }}>{paper.socialMentions.toLocaleString()} social posts</span>}
+        {paper.detailsUrl && (
+          <a href={paper.detailsUrl} target="_blank" rel="noopener" style={{ fontSize: "0.68rem", color: colour, textDecoration: "none", opacity: 0.8, marginLeft: "auto" }}>
+            Full attention report ↗
+          </a>
+        )}
+      </div>
+    </div>
+  );
+}
+
+// ─── Page ─────────────────────────────────────────────────────────────────────
+export default function InTheNews({ timeframe = "1y", paperCount = 10 }) {
+  const [papers,  setPapers]  = useState(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState(null);
+  const [error,   setError]   = useState(null);
 
   useEffect(() => {
     setLoading(true);
     setPapers(null);
     setError(null);
-    const params = new URLSearchParams({ timeframe, limit: paperCount, v: "8" });
-    if (subjectCodes?.length) params.set("subjects", subjectCodes.join(","));
+    const params = new URLSearchParams({ timeframe, limit: Math.min(paperCount, 10), v: "10" });
     fetch(`/api/altmetric?${params}`)
       .then(r => r.ok ? r.json() : r.json().then(e => Promise.reject(e)))
       .then(({ papers }) => { setPapers(papers || []); setLoading(false); })
       .catch(err => { setError(err?.error || String(err)); setLoading(false); });
-  }, [timeframe, paperCount, subjectCodes]);
+  }, [timeframe, paperCount]);
 
   return (
     <div style={{
@@ -39,7 +151,7 @@ export default function InTheNews({ timeframe = "1y", paperCount = 30, subjectCo
         * { box-sizing: border-box; margin: 0; padding: 0; }
       `}</style>
 
-      <div style={{ padding: "4rem 2rem 3rem", maxWidth: 900, margin: "0 auto" }}>
+      <div style={{ padding: "4rem 2rem 3rem", maxWidth: 800, margin: "0 auto" }}>
         <div style={{ fontSize: "0.68rem", color: "rgba(255,255,255,0.3)", letterSpacing: "0.1em", textTransform: "uppercase", marginBottom: "0.75rem" }}>
           International Universities Climate Alliance
         </div>
@@ -47,16 +159,16 @@ export default function InTheNews({ timeframe = "1y", paperCount = 30, subjectCo
           Our research,<br />
           <em style={{ fontStyle: "italic", color: "rgba(255,255,255,0.5)" }}>in the world</em>
         </h1>
-        <p style={{ marginTop: "0.85rem", fontSize: "0.9rem", color: "rgba(255,255,255,0.4)", lineHeight: 1.7, maxWidth: 520 }}>
+        <p style={{ marginTop: "0.85rem", fontSize: "0.9rem", color: "rgba(255,255,255,0.4)", lineHeight: 1.7, maxWidth: 540 }}>
           The highest-attention climate papers from IUCA member universities — ranked by Altmetric score,
-          which measures media coverage, policy citations and social reach.
+          measuring media coverage, policy citations and social reach.
         </p>
       </div>
 
-      <div style={{ maxWidth: 900, margin: "0 auto", padding: "0 2rem 5rem" }}>
+      <div style={{ maxWidth: 800, margin: "0 auto", padding: "0 2rem 5rem" }}>
         {loading && (
           <div style={{ textAlign: "center", padding: "4rem", color: "rgba(255,255,255,0.25)", fontSize: "0.85rem" }}>
-            Loading from Altmetric…
+            Fetching top papers…
           </div>
         )}
 
@@ -72,73 +184,13 @@ export default function InTheNews({ timeframe = "1y", paperCount = 30, subjectCo
           </div>
         )}
 
-        {papers?.map((p, i) => {
-          const colour = scoreColour(p.score);
-          return (
-            <div key={p.doi || i} style={{
-              display: "flex", gap: "1.25rem", alignItems: "flex-start",
-              padding: "1.25rem 0", borderBottom: "1px solid rgba(255,255,255,0.06)",
-            }}>
-              {/* Rank + score ring */}
-              <div style={{ flexShrink: 0, textAlign: "center", width: 56 }}>
-                <div style={{ fontSize: "0.62rem", color: "rgba(255,255,255,0.18)", marginBottom: "0.25rem" }}>#{i + 1}</div>
-                <div style={{
-                  width: 52, height: 52, borderRadius: "50%",
-                  border: `2px solid ${colour}`, background: `${colour}15`,
-                  display: "flex", flexDirection: "column", alignItems: "center", justifyContent: "center",
-                }}>
-                  <span style={{ fontSize: "0.88rem", fontWeight: 700, color: colour, lineHeight: 1 }}>
-                    {p.score >= 1000 ? `${(p.score / 1000).toFixed(1)}k` : p.score}
-                  </span>
-                  <span style={{ fontSize: "0.4rem", color: colour, opacity: 0.7, textTransform: "uppercase", letterSpacing: "0.03em" }}>altmetric</span>
-                </div>
-              </div>
-
-              {/* Paper info */}
-              <div style={{ flex: 1, minWidth: 0 }}>
-                <a
-                  href={p.paperUrl}
-                  target="_blank"
-                  rel="noopener noreferrer"
-                  style={{ textDecoration: "none", display: "block", marginBottom: "0.35rem" }}
-                >
-                  <span style={{
-                    fontFamily: "'Fraunces', serif", fontWeight: 300,
-                    fontSize: "1rem", lineHeight: 1.45, color: "rgba(255,255,255,0.9)",
-                    display: "inline",
-                    transition: "color 0.15s",
-                  }}
-                    onMouseEnter={e => e.currentTarget.style.color = colour}
-                    onMouseLeave={e => e.currentTarget.style.color = "rgba(255,255,255,0.9)"}
-                  >
-                    {p.title} ↗
-                  </span>
-                </a>
-
-                <div style={{ fontSize: "0.75rem", color: "rgba(255,255,255,0.35)", marginBottom: "0.5rem" }}>
-                  <span style={{ color: "rgba(255,255,255,0.6)", fontWeight: 500 }}>{p.university}</span>
-                  {p.journal     ? ` · ${p.journal}`              : ""}
-                  {p.publishedOn ? ` · ${formatDate(p.publishedOn)}` : ""}
-                </div>
-
-                <div style={{ display: "flex", gap: "1rem", flexWrap: "wrap", alignItems: "center" }}>
-                  {p.newsOutlets    > 0 && <span style={{ fontSize: "0.7rem", color: "rgba(255,255,255,0.28)" }}>{p.newsOutlets} news outlets</span>}
-                  {p.policyMentions > 0 && <span style={{ fontSize: "0.7rem", color: "rgba(255,255,255,0.28)" }}>{p.policyMentions} policy docs</span>}
-                  {p.socialMentions > 0 && <span style={{ fontSize: "0.7rem", color: "rgba(255,255,255,0.28)" }}>{p.socialMentions.toLocaleString()} social</span>}
-                  {p.detailsUrl && (
-                    <a href={p.detailsUrl} target="_blank" rel="noopener" style={{ fontSize: "0.7rem", color: colour, textDecoration: "none", opacity: 0.8 }}>
-                      Full attention data ↗
-                    </a>
-                  )}
-                </div>
-              </div>
-            </div>
-          );
-        })}
+        {papers?.map((p, i) => (
+          <PaperCard key={p.doi || i} paper={p} rank={i + 1} />
+        ))}
       </div>
 
       <div style={{ textAlign: "center", paddingBottom: "2.5rem", color: "rgba(255,255,255,0.12)", fontSize: "0.67rem" }}>
-        Attention data from Altmetric · Sorted by Altmetric score
+        Attention data: Altmetric Explorer · Citations: Scopus + SciVal · {new Date().getFullYear()} IUCA
       </div>
     </div>
   );

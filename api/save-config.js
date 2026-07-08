@@ -9,20 +9,19 @@ export default async function handler(req, res) {
   res.setHeader("Access-Control-Allow-Origin", "*");
   res.setHeader("Access-Control-Allow-Headers", "Content-Type");
 
-  const { password, universities, themes, subjectCodes } = req.body;
+  const { password, universities, subjectCodes } = req.body;
 
   const correctPassword = process.env.SETTINGS_PASSWORD;
   if (!correctPassword) return res.status(500).json({ error: "SETTINGS_PASSWORD not configured on server" });
   if (password !== correctPassword) return res.status(401).json({ error: "Incorrect password" });
 
-  if (!Array.isArray(universities) || !Array.isArray(themes)) {
+  if (!Array.isArray(universities)) {
     return res.status(400).json({ error: "Invalid config shape" });
   }
 
   try {
     await kv.set("dashboard_config", {
       universities,
-      themes,
       subjectCodes: Array.isArray(subjectCodes) ? subjectCodes : undefined,
     });
     return res.status(200).json({ ok: true });

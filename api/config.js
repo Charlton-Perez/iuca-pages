@@ -3,9 +3,9 @@
 // when you connect a KV database in the Vercel dashboard under Storage.
 
 import { kv } from "@vercel/kv";
-import { UNIVERSITIES, THEMES, DEFAULT_SUBJECT_CODES } from "../src/data.js";
+import { UNIVERSITIES, DEFAULT_SUBJECT_CODES } from "../src/data.js";
 
-const DEFAULTS = { universities: UNIVERSITIES, themes: THEMES, subjectCodes: DEFAULT_SUBJECT_CODES };
+const DEFAULTS = { universities: UNIVERSITIES, subjectCodes: DEFAULT_SUBJECT_CODES };
 
 export default async function handler(req, res) {
   if (req.method !== "GET") return res.status(405).json({ error: "Method not allowed" });
