@@ -49,7 +49,7 @@ async function fetchSciValBatch(ids, apiKey) {
   }
 }
 
-async function computeTopics(universities, apiKey) {
+async function computeTopics(universities, apiKey, debug) {
   const uniMeta     = Object.fromEntries(universities.map(u => [u.name, { name: u.name, flag: u.flag }]));
   const scopusHdrs  = { 'X-ELS-APIKey': apiKey, Accept: 'application/json' };
 
@@ -63,7 +63,11 @@ async function computeTopics(universities, apiKey) {
       `query=${encodeURIComponent(q)}&count=25&sort=citedby-count`;
     try {
       const r = await fetch(url, { headers: scopusHdrs });
-      if (!r.ok) { console.error(`Scopus ${r.status} for "${uni.name}"`); return; }
+      if (!r.ok) {
+        const body = await r.text();
+        debug.push(`Scopus ${r.status} for "${uni.name}": ${body.slice(0, 200)}`);
+        return;
+      }
       const data    = await r.json();
       const entries = data?.['search-results']?.entry || [];
       papersByUni[uni.name] = entries
@@ -77,7 +81,7 @@ async function computeTopics(universities, apiKey) {
           citations: parseInt(e['citedby-count'] || '0'),
         }));
     } catch (err) {
-      console.error(`Scopus error for "${uni.name}":`, err.message);
+      debug.push(`Scopus fetch error for "${uni.name}": ${err.message}`);
     }
   }));
 
@@ -182,15 +186,18 @@ export default async function handler(req, res) {
 
   // ── 2. Compute fresh ───────────────────────────────────────────────────────
   try {
-    const clusters  = await computeTopics(universities, apiKey);
+    const debug     = [];
+    const clusters  = await computeTopics(universities, apiKey, debug);
     const result    = { clusters, updatedAt: new Date().toISOString(), cachedAt: new Date().toISOString() };
 
-    // Store to KV for subsequent requests
-    if (kv) {
+    // Only cache non-empty results — an empty set means something upstream
+    // failed, and caching it would serve emptiness for 24 hours.
+    if (kv && clusters.length > 0) {
       try { await kv.set(KV_KEY, result, { ex: KV_TTL_S }); }
       catch (err) { console.error('KV write error:', err.message); }
     }
 
+    if (req.query.debug === '1') result.debug = debug.slice(0, 10);
     return res.status(200).json(result);
   } catch (err) {
     return res.status(500).json({ error: err.message });
