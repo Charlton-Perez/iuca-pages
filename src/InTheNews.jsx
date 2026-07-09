@@ -147,10 +147,11 @@ export default function InTheNews({ timeframe = "1y", paperCount = 10 }) {
     setLoading(true);
     setPapers(null);
     setError(null);
-    const params = new URLSearchParams({ timeframe, limit: Math.min(paperCount, 10), v: "10" });
-    fetch(`/api/altmetric?${params}`)
-      .then(r => r.ok ? r.json() : r.json().then(e => Promise.reject(e)))
-      .then(({ papers }) => { setPapers(papers || []); setLoading(false); })
+    // Static JSON straight from the CDN — no serverless function on page load.
+    // Regenerated weekly by scripts/refresh-topics.mjs; a new deploy busts the cache.
+    fetch(`/data/impact.json`)
+      .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
+      .then(({ papers }) => { setPapers((papers || []).slice(0, paperCount)); setLoading(false); })
       .catch(err => { setError(err?.error || String(err)); setLoading(false); });
   }, [timeframe, paperCount]);
 

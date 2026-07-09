@@ -132,7 +132,9 @@ export default function WhatWeDo({ universities = UNIVERSITIES, visibleAreas }) 
 
   useEffect(() => {
     setStatus("loading");
-    fetch(`/api/topics?v=3`)
+    // Static JSON straight from the CDN — no serverless function on page load.
+    // Regenerated weekly by scripts/refresh-topics.mjs; a new deploy busts the cache.
+    fetch(`/data/topics.json`)
       .then(r => { if (!r.ok) throw new Error(r.status); return r.json(); })
       .then(data => {
         setAreas(data.areas || []);
