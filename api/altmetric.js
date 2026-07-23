@@ -188,13 +188,17 @@ async function fetchOpenAlex(doi) {
       abstract = trimToSentence(words.join(" "), 320);
     }
 
+    // Match on both the resolved institution names and the raw affiliation
+    // strings — the raw text sometimes names a member the linker missed.
     const seen = new Set();
-    const iucaFromScopus = (w.authorships || []).flatMap(a =>
-      (a.institutions || []).flatMap(inst =>
-        matchIUCA(inst.display_name || "")
-          .filter(u => { if (seen.has(u.name)) return false; seen.add(u.name); return true; })
-          .map(u => ({ name: u.name, flag: u.flag }))
-      )
+    const candidates = (w.authorships || []).flatMap(a => [
+      ...(a.institutions || []).map(i => i.display_name || ""),
+      ...(a.raw_affiliation_strings || []),
+    ]);
+    const iucaFromScopus = candidates.flatMap(nameStr =>
+      matchIUCA(nameStr)
+        .filter(u => { if (seen.has(u.name)) return false; seen.add(u.name); return true; })
+        .map(u => ({ name: u.name, flag: u.flag }))
     );
 
     return { eid: null, abstract, iucaFromScopus };
@@ -286,15 +290,18 @@ export async function computeImpact({ months = 6, limit = 10, env = process.env 
       const [p, i] = queue.shift();
       if (!p.doi) continue;
       if (scopusKey) abstractResults[i] = await fetchAbstract(p.doi, scopusKey);
-      // Scopus Abstract API is IP-entitled and fails from Vercel — OpenAlex covers it
-      if (!abstractResults[i]?.abstract) {
-        const oa = await fetchOpenAlex(p.doi);
-        if (oa) abstractResults[i] = {
-          eid:            abstractResults[i]?.eid || null,
-          abstract:       oa.abstract || abstractResults[i]?.abstract || "",
-          iucaFromScopus: [...(abstractResults[i]?.iucaFromScopus || []), ...oa.iucaFromScopus],
-        };
-      }
+
+      // ALWAYS consult OpenAlex, not just when the abstract is missing: it
+      // resolves affiliations to their parent institution, which Scopus often
+      // doesn't (e.g. ETH Zurich appears in Scopus as "Institut für Atmosphäre
+      // und Klima" and never name-matches). Scopus is IP-entitled and 403s from
+      // Vercel, so OpenAlex is also the abstract fallback there.
+      const oa = await fetchOpenAlex(p.doi);
+      if (oa) abstractResults[i] = {
+        eid:            abstractResults[i]?.eid || null,
+        abstract:       abstractResults[i]?.abstract || oa.abstract || "",
+        iucaFromScopus: [...(abstractResults[i]?.iucaFromScopus || []), ...oa.iucaFromScopus],
+      };
     }
   }));
 

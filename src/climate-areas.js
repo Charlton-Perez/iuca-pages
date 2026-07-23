@@ -17,7 +17,7 @@
 export const CLIMATE_AREAS = [
   {
     id: "weather-oceans-dynamics",
-    name: "Weather, Oceans & Climate Dynamics",
+    name: "Weather & Climate Dynamics",
     blurb: "The physical climate system — variability, extremes, and the modelling behind prediction.",
     clusters: [
       { id: 14,  name: "Climate Variability and Tropical Cyclone Dynamics" },      // prom 92 · 41,311
@@ -46,7 +46,7 @@ export const CLIMATE_AREAS = [
       { id: 131, name: "Interconnections of Economic Growth and Environmental Impact" }, // prom 99 · 44,936
       { id: 403, name: "Climate Policy and Carbon Emission Dynamics" },            // prom 96 · 24,550
       { id: 975, name: "Sustainable Energy Transition and Community Development" }, // prom 93 · 20,953
-      { id: 833, name: "Consumer Behavior and Climate Change Awareness" },         // prom 86 · 23,786
+      // 833 Consumer Behavior & Climate Awareness moved to "Information Integrity & Climate"
     ],
   },
   {
@@ -90,6 +90,8 @@ export const CLIMATE_AREAS = [
       { id: 912, name: "Mangrove Ecosystems and Heavy Metal Pollution Dynamics" }, // prom 75 · 11,077
       { id: 842, name: "Coastal Dynamics and Sediment Transport Mechanisms" },     // prom 54 · 10,119
       { id: 629, name: "Ecosystem Dynamics and Carbon Management in Fisheries" },  // prom 46 · 10,162
+      { id: 1315, name: "Marine Ecosystems and Plastic Waste Management" },        // prom 37 · 5,632
+      { id: 1099, name: "Sediment Dynamics and Tectonic Influences in River Basins" }, // prom 23 · 6,453
     ],
   },
   {
@@ -113,7 +115,8 @@ export const CLIMATE_AREAS = [
       { id: 381, name: "Health Impacts of Climate Change and Ergonomics" },        // prom 90 · 24,137
       { id: 251, name: "Health Impacts of Air Pollution Exposure" },              // prom 94 · 28,101
       { id: 1137, name: "Cultural Heritage and Climate Change Resilience" },       // prom 46 · 11,737
-      { id: 1507, name: "Indigenous Knowledge and Climate Resilience in Arctic Communities" }, // prom 10 · 2,378
+      { id: 263, name: "Urban Heat Management and Thermal Comfort Solutions" },   // prom 97 · 30,622
+      // 1507 Indigenous Knowledge moved to "Just Transition & Indigenous Knowledge"
     ],
   },
   {
@@ -127,6 +130,43 @@ export const CLIMATE_AREAS = [
       { id: 583,  name: "Climate Change Impacts on Soil Moisture Dynamics" },      // prom 72 · 12,997
       { id: 1286, name: "Agroforestry and Biomass in Climate Resilience" },        // prom 50 · 6,991
       { id: 1259, name: "Innovative Approaches in Forest Management and Biomass Estimation" }, // prom 48 · 6,819
+    ],
+  },
+
+  // ── Social-science areas ────────────────────────────────────────────────────
+  // SciVal's taxonomy has no dedicated clusters for these themes — climate
+  // communication, justice and education research is spread across broader
+  // social-science clusters. The clusters below were identified by running
+  // global Scopus searches per theme and seeing where those papers cluster.
+  // They are thinner than the physical-science areas; expect fewer papers.
+  {
+    id: "information-integrity",
+    name: "Information Integrity & Climate",
+    blurb: "Climate communication, public perception, and the contest over credible information.",
+    clusters: [
+      { id: 833, name: "Consumer Behavior and Climate Change Awareness" },        // prom 86 · 23,786
+      { id: 1322, name: "Risk Perception in Energy Transition" },                 // prom 39 · 5,278
+      { id: 181, name: "Media Influence on Political Communication Dynamics" },   // prom 90 · 29,144
+    ],
+  },
+  {
+    id: "just-transition-indigenous",
+    name: "Just Transition & Indigenous Knowledge",
+    blurb: "Equity in the energy transition, indigenous knowledge, and community governance.",
+    clusters: [
+      { id: 1507, name: "Indigenous Knowledge and Climate Resilience in Arctic Communities" }, // prom 10 · 2,378
+      { id: 1349, name: "Social Movements and Environmental Justice Dynamics" },  // prom 13 · 5,996
+      { id: 1065, name: "Integrating Community Forestry and Environmental Governance" }, // prom 30 · ~6,000
+      { id: 1461, name: "Empowerment and Rights in Land Management" },            // prom 12 · ~3,000
+      { id: 1262, name: "Urban Policy and Livelihood Strategies in the Global South" }, // prom 24 · 6,694
+    ],
+  },
+  {
+    id: "climate-education",
+    name: "Climate Education",
+    blurb: "Teaching climate and sustainability, and building climate literacy.",
+    clusters: [
+      { id: 1179, name: "Sustainable Development in Higher Education Practices" }, // prom 72 · 10,771
     ],
   },
 ];

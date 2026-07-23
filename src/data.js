@@ -34,7 +34,6 @@ export const UNIVERSITIES = [
   { name: "Nanjing University",               flag: "🇨🇳", scopusId: "60015498", gridId: "grid.41156.37",  researchUrl: "https://climate.nju.edu.cn/" },
   { name: "China University of Geosciences",  flag: "🇨🇳", scopusId: "60017001", gridId: "grid.443626.0",  researchUrl: "https://en.cugb.edu.cn/research.htm" },
   { name: "California Inst. of Technology",   flag: "🇺🇸", scopusId: "60006951", gridId: "grid.20861.3d",  researchUrl: "https://climate.caltech.edu/" },
-  { name: "Cornell University",               flag: "🇺🇸", scopusId: "60007776", gridId: "grid.5386.8",    researchUrl: "https://atkinson.cornell.edu/" },
   { name: "Yale University",                  flag: "🇺🇸", scopusId: "60021773", gridId: "grid.47100.32",  researchUrl: "https://environment.yale.edu/research" },
   { name: "New York University",              flag: "🇺🇸", scopusId: "60075336", gridId: "grid.137628.9",  researchUrl: "https://environment.nyu.edu/" },
   { name: "University of Colorado Boulder",   flag: "🇺🇸", scopusId: "60018043", gridId: "grid.266190.a",  researchUrl: "https://cires.colorado.edu/" },
